@@ -23,11 +23,13 @@ function project(lon, lat) {
 var VW = 2000, VH = 1160;           // внутренняя система координат карты
 var fit = { k: 1, dx: 0, dy: 0 };   // проекция -> внутренние координаты
 var extent = [0, 0, VW, VH];        // докуда можно сдвинуть карту: Россия + соседние страны
-var view = { k: 1, x: 0, y: 0 };    // зум/панорама поверх внутренних координат
+var view = { k: 1, x: 0, y: 0, r: 0 };  // зум, панорама и поворот (r, градусы)
 var geo = window.RU_GEO, meta = window.RU_REGIONS, rivers = window.RU_RIVERS;
-var countryMeta = window.RU_COUNTRIES || [];
+var countryMeta = window.RU_COUNTRIES || [], fregionMeta = window.RU_FREGIONS || [];
 
-var regions = [];                   // подготовленные субъекты
+var regions = [];                   // субъекты России и регионы соседних стран
+var countries = [];                 // соседние страны целиком
+var markers = [];                   // звёзды столиц и точки центров регионов
 var byCode = {};
 var riverData = [];
 var selected = null, hovered = null;
@@ -91,8 +93,8 @@ function prepare() {
     });
     var r = {
       code: m.code, name: m.name, short: m.short, type: m.type,
-      capital: m.capital, district: m.district, area: m.area, pop: m.pop,
-      idx: i, polys: polys,
+      capital: m.capital, capitalLL: m.capitalLL, district: m.district,
+      area: m.area, pop: m.pop, idx: i, polys: polys,
       d: polys.map(ringPath).join(''),
       bbox: polyBBox(polys)
     };
@@ -102,26 +104,42 @@ function prepare() {
     byCode[r.code] = r;
   });
 
-  // соседние страны идут в общий список: их так же можно навести, выбрать и
-  // найти поиском. Охват карты по-прежнему считается только по субъектам
-  countryMeta.forEach(function (m, i) {
-    var polys = (geo.countries[m.code] || []).map(function (poly) {
-      return poly.map(function (ring) { return ring.map(projView); });
-    });
+  // соседние страны: страна целиком (контур, подпись, карточка) и её регионы,
+  // которые на карте ведут себя так же, как субъекты. Охват карты по-прежнему
+  // считается только по субъектам России
+  countryMeta.forEach(function (m) {
+    var polys = projPolys(geo.countries[m.code]);
+    var c = {
+      code: m.code, name: m.name, short: m.short, type: m.type,
+      capital: m.capital, capitalLL: m.capitalLL, area: m.area, pop: m.pop,
+      popNote: m.popNote, note: m.note, isCountry: true, members: [],
+      polys: polys, d: polys.map(ringPath).join(''), bbox: polyBBox(polys)
+    };
+    c.mainArea = mainRingArea(polys);
+    c.anchor = poleOfInaccessibility(largestRing(polys));
+    countries.push(c);
+    byCode[c.code] = c;
+    extent = [Math.min(extent[0], c.bbox[0]), Math.min(extent[1], c.bbox[1]),
+              Math.max(extent[2], c.bbox[2]), Math.max(extent[3], c.bbox[3])];
+  });
+  fregionMeta.forEach(function (m) {
+    var c = byCode[m.country];
+    var polys = projPolys(geo.fregions[m.code]);
+    if (!c || !polys.length) return;
     var r = {
       code: m.code, name: m.name, short: m.short, type: m.type,
-      capital: m.capital, area: m.area, pop: m.pop, popNote: m.popNote,
-      note: m.note, country: true, idx: meta.length + i, polys: polys,
-      d: polys.map(ringPath).join(''),
-      bbox: polyBBox(polys)
+      capital: m.capital, capitalLL: m.capitalLL, area: m.area,
+      areaApprox: m.areaApprox, pop: m.pop, popYear: m.popYear,
+      foreign: true, country: c, idx: c.members.length, polys: polys,
+      d: polys.map(ringPath).join(''), bbox: polyBBox(polys)
     };
     r.mainArea = mainRingArea(polys);
     r.anchor = poleOfInaccessibility(largestRing(polys));
+    c.members.push(r);
     regions.push(r);
     byCode[r.code] = r;
-    extent = [Math.min(extent[0], r.bbox[0]), Math.min(extent[1], r.bbox[1]),
-              Math.max(extent[2], r.bbox[2]), Math.max(extent[3], r.bbox[3])];
   });
+  buildMarkers();
 
   geo.land.forEach(function (l) {
     l.d = l.polys.map(function (poly) {
@@ -153,6 +171,39 @@ function prepare() {
 }
 
 function projView(c) { return toView(project(c[0], c[1])); }
+function projPolys(polys) {
+  return (polys || []).map(function (poly) {
+    return poly.map(function (ring) { return ring.map(projView); });
+  });
+}
+
+// Звёзды — столицы государств (Москва и столицы соседних стран), точки —
+// центры регионов. Где центр региона — тот же город, что столица или центр
+// соседнего региона (Ленинградская область и Петербург), значок один. Сверяем
+// и название, и место: разные города бывают ближе 5 км друг к другу (Рыбница
+// и Резина на разных берегах Днестра)
+function buildMarkers() {
+  var seen = [];
+  function add(ll, star, owner) {
+    for (var i = 0; i < seen.length; i++) {
+      if (seen[i].name === owner.capital &&
+          Math.abs(seen[i].ll[0] - ll[0]) < 0.1 && Math.abs(seen[i].ll[1] - ll[1]) < 0.1) {
+        seen[i].owners.push(owner);
+        return;
+      }
+    }
+    var p = projView(ll);
+    var m = { ll: ll, x: p[0], y: p[1], star: star, owners: [owner], name: owner.capital,
+              minK: star ? 0 : Infinity };
+    seen.push(m);
+    markers.push(m);
+  }
+  meta.forEach(function (m) {
+    if (m.capital === 'Москва') add(m.capitalLL, true, byCode[m.code]);
+  });
+  countries.forEach(function (c) { if (c.capitalLL) add(c.capitalLL, true, c); });
+  regions.forEach(function (r) { if (r.capitalLL) add(r.capitalLL, false, r); });
+}
 function toView(p) { return [p[0] * fit.k + fit.dx, p[1] * fit.k + fit.dy]; }
 
 function ringPath(poly) {
@@ -309,7 +360,10 @@ function shade(hex, amt) {
   return 'rgb(' + r + ',' + g + ',' + b + ')';
 }
 function fillOf(r) {
-  if (r.country) return COUNTRY_COLORS[r.code] || '#ddd6c4';
+  if (r.foreign) {
+    return shade(COUNTRY_COLORS[r.country.code] || '#ddd6c4',
+                 [0, 0.12, 0.24, 0.06, 0.18][r.idx % 5]);
+  }
   var base = opts.colorBy === 'type' ? (TCOLOR[r.type] || '#ccc')
                                      : (DCOLOR[r.district] || '#ccc');
   var amt = [0, 0.16, 0.32, 0.08, 0.24][r.idx % 5];
@@ -317,7 +371,8 @@ function fillOf(r) {
 }
 
 // ------------------------------------------------------------------ отрисовка
-var svg, gRoot, gLand, gRegions, gLakes, gRivers, gBorders, gLabels, gRiverLabels;
+var svg, gRoot, gLand, gRegions, gLakes, gRivers, gBorders, gCountryBorders, gMarkers,
+    gLabels, gRiverLabels;
 var tooltip, stage;
 
 function el(tag, attrs) {
@@ -326,23 +381,36 @@ function el(tag, attrs) {
   return e;
 }
 
+// пятиконечная звезда с центром в нуле, размеры — в пикселях экрана
+var STAR_D = (function () {
+  var s = '', R = 6.4, r = 2.7;
+  for (var i = 0; i < 10; i++) {
+    var a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r : R;
+    s += (i ? 'L' : 'M') + (rr * Math.cos(a)).toFixed(2) + ' ' + (rr * Math.sin(a)).toFixed(2);
+  }
+  return s + 'Z';
+})();
+
 function build() {
   svg = document.getElementById('map');
   svg.setAttribute('viewBox', '0 0 ' + VW + ' ' + VH);
   gRoot = el('g', { id: 'root' });
   svg.appendChild(gRoot);
 
-  gRoot.appendChild(el('rect', { x: -VW * 4, y: -VH * 4, width: VW * 9,
-                                 height: VH * 9, fill: 'var(--sea)' }));
+  // фон с запасом: при повороте углы экрана заходят далеко за пределы карты
+  gRoot.appendChild(el('rect', { x: -VW * 6, y: -VH * 6, width: VW * 13,
+                                 height: VH * 13, fill: 'var(--sea)' }));
 
   gLand = el('g', { class: 'land' });
   gRegions = el('g', { class: 'regions' });
   gLakes = el('g', { class: 'lakes' });
   gRivers = el('g', { class: 'rivers' });
   gBorders = el('g', { class: 'borders' });
+  gCountryBorders = el('g', { class: 'country-borders' });
+  gMarkers = el('g', { class: 'markers' });
   gRiverLabels = el('g', { class: 'river-labels' });
   gLabels = el('g', { class: 'labels' });
-  [gLand, gRegions, gLakes, gRivers, gBorders, gRiverLabels, gLabels]
+  [gLand, gRegions, gLakes, gRivers, gBorders, gCountryBorders, gMarkers, gRiverLabels, gLabels]
     .forEach(function (g) { gRoot.appendChild(g); });
 
   geo.land.forEach(function (l) {
@@ -380,7 +448,7 @@ function build() {
         g.style.display = 'none';
         gRiverLabels.appendChild(g);
         r.labels.push({ el: g, inner: inner, at: at, line: line, f: f,
-                        len: r.lens[j], shown: false });
+                        len: r.lens[j], shown: false, rot: null });
       }
     });
   });
@@ -388,9 +456,25 @@ function build() {
   regions.forEach(function (r) {
     gBorders.appendChild(el('path', { d: r.d, class: 'region-outline' }));
   });
+  countries.forEach(function (c) {
+    c.borderEl = el('path', { d: c.d, class: 'country-border' });
+    gCountryBorders.appendChild(c.borderEl);
+  });
 
-  // подписи субъектов: координаты — в системе карты, размер текста — в пикселях
-  // экрана, внутренняя группа только масштабируется под текущий зум
+  markers.forEach(function (m) {
+    var g = el('g', { class: m.star ? 'marker marker-star' : 'marker marker-dot',
+                      transform: 'translate(' + m.x.toFixed(1) + ' ' + m.y.toFixed(1) + ')' });
+    var inner = el('g', {});
+    inner.appendChild(m.star ? el('path', { d: STAR_D }) : el('circle', { r: 2.7 }));
+    g.appendChild(inner);
+    g.style.display = 'none';
+    gMarkers.appendChild(g);
+    m.el = g; m.inner = inner; m.shown = false;
+  });
+
+  // подписи: координаты — в системе карты, размер текста — в пикселях экрана,
+  // внутренняя группа только масштабируется под зум и разворачивается против
+  // поворота карты, чтобы текст всегда стоял прямо
   regions.forEach(function (r) {
     var g = el('g', { class: 'label' });
     g.setAttribute('transform', 'translate(' + r.anchor[0].toFixed(1) + ' ' +
@@ -408,13 +492,22 @@ function build() {
     r.labelEl = g; r.labelInner = inner; r.nameEl = t1; r.capEl = t2;
     r.labelShown = false; r.labelHi = false; r.minK = Infinity;
   });
+  countries.forEach(function (c) {
+    var g = el('g', { class: 'label label-country' });
+    g.setAttribute('transform', 'translate(' + c.anchor[0].toFixed(1) + ' ' +
+                                 c.anchor[1].toFixed(1) + ')');
+    var inner = el('g', {});
+    var t = el('text', { class: 'lbl-country', x: 0, y: COUNTRY_PX * 0.36,
+                         'font-size': COUNTRY_PX });
+    t.textContent = c.short.toUpperCase();
+    inner.appendChild(t);
+    g.appendChild(inner);
+    g.style.display = 'none';
+    gLabels.appendChild(g);
+    c.labelEl = g; c.labelInner = inner;
+    c.labelShown = false; c.labelHi = false; c.minK = Infinity;
+  });
 }
-
-// --------------------------------------------------------------- подписи
-function screenPt(x, y) {
-  return [x * view.k + view.x, y * view.k + view.y];
-}
-function textWidth(s, size) { return s.length * size * 0.54; }
 
 // --------------------------------------------------------------- подписи
 // Подписи расставляются один раз (layoutLabels) и после этого не двигаются:
@@ -424,6 +517,7 @@ function textWidth(s, size) { return s.length * size * 0.54; }
 function textWidth(s, size) { return s.length * size * 0.54; }
 
 var NAME_PX = 11.5, CAP_PX = 10;          // размеры подписей на экране, px
+var COUNTRY_PX = 13;                      // название соседней страны
 function riverPx(order) { return order === 1 ? 11.5 : order === 2 ? 10.5 : 9.5; }
 
 var LEVELS = (function () {
@@ -434,7 +528,7 @@ var LEVELS = (function () {
 
 // простая сетка для проверки пересечений: карта режется на клетки по 50 единиц
 function Grid() { this.cells = {}; }
-Grid.prototype.key = function (x, y) { return ((x / 50) | 0) + ':' + ((y / 50) | 0); };
+Grid.prototype.key = function (x, y) { return Math.floor(x / 50) + ':' + Math.floor(y / 50); };
 Grid.prototype.add = function (b) {
   for (var x = b[0]; x <= b[2] + 50; x += 50) {
     for (var y = b[1]; y <= b[3] + 50; y += 50) {
@@ -471,16 +565,52 @@ function riverAngle(lb, win) {
   return deg;
 }
 
+// угол в диапазон (-180, 180]
+function normDeg(a) {
+  a = a % 360;
+  if (a > 180) a -= 360;
+  if (a <= -180) a += 360;
+  return a;
+}
+// подпись реки в системе карты: на экране она должна стоять под углом
+// русла + поворот карты и никогда не читаться вверх ногами
+function riverRot(lb) {
+  var a = normDeg(lb.angle + view.r);
+  if (a > 90) a -= 180;
+  if (a < -90) a += 180;
+  return a - view.r;
+}
+function placeRiverLabel(lb) {
+  lb.rot = view.r;
+  lb.el.setAttribute('transform', 'translate(' + lb.at[0].toFixed(1) + ' ' +
+    lb.at[1].toFixed(1) + ') rotate(' + riverRot(lb).toFixed(1) + ')');
+}
+
 function layoutLabels() {
   var scale = metrics().s;                   // единицы карты -> px экрана
   var items = [];
+  layoutR = view.r;                          // угол, под который сделана раскладка
+  // раскладка считается в осях экрана: при повороте карты точки подписей
+  // поворачиваются, а сами подписи остаются горизонтальными
+  var th = view.r * RAD, cs = Math.cos(th), sn = Math.sin(th);
+  function rx(x, y) { return x * cs - y * sn; }
+  function ry(x, y) { return x * sn + y * cs; }
 
-  // субъекты: сначала крупные, подпись всегда считается как «название + столица»,
-  // чтобы включение и выключение столиц не меняло раскладку
+  // соседние страны — первыми: их название важнее подписей их регионов
+  countries.forEach(function (c) {
+    c.minK = Infinity;
+    items.push({ region: c, x: rx(c.anchor[0], c.anchor[1]), y: ry(c.anchor[0], c.anchor[1]),
+                 room: c.anchor[2] * 1.6, w: textWidth(c.short, COUNTRY_PX) * 1.25,
+                 h: COUNTRY_PX + 2 });
+  });
+
+  // субъекты и регионы: сначала крупные, подпись всегда считается как
+  // «название + столица», чтобы включение и выключение столиц не меняло раскладку
   regions.slice().sort(function (a, b) { return b.mainArea - a.mainArea; })
     .forEach(function (r) {
       r.minK = Infinity;
-      items.push({ region: r, x: r.anchor[0], y: r.anchor[1], room: r.anchor[2],
+      items.push({ region: r, x: rx(r.anchor[0], r.anchor[1]), y: ry(r.anchor[0], r.anchor[1]),
+                   room: r.anchor[2],
                    w: Math.max(textWidth(r.short, NAME_PX), textWidth(r.capital, CAP_PX)),
                    h: NAME_PX + CAP_PX + 3 });
     });
@@ -498,9 +628,9 @@ function layoutLabels() {
       lb.el.firstChild.firstChild.setAttribute('font-size', px);
       var w = textWidth(rv.name, px), h = px;
       lb.angle = riverAngle(lb, 20);
-      var rad = lb.angle * Math.PI / 180;
+      var rad = (lb.angle + view.r) * RAD;
       var ux = Math.abs(Math.cos(rad)), uy = Math.abs(Math.sin(rad));
-      items.push({ river: rv, label: lb, x: lb.at[0], y: lb.at[1],
+      items.push({ river: rv, label: lb, x: rx(lb.at[0], lb.at[1]), y: ry(lb.at[0], lb.at[1]),
                    w: w * ux + h * uy, h: w * uy + h * ux });
     });
   });
@@ -549,9 +679,16 @@ function layoutLabels() {
       if (lb.minK === Infinity) return;
       var span = textWidth(rv.name, lb.size) / (lb.minK * scale);
       lb.angle = riverAngle(lb, Math.max(8, Math.min(220, span)));
-      lb.el.setAttribute('transform', 'translate(' + lb.at[0].toFixed(1) + ' ' +
-        lb.at[1].toFixed(1) + ') rotate(' + lb.angle.toFixed(1) + ')');
+      placeRiverLabel(lb);
     });
+  });
+
+  // точка центра региона появляется, когда регион на экране шире ~16 px
+  markers.forEach(function (m) {
+    if (m.star) return;
+    var big = 0;
+    m.owners.forEach(function (o) { big = Math.max(big, o.mainArea); });
+    m.minK = 16 / (Math.sqrt(big) * scale);
   });
 
   function box(it, u) {
@@ -564,23 +701,39 @@ function layoutLabels() {
 // каждый кадр меняется только масштаб текста и видимость — координаты фиксированы
 function updateLabels() {
   var u = 1 / (view.k * metrics().s);        // px -> единицы карты
-  var us = u.toFixed(4);
+  var tr = (view.r ? 'rotate(' + (-view.r).toFixed(2) + ') ' : '') +
+           'scale(' + u.toFixed(4) + ')';
+  var selCountry = selected && selected.isCountry ? selected : null;
 
-  regions.forEach(function (r) {
-    if (!r.labelEl) return;
-    var hi = (r === selected || r === hovered);
+  function label(r, hi) {
     var show = opts.labels && (opts.allLabels || hi || view.k >= r.minK);
     if (show !== r.labelShown) {
       r.labelEl.style.display = show ? '' : 'none';
       r.labelShown = show;
     }
     if (show) {
-      r.labelInner.setAttribute('transform', 'scale(' + us + ')');
+      r.labelInner.setAttribute('transform', tr);
       if (hi !== r.labelHi) {
         r.labelEl.classList.toggle('label-hi', hi);
         r.labelHi = hi;
       }
     }
+  }
+  regions.forEach(function (r) {
+    if (r.labelEl) label(r, r === selected || r === hovered);
+  });
+  countries.forEach(function (c) {
+    if (c.labelEl) label(c, c === selCountry);
+  });
+
+  markers.forEach(function (m) {
+    var hi = m.owners.indexOf(selected) >= 0 || m.owners.indexOf(hovered) >= 0;
+    var show = opts.capitals && (m.star || hi || view.k >= m.minK);
+    if (show !== m.shown) {
+      m.el.style.display = show ? '' : 'none';
+      m.shown = show;
+    }
+    if (show) m.inner.setAttribute('transform', tr);
   });
 
   riverData.forEach(function (rv) {
@@ -590,7 +743,10 @@ function updateLabels() {
         lb.el.style.display = show ? '' : 'none';
         lb.shown = show;
       }
-      if (show) lb.inner.setAttribute('transform', 'scale(' + us + ')');
+      if (show) {
+        if (lb.rot !== view.r) placeRiverLabel(lb);
+        lb.inner.setAttribute('transform', 'scale(' + u.toFixed(4) + ')');
+      }
     });
   });
 }
@@ -604,11 +760,16 @@ function applyCapitalLines() {
   });
 }
 
-// ------------------------------------------------------------- зум и панорама
+// ----------------------------------------------------- зум, панорама и поворот
+// Экранная точка s связана с точкой карты p так: s = (x, y) + k · R(r) · p,
+// где R — поворот на r градусов. Все преобразования ниже держат это равенство.
 function applyView() {
   gRoot.setAttribute('transform',
-    'translate(' + view.x.toFixed(2) + ' ' + view.y.toFixed(2) + ') scale(' + view.k.toFixed(4) + ')');
-  gRoot.style.setProperty('--k', view.k);
+    'translate(' + view.x.toFixed(2) + ' ' + view.y.toFixed(2) + ')' +
+    (view.r ? ' rotate(' + view.r.toFixed(3) + ')' : '') +
+    ' scale(' + view.k.toFixed(4) + ')');
+  var needle = document.getElementById('compass-needle');
+  if (needle) needle.style.transform = 'rotate(' + view.r.toFixed(2) + 'deg)';
   scheduleLabels();
   updateScaleBar();
 }
@@ -617,12 +778,37 @@ function scheduleLabels() {
   if (labelTimer) cancelAnimationFrame(labelTimer);
   labelTimer = requestAnimationFrame(function () { labelTimer = null; updateLabels(); });
 }
+// после поворота раскладку подписей пересчитываем, но только когда карта
+// успокоилась: во время самого жеста подписи просто едут вместе с ней
+var relayoutTimer = null, layoutR = 0;
+function scheduleRelayout() {
+  clearTimeout(relayoutTimer);
+  relayoutTimer = setTimeout(function () {
+    if (Math.abs(normDeg(view.r - layoutR)) > 0.5) layoutLabels();
+  }, 260);
+}
+// охват карты (Россия и соседние страны) на экране при текущих k и r, без сдвига
+function rotatedBox(b, k, r) {
+  var th = r * RAD, cs = Math.cos(th) * k, sn = Math.sin(th) * k;
+  var xs = [], ys = [];
+  [[b[0], b[1]], [b[2], b[1]], [b[0], b[3]], [b[2], b[3]]].forEach(function (c) {
+    xs.push(c[0] * cs - c[1] * sn);
+    ys.push(c[0] * sn + c[1] * cs);
+  });
+  return [Math.min.apply(null, xs), Math.min.apply(null, ys),
+          Math.max.apply(null, xs), Math.max.apply(null, ys)];
+}
 function clampView() {
   var minK = 0.85, maxK = 90;
   view.k = Math.min(maxK, Math.max(minK, view.k));
-  var m = 200;
-  view.x = Math.min(m - extent[0] * view.k, Math.max(VW - extent[2] * view.k - m, view.x));
-  view.y = Math.min(m - extent[1] * view.k, Math.max(VH - extent[3] * view.k - m, view.y));
+  // карта должна закрывать окно (с запасом m), а если она уже окна — как при
+  // повороте на 90° на мелком масштабе, — то свободно двигаться внутри него
+  var m = 200, b = rotatedBox(extent, view.k, view.r);
+  view.x = clampRange(view.x, m - b[0], VW - b[2] - m);
+  view.y = clampRange(view.y, m - b[1], VH - b[3] - m);
+}
+function clampRange(v, a, b) {
+  return Math.min(Math.max(a, b), Math.max(Math.min(a, b), v));
 }
 function zoomAt(px, py, factor) {
   var k0 = view.k;
@@ -633,6 +819,38 @@ function zoomAt(px, py, factor) {
   view.y = py - (py - view.y) * f;
   clampView();
   applyView();
+}
+// поворот вокруг экранной точки (px, py) на deg градусов
+function rotateAt(px, py, deg) {
+  if (!deg) return;
+  var th = deg * RAD, cs = Math.cos(th), sn = Math.sin(th);
+  var dx = view.x - px, dy = view.y - py;
+  view.x = px + dx * cs - dy * sn;
+  view.y = py + dx * sn + dy * cs;
+  view.r = normDeg(view.r + deg);
+  clampView();
+  applyView();
+  scheduleRelayout();
+}
+// плавный поворот на deg градусов вокруг центра экрана
+var spin = null;
+function animateRotate(deg, ms) {
+  // повторное нажатие во время поворота добавляет к нему ещё не пройденную
+  // часть: два быстрых нажатия «на 15°» дают ровно 30°
+  if (spin) { cancelAnimationFrame(spin.id); deg += spin.left; spin = null; }
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce || !deg) { rotateAt(VW / 2, VH / 2, deg); return; }
+  var t0 = performance.now(), done = 0;
+  ms = ms || 260;
+  spin = { id: 0, left: deg };
+  (function step(now) {
+    var t = Math.min(1, (now - t0) / ms);
+    var e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;   // плавный старт и финиш
+    rotateAt(VW / 2, VH / 2, deg * e - done);
+    done = deg * e;
+    if (t < 1) { spin.left = deg - done; spin.id = requestAnimationFrame(step); }
+    else spin = null;
+  })(t0);
 }
 // SVG вписан в контейнер по правилу meet: масштаб берётся по меньшей стороне,
 // а остаток добивается полями сверху-снизу или слева-справа. Без учёта этих
@@ -649,34 +867,53 @@ function clientToSvg(cx, cy, m) {
   return [(cx - m.rect.left - m.ox) / m.s, (cy - m.rect.top - m.oy) / m.s];
 }
 function svgPoint(evt) { return clientToSvg(evt.clientX, evt.clientY); }
+// экранная точка (в единицах SVG) -> точка карты: обратное к s = t + k·R·p
+function toMap(sx, sy) {
+  var th = -view.r * RAD, cs = Math.cos(th), sn = Math.sin(th);
+  var dx = (sx - view.x) / view.k, dy = (sy - view.y) / view.k;
+  return [dx * cs - dy * sn, dx * sn + dy * cs];
+}
 function mapPoint(evt) {
   var p = svgPoint(evt);
-  return [(p[0] - view.x) / view.k, (p[1] - view.y) / view.k];
+  return toMap(p[0], p[1]);
 }
 function zoomTo(bbox, pad) {
-  var rect = svg.getBoundingClientRect();
-  var w = bbox[2] - bbox[0], h = bbox[3] - bbox[1];
   pad = pad || 1.35;
+  var b = rotatedBox(bbox, 1, view.r);
+  var w = b[2] - b[0], h = b[3] - b[1];
   var k = Math.min(VW / (w * pad), VH / (h * pad));
   view.k = Math.min(60, Math.max(0.85, k));
-  view.x = VW / 2 - (bbox[0] + bbox[2]) / 2 * view.k;
-  view.y = VH / 2 - (bbox[1] + bbox[3]) / 2 * view.k;
+  var cx = (bbox[0] + bbox[2]) / 2, cy = (bbox[1] + bbox[3]) / 2;
+  var th = view.r * RAD, cs = Math.cos(th), sn = Math.sin(th);
+  view.x = VW / 2 - view.k * (cx * cs - cy * sn);
+  view.y = VH / 2 - view.k * (cx * sn + cy * cs);
   clampView();
   applyView();
 }
-function resetView() { view = { k: 1, x: 0, y: 0 }; applyView(); }
+function resetView() {
+  if (spin) { cancelAnimationFrame(spin.id); spin = null; }
+  view = { k: 1, x: 0, y: 0, r: 0 };
+  applyView();
+  scheduleRelayout();
+}
 
 // --------------------------------------------------------------- интерфейс
 function fmt(n) { return n.toLocaleString('ru-RU'); }
 
 function select(code, zoom) {
   selected = byCode[code] || null;
-  regions.forEach(function (r) { r.el.classList.toggle('sel', r === selected); });
+  var selCountry = selected && selected.isCountry ? selected : null;
+  regions.forEach(function (r) {
+    r.el.classList.toggle('sel', r === selected);
+    r.el.classList.toggle('in-sel', !!selCountry && r.country === selCountry);
+  });
+  countries.forEach(function (c) { c.borderEl.classList.toggle('sel', c === selCountry); });
   document.querySelectorAll('.reg-item').forEach(function (n) {
     n.setAttribute('aria-current', n.dataset.code === code ? 'true' : 'false');
   });
   renderCard();
-  announce(selected ? selected.name + ', столица ' + selected.capital : 'Выбор снят');
+  announce(!selected ? 'Выбор снят' : selected.name +
+    (selected.foreign ? ', центр ' : ', столица ') + selected.capital);
   if (selected && zoom) zoomTo(selected.bbox, selected.mainArea < 400 ? 4 : 1.5);
   else scheduleLabels();
   // прокручиваем список к выбранному только когда панель на экране: у скрытой
@@ -696,25 +933,55 @@ function announce(text) {
 function renderCard() {
   var box = document.getElementById('card');
   if (!selected) {
-    box.innerHTML = '<p class="hint">Выберите субъект на карте или в списке — ' +
-      'покажу название, столицу, федеральный округ, площадь и население.</p>';
+    box.innerHTML = '<p class="hint">Выберите регион или страну на карте или в списке — ' +
+      'покажу название, столицу, площадь и население.</p>';
     return;
   }
-  var r = selected;
-  var dens = (r.pop / r.area).toFixed(r.pop / r.area < 10 ? 2 : 1);
-  var html = '<h3 class="card-title">' + r.name + '</h3>' +
-    '<p class="card-type">' + r.type +
-      (r.country ? ' · соседняя страна' : ' · ' + DNAME[r.district] + ' федеральный округ') +
-    '</p>' +
-    '<dl>' +
-      '<dt>Столица</dt><dd><b>' + r.capital + '</b></dd>' +
-      (r.country ? '' : '<dt>Код</dt><dd>' + r.code + '</dd>') +
-      '<dt>Площадь</dt><dd>' + fmt(r.area) + ' км²</dd>' +
-      '<dt>Население</dt><dd>' + fmt(r.pop) + ' чел.' +
-        (r.popNote ? '<span class="card-src">' + r.popNote + '</span>' : '') + '</dd>' +
-      '<dt>Плотность</dt><dd>' + dens + ' чел./км²</dd>' +
-    '</dl>';
-  if (r.note) html += '<p class="card-note">' + r.note + '</p>';
+  var r = selected, html;
+  var title = '<h3 class="card-title" tabindex="-1">' + r.name + '</h3>';
+  function people(n, note) {
+    return '<dt>Население</dt><dd>' + fmt(n) + ' чел.' +
+           (note ? '<span class="card-src">' + note + '</span>' : '') + '</dd>' +
+           '<dt>Плотность</dt><dd>' + (n / r.area).toFixed(n / r.area < 10 ? 2 : 1) +
+           ' чел./км²</dd>';
+  }
+  if (r.isCountry) {
+    html = title +
+      '<p class="card-type">' + r.type + ' · соседняя страна</p>' +
+      '<dl>' +
+        '<dt>Столица</dt><dd><b>' + r.capital + '</b></dd>' +
+        '<dt>Площадь</dt><dd>' + fmt(r.area) + ' км²</dd>' +
+        people(r.pop, r.popNote) +
+      '</dl>';
+    if (r.note) html += '<p class="card-note">' + r.note + '</p>';
+    if (r.members.length) {
+      var list = r.members.slice().sort(function (a, b) { return a.short.localeCompare(b.short, 'ru'); });
+      html += '<p class="card-sub">Регионы (' + list.length + ')</p><ul class="card-regs">' +
+        list.map(function (m) {
+          return '<li><button type="button" class="card-reg" data-code="' + m.code + '">' +
+                 m.short + '</button></li>';
+        }).join('') + '</ul>';
+    }
+  } else if (r.foreign) {
+    html = title +
+      '<p class="card-type">' + r.type + ' · ' +
+        '<button type="button" class="card-link" data-code="' + r.country.code + '">' +
+        r.country.short + '</button></p>' +
+      '<dl>' +
+        '<dt>Центр</dt><dd><b>' + r.capital + '</b></dd>' +
+        '<dt>Площадь</dt><dd>' + (r.areaApprox ? '≈ ' : '') + fmt(r.area) + ' км²</dd>' +
+        (r.pop ? people(r.pop, r.popYear ? 'данные ' + r.popYear + ' г.' : '') : '') +
+      '</dl>';
+  } else {
+    html = title +
+      '<p class="card-type">' + r.type + ' · ' + DNAME[r.district] + ' федеральный округ</p>' +
+      '<dl>' +
+        '<dt>Столица</dt><dd><b>' + r.capital + '</b></dd>' +
+        '<dt>Код</dt><dd>' + r.code + '</dd>' +
+        '<dt>Площадь</dt><dd>' + fmt(r.area) + ' км²</dd>' +
+        people(r.pop) +
+      '</dl>';
+  }
   var rr = riversOf(r);
   if (rr.length) html += '<p class="card-rivers"><span>Крупные реки:</span> ' + rr.join(', ') + '</p>';
   box.innerHTML = html;
@@ -773,7 +1040,7 @@ function buildSidebar() {
     });
     html += '</ul></section>';
   });
-  var foreign = regions.filter(function (r) { return r.country; });
+  var foreign = countries.slice();
   if (foreign.length) {
     foreign.sort(function (a, b) { return a.short.localeCompare(b.short, 'ru'); });
     html += '<section class="dist dist-foreign"><h3><i class="sw-foreign" aria-hidden="true"></i>' +
@@ -810,6 +1077,10 @@ function buildLegend() {
       });
     }
     if (countryMeta.length) html += '<li><i class="sw-foreign" aria-hidden="true"></i>Соседние страны</li>';
+    html += '<li><svg class="lg-mark" viewBox="-8 -8 16 16" aria-hidden="true">' +
+            '<path class="lg-star" d="' + STAR_D + '"/></svg>Столица государства</li>' +
+            '<li><svg class="lg-mark" viewBox="-8 -8 16 16" aria-hidden="true">' +
+            '<circle class="lg-dot" r="2.9"/></svg>Центр региона</li>';
     html += '<li><i class="lg-riv" aria-hidden="true"></i>Крупные реки</li>';
     wrap.innerHTML = html;
   }
@@ -824,9 +1095,21 @@ function buildSearch() {
   var items = [], hits = [], cursor = -1;
 
   regions.forEach(function (r) {
-    items.push({ t: r.short, s: (r.country ? r.type.toLowerCase() : 'субъект') +
-                 ', столица ' + r.capital, code: r.code });
+    if (r.foreign) {
+      items.push({ t: r.short, s: r.type.toLowerCase() + ', ' + r.country.short +
+                   (r.capital === r.short ? '' : ', центр ' + r.capital), code: r.code });
+      // центр, совпадающий со столицей страны, ищется как столица страны
+      if (r.capital !== r.country.capital) {
+        items.push({ t: r.capital, s: 'центр, ' + r.short + ' (' + r.country.short + ')', code: r.code });
+      }
+      return;
+    }
+    items.push({ t: r.short, s: 'субъект, столица ' + r.capital, code: r.code });
     items.push({ t: r.capital, s: 'столица, ' + r.short, code: r.code });
+  });
+  countries.forEach(function (c) {
+    items.push({ t: c.short, s: c.type.toLowerCase() + ', столица ' + c.capital, code: c.code });
+    items.push({ t: c.capital, s: 'столица, ' + c.short, code: c.code });
   });
   riverData.forEach(function (rv) {
     items.push({ t: rv.name, s: 'река' + (rv.length ? ', ' + fmt(rv.length) + ' км' : ''),
@@ -912,9 +1195,7 @@ function focusRiver(rv) {
       b[2] = Math.max(b[2], c[0]); b[3] = Math.max(b[3], c[1]);
     });
   });
-  selected = null;
-  regions.forEach(function (r) { r.el.classList.remove('sel'); });
-  renderCard();
+  select(null, false);
   zoomTo(b, 1.25);
   flashRiver(rv);
 }
@@ -945,17 +1226,38 @@ function bindMap() {
   tooltip = document.getElementById('tip');
   var drag = null;
 
+  // правая кнопка мыши или Shift + левая — поворот вокруг центра экрана:
+  // карта поворачивается вслед за курсором, как ручка вокруг оси
+  function cursorAngle(e) {
+    var p = svgPoint(e);
+    return Math.atan2(p[1] - VH / 2, p[0] - VW / 2) / RAD;
+  }
+  var rotateEnded = 0;
+  svg.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+  // в Windows меню появляется при отпускании кнопки — и там, где её отпустили,
+  // поэтому после поворота правой кнопкой гасим его по всей странице
+  window.addEventListener('contextmenu', function (e) {
+    if ((drag && drag.rotate) || performance.now() - rotateEnded < 400) e.preventDefault();
+  });
   svg.addEventListener('mousedown', function (e) {
+    if (spin) { cancelAnimationFrame(spin.id); spin = null; }
     drag = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y, moved: 0,
-             s: 1 / metrics().s };
-    svg.classList.add('grabbing');
+             s: 1 / metrics().s, rotate: e.button === 2 || e.shiftKey,
+             a: cursorAngle(e) };
+    svg.classList.add(drag.rotate ? 'rotating' : 'grabbing');
   });
   window.addEventListener('mousemove', function (e) {
     if (drag) {
+      drag.moved += Math.abs(e.movementX) + Math.abs(e.movementY);
+      if (drag.rotate) {
+        var a = cursorAngle(e);
+        rotateAt(VW / 2, VH / 2, normDeg(a - drag.a));
+        drag.a = a;
+        return;
+      }
       var s = drag.s;
       view.x = drag.vx + (e.clientX - drag.x) * s;
       view.y = drag.vy + (e.clientY - drag.y) * s;
-      drag.moved += Math.abs(e.movementX) + Math.abs(e.movementY);
       clampView(); applyView();
       return;
     }
@@ -971,8 +1273,9 @@ function bindMap() {
   });
   window.addEventListener('mouseup', function (e) {
     if (drag) {
-      svg.classList.remove('grabbing');
-      if (drag.moved < 5) {
+      svg.classList.remove('grabbing', 'rotating');
+      if (drag.rotate) rotateEnded = performance.now();
+      if (drag.moved < 5 && !drag.rotate) {
         var r = regionAt(e);
         if (r) select(r.code, false); else select(null, false);
       }
@@ -989,20 +1292,24 @@ function bindMap() {
     zoomAt(p[0], p[1], Math.exp(-e.deltaY * (e.deltaMode ? 0.05 : 0.0016)));
   }, { passive: false });
 
-  // тач: один палец двигает карту, два — двигают и меняют масштаб одновременно.
-  // Точка между пальцами остаётся под ними, поэтому жест не «уплывает».
-  var touch = null, pending = null, frame = null;
+  // тач: один палец двигает карту, два — двигают, меняют масштаб и поворачивают
+  // одновременно. Точка карты между пальцами остаётся под ними, поэтому жест не
+  // «уплывает». Поворот включается, только когда пальцы повернулись больше чем
+  // на 12°: иначе обычное сведение пальцев слегка крутило бы карту
+  var touch = null, pending = null, frame = null, ROT_START = 12;
 
   function apply() {
     frame = null;
     if (!pending) return;
-    view.k = pending.k; view.x = pending.x; view.y = pending.y;
+    var turned = pending.r !== view.r;
+    view.k = pending.k; view.x = pending.x; view.y = pending.y; view.r = pending.r;
     pending = null;
     clampView();
     applyView();
+    if (turned) scheduleRelayout();
   }
-  function queue(k, x, y) {
-    pending = { k: k, x: x, y: y };
+  function queue(k, r, x, y) {
+    pending = { k: k, r: r, x: x, y: y };
     if (!frame) frame = requestAnimationFrame(apply);   // не чаще кадра экрана
   }
   function gestureOn() {
@@ -1020,21 +1327,26 @@ function bindMap() {
       var a = clientToSvg(e.touches[0].clientX, e.touches[0].clientY, m);
       var b = clientToSvg(e.touches[1].clientX, e.touches[1].clientY, m);
       return { c: [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2],
-               d: Math.hypot(a[0] - b[0], a[1] - b[1]) };
+               d: Math.hypot(a[0] - b[0], a[1] - b[1]),
+               a: Math.atan2(b[1] - a[1], b[0] - a[0]) / RAD };
     }
     var p = clientToSvg(e.touches[0].clientX, e.touches[0].clientY, m);
-    return { c: p, d: 0 };
+    return { c: p, d: 0, a: 0 };
   }
 
   function startTouch(e) {
     var t = touchInfo(e);
-    touch = { d0: t.d, c0: t.c, k0: view.k,
-              // точка карты под центром жеста — её и держим на месте
-              mx: (t.c[0] - view.x) / view.k, my: (t.c[1] - view.y) / view.k,
-              moved: 0 };
+    // точка карты под центром жеста — её и держим на месте
+    var mp = toMap(t.c[0], t.c[1]);
+    touch = { d0: t.d, c0: t.c, k0: view.k, r0: view.r, a0: t.a,
+              rotating: touch ? touch.rotating : false, aOff: 0,
+              mx: mp[0], my: mp[1], moved: touch ? touch.moved : 0,
+              // был ли в жесте второй палец: тогда это щипок, а не нажатие
+              multi: (touch && touch.multi) || e.touches.length > 1 };
   }
 
   svg.addEventListener('touchstart', function (e) {
+    if (spin) { cancelAnimationFrame(spin.id); spin = null; }
     startTouch(e);
     gestureOn();
   }, { passive: true });
@@ -1043,18 +1355,26 @@ function bindMap() {
     if (!touch) return;
     e.preventDefault();
     var t = touchInfo(e);
-    var k = view.k;
+    var k = view.k, r = view.r;
     if (t.d && touch.d0) {
       k = Math.min(90, Math.max(0.85, touch.k0 * (t.d / touch.d0)));
+      var da = normDeg(t.a - touch.a0);
+      if (!touch.rotating && Math.abs(da) > ROT_START) {
+        touch.rotating = true;
+        touch.aOff = da;                     // поворот начинается с нуля, без рывка
+      }
+      if (touch.rotating) r = normDeg(touch.r0 + da - touch.aOff);
     }
     touch.moved += Math.abs(t.c[0] - touch.c0[0]) + Math.abs(t.c[1] - touch.c0[1]);
-    queue(k, t.c[0] - touch.mx * k, t.c[1] - touch.my * k);
+    var th = r * RAD, cs = Math.cos(th), sn = Math.sin(th);
+    queue(k, r, t.c[0] - k * (touch.mx * cs - touch.my * sn),
+                t.c[1] - k * (touch.mx * sn + touch.my * cs));
   }, { passive: false });
 
   svg.addEventListener('touchend', function (e) {
     if (frame) { cancelAnimationFrame(frame); apply(); }
     if (e.touches.length) { startTouch(e); return; }   // палец убрали — жест продолжается
-    if (touch && touch.moved < 8 && e.changedTouches.length === 1) {
+    if (touch && !touch.multi && touch.moved < 8 && e.changedTouches.length === 1) {
       var r = regionAt(e.changedTouches[0]);
       select(r ? r.code : null, false);
     }
@@ -1072,17 +1392,27 @@ function bindMap() {
     resizeTimer = setTimeout(layoutLabels, 200);
   });
   window.addEventListener('keydown', function (e) {
-    if (e.target.tagName === 'INPUT') return;
-    if (e.key === '+' || e.key === '=') zoomAt(VW / 2, VH / 2, 1.3);
-    if (e.key === '-') zoomAt(VW / 2, VH / 2, 1 / 1.3);
-    if (e.key === '0') resetView();
-    if (e.key === 'Escape') select(null, false);
+    var t = e.target;
+    if (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA' ||
+        t.isContentEditable) return;
+    // сочетания с Ctrl, Cmd и Alt — команды браузера, а не карты
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    var k = e.key.toLowerCase();
+    if (k === '+' || k === '=') zoomAt(VW / 2, VH / 2, 1.3);
+    if (k === '-') zoomAt(VW / 2, VH / 2, 1 / 1.3);
+    if (k === '0') resetView();
+    // Q, E и N — по букве, в латинской и в русской раскладке (Й, У, Т)
+    if (k === 'q' || k === 'й') animateRotate(-15);
+    if (k === 'e' || k === 'у') animateRotate(15);
+    if (k === 'n' || k === 'т') animateRotate(-view.r);
+    if (k === 'escape') select(null, false);
   });
 }
 
 function showTip(e, r) {
   tooltip.innerHTML = '<b>' + r.short + '</b><span>' + r.type.toLowerCase() +
-                      '</span><em>столица — ' + r.capital + '</em>';
+                      (r.foreign ? ', ' + r.country.short : '') + '</span><em>' +
+                      (r.foreign ? 'центр' : 'столица') + ' — ' + r.capital + '</em>';
   tooltip.classList.add('open');
   var box = stage.getBoundingClientRect();
   var x = e.clientX - box.left + 16, y = e.clientY - box.top + 16;
@@ -1109,7 +1439,7 @@ function bindControls() {
     gRiverLabels.style.display = opts.rivers ? '' : 'none';
   });
   toggle('t-labels', 'labels');
-  toggle('t-capitals', 'capitals', applyCapitalLines);
+  toggle('t-capitals', 'capitals', applyCapitalLines);   // и значки столиц тоже
   toggle('t-all', 'allLabels');
   toggle('t-lakes', 'lakes', function () {
     gLakes.style.display = opts.lakes ? '' : 'none';
@@ -1122,6 +1452,18 @@ function bindControls() {
   document.getElementById('zoom-in').addEventListener('click', function () { zoomAt(VW / 2, VH / 2, 1.35); });
   document.getElementById('zoom-out').addEventListener('click', function () { zoomAt(VW / 2, VH / 2, 1 / 1.35); });
   document.getElementById('zoom-reset').addEventListener('click', resetView);
+  document.getElementById('rotate-left').addEventListener('click', function () { animateRotate(-15); });
+  document.getElementById('rotate-right').addEventListener('click', function () { animateRotate(15); });
+  document.getElementById('compass').addEventListener('click', function () { animateRotate(-view.r, 360); });
+  // карточка перерисовывается целиком, поэтому фокус с нажатой кнопки
+  // переводим на заголовок новой карточки — иначе он улетает в начало страницы
+  document.getElementById('card').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-code]');
+    if (!b) return;
+    select(b.dataset.code, true);
+    var title = document.querySelector('#card .card-title');
+    if (title) title.focus();
+  });
   document.getElementById('download').addEventListener('click', downloadSVG);
   var sideBtn = document.getElementById('sidebar-toggle');
   var sideTxt = document.getElementById('sidebar-toggle-text');
@@ -1159,8 +1501,9 @@ function downloadSVG() {
 
 function stats() {
   document.getElementById('stats').textContent =
-    meta.length + ' регионов · ' +
-    (countryMeta.length ? countryMeta.length + ' соседних стран · ' : '') +
+    meta.length + ' регионов России · ' +
+    (countries.length ? countries.length + ' соседних стран (' +
+      (regions.length - meta.length) + ' регионов) · ' : '') +
     riverData.length + ' рек · ' +
     geo.lakes.length + ' озёр и водохранилищ';
 }

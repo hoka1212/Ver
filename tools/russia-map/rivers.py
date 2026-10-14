@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-"""Extract major Russian rivers from Natural Earth 10m river centerlines."""
+"""Extract major rivers of Russia and its neighbours shown on the map
+from Natural Earth 10m river centerlines."""
 import json, math, os, sys
 
 SC = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -135,6 +136,33 @@ RIVERS = {
  'Udzha':        ('Уджа', 334, 3),
  'Bol’shaya Kuonamka': ('Большая Куонамка', 457, 3),
  'Nizhnyaya Tunguska': ('Нижняя Тунгуска', 2989, 2),
+ # --- Днепр и реки соседних стран: Украины, Беларуси, Молдовы, Румынии,
+ # Болгарии, Венгрии и Турции
+ 'Dnipro':       ('Днепр', 2201, 1),
+ 'Dnepre':       ('Днепр', 2201, 1),
+ 'Danube':       ('Дунай', 2850, 1),
+ 'Donau':        ('Дунай', 2850, 1),
+ 'Bratul Chillia': ('Килийское гирло', None, 3),
+ 'Dniester':     ('Днестр', 1362, 2),
+ 'Prut':         ('Прут', 953, 2),
+ 'Southern Bug': ('Южный Буг', 806, 2),
+ 'Bug':          ('Западный Буг', 772, 3),
+ 'Pripyat':      ('Припять', 761, 2),
+ 'Daugava':      ('Западная Двина', 1020, 2),
+ 'Neman':        ('Неман', 937, 2),
+ 'Mures':        ('Муреш', 789, 3),
+ 'Olt':          ('Олт', 615, 3),
+ 'Ialomita':     ('Яломица', 417, 3),
+ 'Evros':        ('Марица', 480, 3),
+ 'Firat':        ('Евфрат', 2800, 1),
+ 'Dicle':        ('Тигр', 1850, 2),
+ 'Murat':        ('Мурат', 722, 3),
+ 'Kiz?lirmak':   ('Кызылырмак', 1355, 2),
+ 'Sakarya':      ('Сакарья', 824, 3),
+ 'Kelkit':       ('Келькит', 573, 3),
+ 'Ceyhan':       ('Джейхан', 509, 3),
+ 'Byk Menderes': ('Большой Мендерес', 548, 3),
+ 'Aras':         ('Аракс', 1072, 3),
 }
 
 # Bounding box of Russia (rivers are kept only where they run through it).
@@ -143,6 +171,10 @@ def in_russia(x, y):
     if x >= 19 and x <= 180: return True
     if x <= -168: return True   # Chukotka east of the date line
     return False
+
+def in_area(x, y):
+    # Россия и соседние страны, показанные на карте по регионам
+    return in_russia(x, y) or (16 <= x <= 45 and 35.5 <= y <= 57)
 
 def rdp(pts, eps):
     if len(pts) < 3: return pts
@@ -176,13 +208,16 @@ def main():
         if nm not in RIVERS: continue
         ru, length, order = RIVERS[nm]
         for line in parts(f['geometry']):
-            if not any(in_russia(c[0], c[1]) for c in line): continue
+            if not any(in_area(c[0], c[1]) for c in line): continue
             line = rdp([[c[0], c[1]] for c in line], 0.004 if order == 1 else 0.008 if order == 2 else 0.015)
             line = [[round(c[0], 3), round(c[1], 3)] for c in line]
             r = out.setdefault(ru, {'name': ru, 'length': length, 'order': order, 'lines': []})
             r['lines'].append(line)
     rivers = sorted(out.values(), key=lambda r: (r['order'], -(r['length'] or 0)))
     print(len(rivers), 'rivers', sum(len(r['lines']) for r in rivers), 'segments')
-    json.dump(rivers, open(os.path.join(SC, 'rivers.json'), 'w'), ensure_ascii=False)
+    with open(os.path.join(SC, 'russia-rivers.js'), 'w') as fh:
+        fh.write('window.RU_RIVERS = ')
+        json.dump(rivers, fh, ensure_ascii=False, separators=(',', ':'))
+        fh.write(';\n')
 
 main()
