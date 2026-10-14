@@ -22,8 +22,10 @@ function project(lon, lat) {
 // --------------------------------------------------------------- состояние
 var VW = 2000, VH = 1160;           // внутренняя система координат карты
 var fit = { k: 1, dx: 0, dy: 0 };   // проекция -> внутренние координаты
+var extent = [0, 0, VW, VH];        // докуда можно сдвинуть карту: Россия + соседние страны
 var view = { k: 1, x: 0, y: 0 };    // зум/панорама поверх внутренних координат
 var geo = window.RU_GEO, meta = window.RU_REGIONS, rivers = window.RU_RIVERS;
+var countryMeta = window.RU_COUNTRIES || [];
 
 var regions = [];                   // подготовленные субъекты
 var byCode = {};
@@ -52,6 +54,12 @@ var TYPES = [
 ];
 var TCOLOR = {};
 TYPES.forEach(function (t) { TCOLOR[t[0]] = t[1]; });
+
+// соседние страны раскрашены приглушённо и не зависят от выбранной заливки
+var COUNTRY_COLORS = {
+  UA: '#d9c98c', BY: '#b7c99a', MD: '#d4a9b9', PMR: '#b98f8f',
+  RO: '#b8b3d6', BG: '#9fc6b8', HU: '#a9bcd6', TR: '#dfb59a'
+};
 
 // --------------------------------------------------------------- геометрия
 function prepare() {
@@ -92,6 +100,27 @@ function prepare() {
     r.anchor = poleOfInaccessibility(largestRing(polys));
     regions.push(r);
     byCode[r.code] = r;
+  });
+
+  // соседние страны идут в общий список: их так же можно навести, выбрать и
+  // найти поиском. Охват карты по-прежнему считается только по субъектам
+  countryMeta.forEach(function (m, i) {
+    var polys = (geo.countries[m.code] || []).map(function (poly) {
+      return poly.map(function (ring) { return ring.map(projView); });
+    });
+    var r = {
+      code: m.code, name: m.name, short: m.short, type: m.type,
+      capital: m.capital, area: m.area, pop: m.pop, popNote: m.popNote,
+      note: m.note, country: true, idx: meta.length + i, polys: polys,
+      d: polys.map(ringPath).join(''),
+      bbox: polyBBox(polys)
+    };
+    r.mainArea = mainRingArea(polys);
+    r.anchor = poleOfInaccessibility(largestRing(polys));
+    regions.push(r);
+    byCode[r.code] = r;
+    extent = [Math.min(extent[0], r.bbox[0]), Math.min(extent[1], r.bbox[1]),
+              Math.max(extent[2], r.bbox[2]), Math.max(extent[3], r.bbox[3])];
   });
 
   geo.land.forEach(function (l) {
@@ -280,6 +309,7 @@ function shade(hex, amt) {
   return 'rgb(' + r + ',' + g + ',' + b + ')';
 }
 function fillOf(r) {
+  if (r.country) return COUNTRY_COLORS[r.code] || '#ddd6c4';
   var base = opts.colorBy === 'type' ? (TCOLOR[r.type] || '#ccc')
                                      : (DCOLOR[r.district] || '#ccc');
   var amt = [0, 0.16, 0.32, 0.08, 0.24][r.idx % 5];
@@ -591,8 +621,8 @@ function clampView() {
   var minK = 0.85, maxK = 90;
   view.k = Math.min(maxK, Math.max(minK, view.k));
   var m = 200;
-  view.x = Math.min(m, Math.max(VW - VW * view.k - m, view.x));
-  view.y = Math.min(m, Math.max(VH - VH * view.k - m, view.y));
+  view.x = Math.min(m - extent[0] * view.k, Math.max(VW - extent[2] * view.k - m, view.x));
+  view.y = Math.min(m - extent[1] * view.k, Math.max(VH - extent[3] * view.k - m, view.y));
 }
 function zoomAt(px, py, factor) {
   var k0 = view.k;
@@ -674,14 +704,17 @@ function renderCard() {
   var dens = (r.pop / r.area).toFixed(r.pop / r.area < 10 ? 2 : 1);
   var html = '<h3 class="card-title">' + r.name + '</h3>' +
     '<p class="card-type">' + r.type +
-      ' · ' + DNAME[r.district] + ' федеральный округ</p>' +
+      (r.country ? ' · соседняя страна' : ' · ' + DNAME[r.district] + ' федеральный округ') +
+    '</p>' +
     '<dl>' +
       '<dt>Столица</dt><dd><b>' + r.capital + '</b></dd>' +
-      '<dt>Код</dt><dd>' + r.code + '</dd>' +
+      (r.country ? '' : '<dt>Код</dt><dd>' + r.code + '</dd>') +
       '<dt>Площадь</dt><dd>' + fmt(r.area) + ' км²</dd>' +
-      '<dt>Население</dt><dd>' + fmt(r.pop) + ' чел.</dd>' +
+      '<dt>Население</dt><dd>' + fmt(r.pop) + ' чел.' +
+        (r.popNote ? '<span class="card-src">' + r.popNote + '</span>' : '') + '</dd>' +
       '<dt>Плотность</dt><dd>' + dens + ' чел./км²</dd>' +
     '</dl>';
+  if (r.note) html += '<p class="card-note">' + r.note + '</p>';
   var rr = riversOf(r);
   if (rr.length) html += '<p class="card-rivers"><span>Крупные реки:</span> ' + rr.join(', ') + '</p>';
   box.innerHTML = html;
@@ -740,6 +773,21 @@ function buildSidebar() {
     });
     html += '</ul></section>';
   });
+  var foreign = regions.filter(function (r) { return r.country; });
+  if (foreign.length) {
+    foreign.sort(function (a, b) { return a.short.localeCompare(b.short, 'ru'); });
+    html += '<section class="dist dist-foreign"><h3><i class="sw-foreign" aria-hidden="true"></i>' +
+            'Соседние страны<span class="count">' + foreign.length +
+            '<span class="sr-only"> стран</span></span></h3><ul>';
+    foreign.forEach(function (r) {
+      html += '<li><button type="button" class="reg-item" data-code="' + r.code + '"' +
+              ' aria-current="false">' +
+              '<span class="ri-name">' + r.short + '</span>' +
+              '<span class="ri-cap"><span class="sr-only">столица </span>' + r.capital +
+              '</span></button></li>';
+    });
+    html += '</ul></section>';
+  }
   wrap.innerHTML = html;
   wrap.addEventListener('click', function (e) {
     var b = e.target.closest('.reg-item');
@@ -761,6 +809,7 @@ function buildLegend() {
         html += '<li><i style="background:' + t[1] + '" aria-hidden="true"></i>' + t[0] + '</li>';
       });
     }
+    if (countryMeta.length) html += '<li><i class="sw-foreign" aria-hidden="true"></i>Соседние страны</li>';
     html += '<li><i class="lg-riv" aria-hidden="true"></i>Крупные реки</li>';
     wrap.innerHTML = html;
   }
@@ -775,7 +824,8 @@ function buildSearch() {
   var items = [], hits = [], cursor = -1;
 
   regions.forEach(function (r) {
-    items.push({ t: r.short, s: 'субъект, столица ' + r.capital, code: r.code });
+    items.push({ t: r.short, s: (r.country ? r.type.toLowerCase() : 'субъект') +
+                 ', столица ' + r.capital, code: r.code });
     items.push({ t: r.capital, s: 'столица, ' + r.short, code: r.code });
   });
   riverData.forEach(function (rv) {
@@ -1109,7 +1159,9 @@ function downloadSVG() {
 
 function stats() {
   document.getElementById('stats').textContent =
-    regions.length + ' регионов · ' + riverData.length + ' рек · ' +
+    meta.length + ' регионов · ' +
+    (countryMeta.length ? countryMeta.length + ' соседних стран · ' : '') +
+    riverData.length + ' рек · ' +
     geo.lakes.length + ' озёр и водохранилищ';
 }
 

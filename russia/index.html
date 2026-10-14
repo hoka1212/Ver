@@ -54,14 +54,14 @@
 </head>
 <body>
 
-<a class="skip-link" href="#region-nav">Перейти к списку субъектов</a>
+<a class="skip-link" href="#region-nav">Перейти к списку субъектов и стран</a>
 
 <header class="topbar">
   <div class="brand">
     <p class="brand-mark" aria-hidden="true">RU</p>
     <div>
       <h1>Карта России</h1>
-      <p class="brand-sub">Субъекты федерации, их столицы и крупные реки</p>
+      <p class="brand-sub">Субъекты федерации, их столицы, крупные реки и соседние страны</p>
     </div>
   </div>
 
@@ -70,7 +70,7 @@
     <input id="search" type="text" autocomplete="off" spellcheck="false"
            role="combobox" aria-expanded="false" aria-controls="search-results"
            aria-autocomplete="list" aria-describedby="search-hint"
-           placeholder="Поиск: субъект, столица или река — «Якутия», «Казань», «Енисей»">
+           placeholder="Поиск: субъект, страна, столица или река — «Якутия», «Казань», «Енисей»">
     <p id="search-hint" class="sr-only">
       Введите не меньше двух букв. Варианты перебираются стрелками вверх и вниз,
       Enter открывает выбранный, Escape закрывает список.
@@ -111,12 +111,12 @@
       федеральный округ, площадь и население.</p>
     </section>
 
-    <nav id="region-nav" aria-label="Субъекты федерации">
-      <h2 class="panel-title">Субъекты федерации</h2>
+    <nav id="region-nav" aria-label="Субъекты федерации и соседние страны">
+      <h2 class="panel-title">Субъекты федерации и соседние страны</h2>
       <div id="region-list" class="region-list"></div>
     </nav>
 
-    <p class="credit">Данные: Natural Earth 1:10 млн · Росстат, перепись 2021</p>
+    <p class="credit">Данные: Natural Earth 1:10 млн · Росстат, перепись 2021 · по соседним странам — национальные переписи и оценки</p>
   </aside>
 
   <main class="stage" id="stage">
