@@ -44,16 +44,22 @@ FIX = {
  'RO-B':  {'name': 'Бухарест', 'short': 'Бухарест', 'type': 'Муниципий',
            'capital': 'Бухарест', 'capitalLL': (26.1025, 44.4268), 'area': 228, 'areaApprox': False},
  'RO-IF': {'capital': 'Буфтя', 'capitalLL': (25.949, 44.561)},
- 'HU-BU': {'name': 'Будапешт', 'short': 'Будапешт', 'type': 'Столица',
+ 'HU-BU': {'name': 'Будапешт', 'short': 'Будапешт', 'type': 'Столичный город',
            'capital': 'Будапешт', 'capitalLL': (19.0402, 47.4979)},
  'HU-CS': {'name': 'Медье Чонград-Чанад', 'short': 'Чонград-Чанад'},
+ # площадь и население — муниципия целиком (Q17176229), а не только города,
+ # чтобы плотность считалась по одной и той же единице
  'MD-CU': {'name': 'Кишинёв', 'short': 'Кишинёв', 'type': 'Муниципий',
-           'capital': 'Кишинёв', 'capitalLL': (28.8638, 47.0105)},
+           'capital': 'Кишинёв', 'capitalLL': (28.8638, 47.0105),
+           'area': 563, 'areaApprox': False, 'pop': 720128, 'popYear': '2024'},
+ 'MD-GA': {'area': 1832, 'areaApprox': False, 'pop': 103668, 'popYear': '2024'},
  'MD-BA': {'name': 'Бельцы', 'short': 'Бельцы', 'type': 'Муниципий',
            'capital': 'Бельцы', 'capitalLL': (27.9295, 47.7615)},
+ # у этого района Natural Earth ссылается на одноимённый жудец Румынии (Q-id),
+ # поэтому всё задано вручную; цифры — Викиданные Q2128868, перепись 2024 г.
  'MD-CL': {'name': 'Кэлэрашский район', 'short': 'Кэлэрашский р-н',
-           'capital': 'Кэлэрашь', 'capitalLL': (28.306, 47.255), 'area': None, 'pop': None,
-           'popYear': None},
+           'capital': 'Кэлэрашь', 'capitalLL': (28.306, 47.255), 'area': 753,
+           'areaApprox': False, 'pop': 43864, 'popYear': '2024'},
  'MD-BS': {'capital': 'Басарабяска'},
  'TR-12': {'capital': 'Бингёль', 'capitalLL': (40.4986, 38.8847)},
 }
@@ -61,6 +67,12 @@ FIX = {
 # Дунауйварош стоит на правом берегу Дуная, в медье Фейер, но его контур в
 # Natural Earth заходит за реку, и центр оказывается в Бач-Кишкуне
 HU_FIX = {'HUN-4925': 'HU-FE'}
+
+# Численность населения провинций Турции в Викиданных несогласованна: значения
+# за разные годы (2015–2023), часть явно ошибочна (за 2021 г. сумма по 81
+# провинции — 75,9 млн при 84,7 млн по стране), поэтому население илов не
+# показываем вовсе — лучше без цифры, чем с неверной
+NO_POP = {'TR'}
 
 def rings(g):
     if g['type'] == 'Polygon': return [g['coordinates']]
@@ -145,11 +157,13 @@ def keys():
 def wikidata(ids):
     cache = os.path.join(SC, 'wd_regions.json')
     if not os.path.exists(cache):
-        q = ('SELECT ?r ?rLabel ?cap ?capLabel ?coord ?area ?pop ?popdate WHERE {'
+        q = ('SELECT ?r ?rLabel ?cap ?capLabel ?coord ?area ?pop ?popdate ?rank WHERE {'
              ' VALUES ?r { %s }'
              ' OPTIONAL { ?r wdt:P36 ?cap . OPTIONAL { ?cap wdt:P625 ?coord . } }'
              ' OPTIONAL { ?r wdt:P2046 ?area . }'
-             ' OPTIONAL { ?r p:P1082 ?ps . ?ps ps:P1082 ?pop . OPTIONAL { ?ps pq:P585 ?popdate . } }'
+             # устаревшие (deprecated) значения численности не берём вовсе
+             ' OPTIONAL { ?r p:P1082 ?ps . ?ps ps:P1082 ?pop ; wikibase:rank ?rank .'
+             ' FILTER(?rank != wikibase:DeprecatedRank) OPTIONAL { ?ps pq:P585 ?popdate . } }'
              ' SERVICE wikibase:label { bd:serviceParam wikibase:language "ru,en". } }'
              % ' '.join('wd:' + i for i in sorted(ids)))
         req = urllib.request.Request(
@@ -169,7 +183,9 @@ def wikidata(ids):
                 c['ll'] = (round(float(x), 4), round(float(y), 4))
         if 'area' in b: e['area'] = float(b['area']['value'])
         if 'pop' in b:
-            e['pops'].append((b.get('popdate', {}).get('value', '')[:4], int(float(b['pop']['value']))))
+            pref = b.get('rank', {}).get('value', '').endswith('PreferredRank')
+            e['pops'].append((pref, b.get('popdate', {}).get('value', '')[:4],
+                              int(float(b['pop']['value']))))
     return by
 
 def short_of(name, cc):
@@ -207,7 +223,8 @@ def meta():
             r = {'name': name, 'short': short, 'type': typ, 'capital': cap, 'capitalLL': ll,
                  'area': round(calc, -1), 'areaApprox': True, 'pop': None, 'popYear': None}
         else:
-            nm = (p['name_ru'] or p['name']).replace('ил ', '').replace('́', '')
+            nm = (p['name_ru'] or p['name']).replace('́', '')
+            if cc == 'TR' and nm.startswith('ил '): nm = nm[3:]     # «ил Афьонкарахисар»
             typ = {'UA': 'Область', 'BY': 'Область', 'BG': 'Область', 'MD': 'Район',
                    'RO': 'Жудец', 'HU': 'Медье', 'TR': 'Ил'}[cc]
             full = {'RO': 'Жудец ', 'HU': 'Медье ', 'TR': 'Ил '}.get(cc, '') + nm
@@ -217,7 +234,8 @@ def meta():
             cap = (inn or caps or [{'name': None, 'll': None}])[0]
             area, approx = round(calc, -1), True
             if e['area'] and 0.85 < e['area'] / calc < 1.15: area, approx = round(e['area']), False
-            pop = max(e['pops']) if e['pops'] else (None, None)
+            # предпочтительное (preferred) значение, если оно отмечено, иначе самое свежее
+            pop = max(e['pops'])[1:] if e['pops'] and cc not in NO_POP else (None, None)
             r = {'name': full, 'short': short_of(nm, cc), 'type': typ, 'capital': cap['name'],
                  'capitalLL': cap['ll'], 'area': area, 'areaApprox': approx,
                  'pop': pop[1], 'popYear': pop[0] or None}

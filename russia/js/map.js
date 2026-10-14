@@ -178,19 +178,23 @@ function projPolys(polys) {
 }
 
 // Звёзды — столицы государств (Москва и столицы соседних стран), точки —
-// центры регионов. Где центр региона совпадает со столицей или с центром
-// соседнего региона (Ленинградская область и Петербург), значок один
+// центры регионов. Где центр региона — тот же город, что столица или центр
+// соседнего региона (Ленинградская область и Петербург), значок один. Сверяем
+// и название, и место: разные города бывают ближе 5 км друг к другу (Рыбница
+// и Резина на разных берегах Днестра)
 function buildMarkers() {
   var seen = [];
   function add(ll, star, owner) {
     for (var i = 0; i < seen.length; i++) {
-      if (Math.abs(seen[i].ll[0] - ll[0]) < 0.05 && Math.abs(seen[i].ll[1] - ll[1]) < 0.05) {
+      if (seen[i].name === owner.capital &&
+          Math.abs(seen[i].ll[0] - ll[0]) < 0.1 && Math.abs(seen[i].ll[1] - ll[1]) < 0.1) {
         seen[i].owners.push(owner);
         return;
       }
     }
     var p = projView(ll);
-    var m = { ll: ll, x: p[0], y: p[1], star: star, owners: [owner], minK: star ? 0 : Infinity };
+    var m = { ll: ll, x: p[0], y: p[1], star: star, owners: [owner], name: owner.capital,
+              minK: star ? 0 : Infinity };
     seen.push(m);
     markers.push(m);
   }
@@ -506,9 +510,6 @@ function build() {
 }
 
 // --------------------------------------------------------------- подписи
-function textWidth(s, size) { return s.length * size * 0.54; }
-
-// --------------------------------------------------------------- подписи
 // Подписи расставляются один раз (layoutLabels) и после этого не двигаются:
 // у каждой запомнен свой масштаб появления minK. При зуме подпись едет вместе
 // со своим регионом или руслом, размер на экране остаётся тем же, а пересчёта
@@ -588,6 +589,7 @@ function placeRiverLabel(lb) {
 function layoutLabels() {
   var scale = metrics().s;                   // единицы карты -> px экрана
   var items = [];
+  layoutR = view.r;                          // угол, под который сделана раскладка
   // раскладка считается в осях экрана: при повороте карты точки подписей
   // поворачиваются, а сами подписи остаются горизонтальными
   var th = view.r * RAD, cs = Math.cos(th), sn = Math.sin(th);
@@ -782,7 +784,7 @@ var relayoutTimer = null, layoutR = 0;
 function scheduleRelayout() {
   clearTimeout(relayoutTimer);
   relayoutTimer = setTimeout(function () {
-    if (Math.abs(normDeg(view.r - layoutR)) > 0.5) { layoutR = view.r; layoutLabels(); }
+    if (Math.abs(normDeg(view.r - layoutR)) > 0.5) layoutLabels();
   }, 260);
 }
 // охват карты (Россия и соседние страны) на экране при текущих k и r, без сдвига
@@ -799,9 +801,14 @@ function rotatedBox(b, k, r) {
 function clampView() {
   var minK = 0.85, maxK = 90;
   view.k = Math.min(maxK, Math.max(minK, view.k));
+  // карта должна закрывать окно (с запасом m), а если она уже окна — как при
+  // повороте на 90° на мелком масштабе, — то свободно двигаться внутри него
   var m = 200, b = rotatedBox(extent, view.k, view.r);
-  view.x = Math.min(m - b[0], Math.max(VW - b[2] - m, view.x));
-  view.y = Math.min(m - b[1], Math.max(VH - b[3] - m, view.y));
+  view.x = clampRange(view.x, m - b[0], VW - b[2] - m);
+  view.y = clampRange(view.y, m - b[1], VH - b[3] - m);
+}
+function clampRange(v, a, b) {
+  return Math.min(Math.max(a, b), Math.max(Math.min(a, b), v));
 }
 function zoomAt(px, py, factor) {
   var k0 = view.k;
@@ -828,18 +835,21 @@ function rotateAt(px, py, deg) {
 // плавный поворот на deg градусов вокруг центра экрана
 var spin = null;
 function animateRotate(deg, ms) {
-  if (spin) cancelAnimationFrame(spin.id);
+  // повторное нажатие во время поворота добавляет к нему ещё не пройденную
+  // часть: два быстрых нажатия «на 15°» дают ровно 30°
+  if (spin) { cancelAnimationFrame(spin.id); deg += spin.left; spin = null; }
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduce || !deg) { rotateAt(VW / 2, VH / 2, deg); return; }
   var t0 = performance.now(), done = 0;
   ms = ms || 260;
-  spin = { id: 0 };
+  spin = { id: 0, left: deg };
   (function step(now) {
     var t = Math.min(1, (now - t0) / ms);
     var e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;   // плавный старт и финиш
     rotateAt(VW / 2, VH / 2, deg * e - done);
     done = deg * e;
-    if (t < 1) spin.id = requestAnimationFrame(step); else spin = null;
+    if (t < 1) { spin.left = deg - done; spin.id = requestAnimationFrame(step); }
+    else spin = null;
   })(t0);
 }
 // SVG вписан в контейнер по правилу meet: масштаб берётся по меньшей стороне,
@@ -928,6 +938,7 @@ function renderCard() {
     return;
   }
   var r = selected, html;
+  var title = '<h3 class="card-title" tabindex="-1">' + r.name + '</h3>';
   function people(n, note) {
     return '<dt>Население</dt><dd>' + fmt(n) + ' чел.' +
            (note ? '<span class="card-src">' + note + '</span>' : '') + '</dd>' +
@@ -935,7 +946,7 @@ function renderCard() {
            ' чел./км²</dd>';
   }
   if (r.isCountry) {
-    html = '<h3 class="card-title">' + r.name + '</h3>' +
+    html = title +
       '<p class="card-type">' + r.type + ' · соседняя страна</p>' +
       '<dl>' +
         '<dt>Столица</dt><dd><b>' + r.capital + '</b></dd>' +
@@ -952,7 +963,7 @@ function renderCard() {
         }).join('') + '</ul>';
     }
   } else if (r.foreign) {
-    html = '<h3 class="card-title">' + r.name + '</h3>' +
+    html = title +
       '<p class="card-type">' + r.type + ' · ' +
         '<button type="button" class="card-link" data-code="' + r.country.code + '">' +
         r.country.short + '</button></p>' +
@@ -962,7 +973,7 @@ function renderCard() {
         (r.pop ? people(r.pop, r.popYear ? 'данные ' + r.popYear + ' г.' : '') : '') +
       '</dl>';
   } else {
-    html = '<h3 class="card-title">' + r.name + '</h3>' +
+    html = title +
       '<p class="card-type">' + r.type + ' · ' + DNAME[r.district] + ' федеральный округ</p>' +
       '<dl>' +
         '<dt>Столица</dt><dd><b>' + r.capital + '</b></dd>' +
@@ -1086,7 +1097,7 @@ function buildSearch() {
   regions.forEach(function (r) {
     if (r.foreign) {
       items.push({ t: r.short, s: r.type.toLowerCase() + ', ' + r.country.short +
-                   ', центр ' + r.capital, code: r.code });
+                   (r.capital === r.short ? '' : ', центр ' + r.capital), code: r.code });
       // центр, совпадающий со столицей страны, ищется как столица страны
       if (r.capital !== r.country.capital) {
         items.push({ t: r.capital, s: 'центр, ' + r.short + ' (' + r.country.short + ')', code: r.code });
@@ -1221,7 +1232,13 @@ function bindMap() {
     var p = svgPoint(e);
     return Math.atan2(p[1] - VH / 2, p[0] - VW / 2) / RAD;
   }
+  var rotateEnded = 0;
   svg.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+  // в Windows меню появляется при отпускании кнопки — и там, где её отпустили,
+  // поэтому после поворота правой кнопкой гасим его по всей странице
+  window.addEventListener('contextmenu', function (e) {
+    if ((drag && drag.rotate) || performance.now() - rotateEnded < 400) e.preventDefault();
+  });
   svg.addEventListener('mousedown', function (e) {
     if (spin) { cancelAnimationFrame(spin.id); spin = null; }
     drag = { x: e.clientX, y: e.clientY, vx: view.x, vy: view.y, moved: 0,
@@ -1257,6 +1274,7 @@ function bindMap() {
   window.addEventListener('mouseup', function (e) {
     if (drag) {
       svg.classList.remove('grabbing', 'rotating');
+      if (drag.rotate) rotateEnded = performance.now();
       if (drag.moved < 5 && !drag.rotate) {
         var r = regionAt(e);
         if (r) select(r.code, false); else select(null, false);
@@ -1374,15 +1392,20 @@ function bindMap() {
     resizeTimer = setTimeout(layoutLabels, 200);
   });
   window.addEventListener('keydown', function (e) {
-    if (e.target.tagName === 'INPUT') return;
-    if (e.key === '+' || e.key === '=') zoomAt(VW / 2, VH / 2, 1.3);
-    if (e.key === '-') zoomAt(VW / 2, VH / 2, 1 / 1.3);
-    if (e.key === '0') resetView();
-    // Q и E — по положению клавиш, поэтому работают и в русской раскладке
-    if (e.code === 'KeyQ') animateRotate(-15);
-    if (e.code === 'KeyE') animateRotate(15);
-    if (e.code === 'KeyN') animateRotate(-view.r);
-    if (e.key === 'Escape') select(null, false);
+    var t = e.target;
+    if (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA' ||
+        t.isContentEditable) return;
+    // сочетания с Ctrl, Cmd и Alt — команды браузера, а не карты
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    var k = e.key.toLowerCase();
+    if (k === '+' || k === '=') zoomAt(VW / 2, VH / 2, 1.3);
+    if (k === '-') zoomAt(VW / 2, VH / 2, 1 / 1.3);
+    if (k === '0') resetView();
+    // Q, E и N — по букве, в латинской и в русской раскладке (Й, У, Т)
+    if (k === 'q' || k === 'й') animateRotate(-15);
+    if (k === 'e' || k === 'у') animateRotate(15);
+    if (k === 'n' || k === 'т') animateRotate(-view.r);
+    if (k === 'escape') select(null, false);
   });
 }
 
@@ -1432,9 +1455,14 @@ function bindControls() {
   document.getElementById('rotate-left').addEventListener('click', function () { animateRotate(-15); });
   document.getElementById('rotate-right').addEventListener('click', function () { animateRotate(15); });
   document.getElementById('compass').addEventListener('click', function () { animateRotate(-view.r, 360); });
+  // карточка перерисовывается целиком, поэтому фокус с нажатой кнопки
+  // переводим на заголовок новой карточки — иначе он улетает в начало страницы
   document.getElementById('card').addEventListener('click', function (e) {
     var b = e.target.closest('[data-code]');
-    if (b) select(b.dataset.code, true);
+    if (!b) return;
+    select(b.dataset.code, true);
+    var title = document.querySelector('#card .card-title');
+    if (title) title.focus();
   });
   document.getElementById('download').addEventListener('click', downloadSVG);
   var sideBtn = document.getElementById('sidebar-toggle');

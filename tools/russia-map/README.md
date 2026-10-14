@@ -11,7 +11,9 @@
 ## Как пересобрать
 
 ```sh
-mkdir -p work && cd work
+# скрипты читают исходники и пишут результат в папку tools/ — на уровень выше
+# самих скриптов, поэтому всё запускается оттуда (рабочие файлы в git не нужны)
+cd tools
 BASE=https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson
 curl -O $BASE/ne_10m_admin_1_states_provinces.geojson
 curl -O $BASE/ne_10m_rivers_lake_centerlines.geojson
@@ -45,18 +47,18 @@ mapshaper all_40.json -filter 'grp!="RU"' -dissolve grp \
 # регионы соседних стран: foreign.py помечает области ключом региона
 # (венгерские города на правах медье — ключом своего медье, районы
 # Приднестровья — своими ключами), mapshaper склеивает их по этому ключу
-python3 ../foreign.py keys
+python3 russia-map/foreign.py keys
 mapshaper fregions_src.json -dissolve rkey copy-fields=grp \
   -o precision=0.001 format=geojson fregions_40.json
 # названия, центры, площадь и население регионов: Natural Earth + Викиданные
 # (запрос к query.wikidata.org кэшируется в wd_regions.json)
-python3 ../foreign.py meta
+python3 russia-map/foreign.py meta
 
-python3 ../geo.py && python3 ../regions.py && python3 ../rivers.py
+python3 russia-map/geo.py && python3 russia-map/regions.py && python3 russia-map/rivers.py
 # положить как russia/js/geo.js, russia/js/regions.js, russia/js/rivers.js
-cp russia-geo.js ../../../russia/js/geo.js
-cp russia-regions.js ../../../russia/js/regions.js
-cp russia-rivers.js ../../../russia/js/rivers.js
+cp russia-geo.js ../russia/js/geo.js
+cp russia-regions.js ../russia/js/regions.js
+cp russia-rivers.js ../russia/js/rivers.js
 # в russia/index.html поднять номер версии ?v= у подключённых файлов, чтобы
 # браузеры не смешивали новые данные со старыми из кэша
 ```
@@ -106,8 +108,11 @@ cp russia-rivers.js ../../../russia/js/rivers.js
 Викиданных по ссылке `wikidataid`, которая есть у каждой области Natural Earth:
 площадь — если она расходится с площадью контура не больше чем на 15 %, иначе
 считается по контуру и показывается со знаком «≈»; население — самое свежее
-значение с годом. Для районов Приднестровья и Гагаузии ссылок нет, их названия
-и центры заданы вручную (`MANUAL`), остальные ручные поправки — в `FIX`.
+значение с годом (предпочтительное, если оно отмечено; устаревшие значения не
+берутся). Население провинций Турции не показывается: в Викиданных оно за разные
+годы и местами ошибочно (сумма за 2021 г. на 9 млн меньше страны). Для районов
+Приднестровья и Гагаузии ссылок нет, их названия и центры заданы вручную
+(`MANUAL`), остальные ручные поправки — в `FIX`.
 `foreign.py meta` печатает регионы, центр которых после генерализации оказался
 вне контура: это Киевская, Минская, Софийская области и медье Пешт (их центры —
 столицы, которые в состав области не входят) и несколько городов на самой
