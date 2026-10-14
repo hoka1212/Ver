@@ -202,6 +202,10 @@ def main():
         json.dump(out, fh, ensure_ascii=False, indent=0)
         fh.write(';\nwindow.RU_COUNTRIES = ')
         json.dump(countries, fh, ensure_ascii=False, indent=0)
+        # регионы соседних стран — таблицу собирает foreign.py meta
+        fh.write(';\nwindow.RU_FREGIONS = ')
+        json.dump(json.load(open(os.path.join(SC, 'russia-fregions.json'))), fh,
+                  ensure_ascii=False, indent=0)
         fh.write(';\n')
 
 main()

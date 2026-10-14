@@ -52,6 +52,14 @@ for f in cs['features']:
 countries = {k: round_poly(v, 3) for k, v in countries.items()}
 print('countries:', sorted(countries))
 
+# регионы соседних стран (fregions_40.json собирает foreign.py keys + mapshaper)
+fregions = {}
+fr = json.load(open(os.path.join(SC, 'fregions_40.json')))
+for f in fr['features']:
+    fregions.setdefault(f['properties']['rkey'], []).extend(rings(f['geometry']))
+fregions = {k: round_poly(v, 3) for k, v in fregions.items()}
+print('foreign regions:', len(fregions))
+
 # ---- neighbouring land ------------------------------------------------------
 land = []
 cn = json.load(open(os.path.join(SC, 'ne50_countries.geojson')))
@@ -110,7 +118,8 @@ for f in lk['features']:
 lakes.sort(key=lambda l: -l['size'])
 print('lakes:', len(lakes))
 
-bundle = {'regions': regions, 'countries': countries, 'land': land, 'lakes': lakes}
+bundle = {'regions': regions, 'countries': countries, 'fregions': fregions,
+          'land': land, 'lakes': lakes}
 out = os.path.join(SC, 'russia-geo.js')
 with open(out, 'w') as fh:
     fh.write('window.RU_GEO = ')

@@ -15,7 +15,7 @@
 <meta property="og:image" content="https://hoka1212.github.io/Ver/russia/preview.png">
 <meta property="og:locale" content="ru_RU">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="css/map.css">
+<link rel="stylesheet" href="css/map.css?v=2">
 <style id="map-style">
   /* стили самой карты — вынесены отдельно, чтобы попадать в экспорт SVG */
   #map { --sea: #cfe3ef; background: #cfe3ef; display: block; width: 100%; height: 100%;
@@ -50,6 +50,17 @@
   #map .lbl-name { fill: #16203a; font-weight: 700; }
   #map .lbl-cap { fill: #6b2414; font-weight: 600; }
   #map .label-hi .lbl-name { fill: #0b1c3d; }
+  #map.rotating { cursor: alias; }
+  #map .region.in-sel { filter: brightness(0.95) saturate(1.25); }
+  #map .country-border { fill: none; stroke: #4b5468; stroke-width: 1.5; stroke-opacity: 0.85;
+                         vector-effect: non-scaling-stroke; stroke-linejoin: round; pointer-events: none; }
+  #map .country-border.sel { stroke: #16233f; stroke-width: 2.6; stroke-opacity: 1; }
+  #map .marker { pointer-events: none; }
+  #map .marker-dot circle { fill: #ffffff; stroke: #3b2a22; stroke-width: 1.3; }
+  #map .marker-star path { fill: #b3261e; stroke: #ffffff; stroke-width: 1.1; stroke-linejoin: round; }
+  #map .labels .lbl-country { fill: #3d3626; fill-opacity: 0.82; font-weight: 700; letter-spacing: 1.6px;
+                              stroke-width: 3.2px; }
+  #map .label-country.label-hi .lbl-country { fill: #16233f; fill-opacity: 1; }
 </style>
 </head>
 <body>
@@ -97,18 +108,18 @@
 
       <fieldset class="toggles">
         <legend class="sr-only">Что показывать на карте</legend>
-        <label><input type="checkbox" id="t-labels" checked> Названия субъектов</label>
-        <label><input type="checkbox" id="t-capitals" checked> Столицы</label>
+        <label><input type="checkbox" id="t-labels" checked> Названия регионов и стран</label>
+        <label><input type="checkbox" id="t-capitals" checked> Столицы и центры регионов</label>
         <label><input type="checkbox" id="t-rivers" checked> Реки</label>
         <label><input type="checkbox" id="t-lakes" checked> Озёра и водохранилища</label>
-        <label><input type="checkbox" id="t-all"> Названия всех субъектов сразу
+        <label><input type="checkbox" id="t-all"> Названия всех регионов сразу
           <span class="sub">(мелкие могут накладываться)</span></label>
       </fieldset>
     </form>
 
     <section id="card" class="card" aria-live="polite" aria-label="Сведения о выбранном субъекте">
-      <p class="hint">Выберите субъект на карте или в списке — покажу название, столицу,
-      федеральный округ, площадь и население.</p>
+      <p class="hint">Выберите регион или страну на карте или в списке — покажу
+      название, столицу, площадь и население.</p>
     </section>
 
     <nav id="region-nav" aria-label="Субъекты федерации и соседние страны">
@@ -124,9 +135,11 @@
     <h2 id="map-title" class="sr-only">Карта России: субъекты федерации, столицы и крупные реки</h2>
     <p id="map-desc" class="sr-only">
       Карта управляется мышью: колесо меняет масштаб, перетаскивание сдвигает,
-      щелчок выбирает субъект. С клавиатуры то же самое доступно кнопками масштаба
-      и списком субъектов в боковой панели, а клавиши «плюс», «минус» и «ноль»
-      приближают, отдаляют и возвращают вид всей страны.
+      перетаскивание правой кнопкой или с зажатым Shift поворачивает, щелчок
+      выбирает регион. На сенсорном экране карту поворачивают двумя пальцами.
+      С клавиатуры то же самое доступно кнопками масштаба и поворота и списком
+      в боковой панели; клавиши «плюс», «минус» и «ноль» приближают, отдаляют и
+      возвращают вид всей страны, Q и E поворачивают карту, N ставит север вверх.
     </p>
     <p id="map-status" class="sr-only" role="status"></p>
 
@@ -148,17 +161,24 @@
     </div>
 
     <div class="zoom-ui" role="group" aria-label="Управление картой">
+      <button type="button" id="compass" title="Север вверх">
+        <svg viewBox="-12 -12 24 24" aria-hidden="true"><g id="compass-needle">
+          <path d="M0 -10 L4 1 L-4 1 Z" fill="#c8322b"/><path d="M0 10 L4 -1 L-4 -1 Z" fill="#8892a6"/>
+        </g></svg>
+        <span class="sr-only">Повернуть карту севером вверх</span></button>
       <button type="button" id="zoom-in"><span aria-hidden="true">+</span><span class="sr-only">Приблизить</span></button>
       <button type="button" id="zoom-out"><span aria-hidden="true">−</span><span class="sr-only">Отдалить</span></button>
+      <button type="button" id="rotate-left" title="Повернуть против часовой стрелки"><span aria-hidden="true">⟲</span><span class="sr-only">Повернуть карту против часовой стрелки</span></button>
+      <button type="button" id="rotate-right" title="Повернуть по часовой стрелке"><span aria-hidden="true">⟳</span><span class="sr-only">Повернуть карту по часовой стрелке</span></button>
       <button type="button" id="zoom-reset"><span aria-hidden="true">⤢</span><span class="sr-only">Показать всю страну</span></button>
       <button type="button" id="download"><span aria-hidden="true">↓</span><span class="sr-only">Скачать карту в формате SVG</span></button>
     </div>
   </main>
 </div>
 
-<script src="js/regions.js"></script>
-<script src="js/geo.js"></script>
-<script src="js/rivers.js"></script>
-<script src="js/map.js"></script>
+<script src="js/regions.js?v=2"></script>
+<script src="js/geo.js?v=2"></script>
+<script src="js/rivers.js?v=2"></script>
+<script src="js/map.js?v=2"></script>
 </body>
 </html>
