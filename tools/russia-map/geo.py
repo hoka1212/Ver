@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Assemble the geometry bundle: federal subjects, neighbouring land, lakes."""
+"""Assemble the geometry bundle: federal subjects, neighbouring countries, land, lakes."""
 import json, os
 SC = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -42,6 +42,16 @@ for f in src['features']:
 regions = {k: round_poly(v, 3) for k, v in regions.items()}
 print('regions:', len(regions))
 
+# ---- соседние страны, которые показаны на карте наравне с субъектами ----------
+# Собраны из тех же областей admin-1, что и субъекты, и генерализованы с ними
+# одним прогоном mapshaper, поэтому общие границы совпадают точка в точку
+countries = {}
+cs = json.load(open(os.path.join(SC, 'countries_40.json')))
+for f in cs['features']:
+    countries.setdefault(f['properties']['grp'], []).extend(rings(f['geometry']))
+countries = {k: round_poly(v, 3) for k, v in countries.items()}
+print('countries:', sorted(countries))
+
 # ---- neighbouring land ------------------------------------------------------
 land = []
 cn = json.load(open(os.path.join(SC, 'ne50_countries.geojson')))
@@ -56,7 +66,7 @@ NAMES = {
  'Kyrgyzstan': 'КИРГИЗИЯ', 'Tajikistan': 'ТАДЖИКИСТАН',
  'United States of America': 'США', 'Iran': 'ИРАН', 'Moldova': 'МОЛДОВА',
  'Romania': 'РУМЫНИЯ', 'Denmark': 'ДАНИЯ', 'Germany': 'ГЕРМАНИЯ',
- 'South Korea': 'РЕСПУБЛИКА КОРЕЯ',
+ 'South Korea': 'РЕСПУБЛИКА КОРЕЯ', 'Bulgaria': 'БОЛГАРИЯ', 'Hungary': 'ВЕНГРИЯ',
 }
 def keep(polys):
     out = []
@@ -88,7 +98,8 @@ for f in lk['features']:
     ys = [c[1] for poly in polys for ring in poly for c in ring]
     if not xs: continue
     x0, x1, y0, y1 = min(xs), max(xs), min(ys), max(ys)
-    if not (y1 > 40 and ((x0 > 18 and x1 < 181) or x0 < -165)): continue
+    if not ((y1 > 40 and ((x0 > 18 and x1 < 181) or x0 < -165)) or
+            (y1 > 35 and x0 > 15 and x1 < 45)): continue
     size = (x1 - x0) * (y1 - y0)
     rank = p.get('scalerank') or 9
     if size < 0.12 and rank > 4: continue
@@ -99,7 +110,7 @@ for f in lk['features']:
 lakes.sort(key=lambda l: -l['size'])
 print('lakes:', len(lakes))
 
-bundle = {'regions': regions, 'land': land, 'lakes': lakes}
+bundle = {'regions': regions, 'countries': countries, 'land': land, 'lakes': lakes}
 out = os.path.join(SC, 'russia-geo.js')
 with open(out, 'w') as fh:
     fh.write('window.RU_GEO = ')
