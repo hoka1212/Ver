@@ -1,22 +1,47 @@
-/* Карта России: субъекты федерации, их столицы и крупные реки.
-   Геометрия — Natural Earth 1:10m, проекция — равновеликая коническая Альберса. */
+/* Карта России: субъекты федерации, их столицы и крупные реки на плоской карте мира.
+   Геометрия — Natural Earth 1:10m, проекция — цилиндрическая Миллера. */
 (function () {
 'use strict';
 
 // ---------------------------------------------------------------- проекция
+// Плоская карта мира: меридианы — вертикальные прямые, параллели — горизонтальные.
+// Проекция Миллера растягивает высокие широты заметно меньше, чем Меркатор, и
+// не уходит в бесконечность у полюсов. Центральный меридиан 11,5° в. д.: тогда
+// разрез карты (168,5° з. д.) проходит по Беринговому проливу — между островом
+// Ратманова (168,99° з. д., Россия) и Аляской (168,08° з. д.), — и ни Россия,
+// ни Америка не разрезаются.
 var RAD = Math.PI / 180;
-var LON0 = 100, PHI1 = 50 * RAD, PHI2 = 70 * RAD, PHI0 = 55 * RAD;
-var N = (Math.sin(PHI1) + Math.sin(PHI2)) / 2;
-var C = Math.cos(PHI1) * Math.cos(PHI1) + 2 * N * Math.sin(PHI1);
-var RHO0 = Math.sqrt(C - 2 * N * Math.sin(PHI0)) / N;
+var LON0 = 11.5;
 
+// lon, lat в градусах -> x, y в радианах; y растёт вниз, как на экране
 function project(lon, lat) {
   var lam = lon - LON0;
   while (lam > 180) lam -= 360;
-  while (lam < -180) lam += 360;
-  var th = N * lam * RAD;
-  var rho = Math.sqrt(Math.max(0, C - 2 * N * Math.sin(lat * RAD))) / N;
-  return [rho * Math.sin(th), rho * Math.cos(th) - RHO0];
+  while (lam <= -180) lam += 360;
+  var phi = Math.max(-89.9, Math.min(89.9, lat)) * RAD;
+  return [lam * RAD, -1.25 * Math.log(Math.tan(Math.PI / 4 + 0.4 * phi))];
+}
+// широта по экранной координате y (обратное к project)
+function unprojectLat(y) {
+  return (2.5 * Math.atan(Math.exp(-0.8 * y)) - 0.625 * Math.PI) / RAD;
+}
+// контур или линия целиком: если кусок пересекает линию разреза, его точки
+// остаются по одну сторону, а не перепрыгивают через всю карту
+function projRing(ring) {
+  var out = [], sum = 0, i, p;
+  for (i = 0; i < ring.length; i++) {
+    p = project(ring[i][0], ring[i][1]);
+    if (i) {
+      var prev = out[i - 1][0];
+      while (p[0] - prev > Math.PI) p[0] -= 2 * Math.PI;
+      while (p[0] - prev < -Math.PI) p[0] += 2 * Math.PI;
+    }
+    sum += p[0];
+    out.push(p);
+  }
+  var shift = sum / out.length > Math.PI ? -2 * Math.PI : sum / out.length < -Math.PI ? 2 * Math.PI : 0;
+  if (shift) out.forEach(function (q) { q[0] += shift; });
+  return out;
 }
 
 // --------------------------------------------------------------- состояние
@@ -24,7 +49,7 @@ var VW = 2000, VH = 1160;           // внутренняя система ко�
 var fit = { k: 1, dx: 0, dy: 0 };   // проекция -> внутренние координаты
 var extent = [0, 0, VW, VH];        // докуда можно сдвинуть карту: Россия + страны Европы и Азии
 var view = { k: 1, x: 0, y: 0, r: 0 };  // зум, панорама и поворот (r, градусы)
-var MIN_K = 0.85, MAX_K = 90;       // MIN_K уменьшается, чтобы влезла вся Евразия
+var MIN_K = 0.85, MAX_K = 90;       // MIN_K уменьшается, чтобы влез весь мир
 var geo = window.RU_GEO, meta = window.RU_REGIONS, rivers = window.RU_RIVERS;
 var countryMeta = window.RU_COUNTRIES || [];
 
@@ -71,8 +96,7 @@ function prepare() {
   Object.keys(geo.regions).forEach(function (code) {
     projected[code] = geo.regions[code].map(function (poly) {
       return poly.map(function (ring) {
-        return ring.map(function (c) {
-          var p = project(c[0], c[1]);
+        return projRing(ring).map(function (p) {
           if (p[0] < minX) minX = p[0];
           if (p[0] > maxX) maxX = p[0];
           if (p[1] < minY) minY = p[1];
@@ -105,7 +129,7 @@ function prepare() {
   });
 
   // страны Европы и Азии. Охват карты и стартовый вид по-прежнему считаются
-  // только по субъектам России, а вот отдалить карту можно до всей Евразии
+  // только по субъектам России, а вот отдалить карту можно до всего мира
   countryMeta.forEach(function (m, i) {
     var polys = projPolys(geo.countries[m.code]);
     if (!polys.length) return;
@@ -123,26 +147,29 @@ function prepare() {
               Math.max(extent[2], c.bbox[2]), Math.max(extent[3], c.bbox[3])];
   });
   areas = regions.concat(countries);
+
+  // остальной мир — серой подложкой; он тоже входит в охват, чтобы карту можно
+  // было отдалить до всей Земли
+  geo.land.forEach(function (l) {
+    var polys = projPolys(l.polys);
+    l.d = polys.map(ringPath).join('');
+    var b = polyBBox(polys);
+    extent = [Math.min(extent[0], b[0]), Math.min(extent[1], b[1]),
+              Math.max(extent[2], b[2]), Math.max(extent[3], b[3])];
+  });
   MIN_K = Math.min(0.85, 0.95 * Math.min(VW / (extent[2] - extent[0]),
                                          VH / (extent[3] - extent[1])));
   buildMarkers();
 
-  geo.land.forEach(function (l) {
-    l.d = l.polys.map(function (poly) {
-      return ringPath(poly.map(function (ring) { return ring.map(projView); }));
-    }).join('');
-  });
   geo.lakes.forEach(function (l) {
-    var polys = l.polys.map(function (poly) {
-      return poly.map(function (ring) { return ring.map(projView); });
-    });
+    var polys = projPolys(l.polys);
     l.d = polys.map(ringPath).join('');
     l.anchor = poleOfInaccessibility(largestRing(polys));
     l.bbox = polyBBox(polys);
   });
 
   rivers.forEach(function (r) {
-    var lines = r.lines.map(function (line) { return line.map(projView); });
+    var lines = r.lines.map(projViewRing);
     var best = 0, bi = 0, lens = [];
     lines.forEach(function (line, i) {
       var len = lineLength(line);
@@ -157,10 +184,9 @@ function prepare() {
 }
 
 function projView(c) { return toView(project(c[0], c[1])); }
+function projViewRing(ring) { return projRing(ring).map(toView); }
 function projPolys(polys) {
-  return (polys || []).map(function (poly) {
-    return poly.map(function (ring) { return ring.map(projView); });
-  });
+  return (polys || []).map(function (poly) { return poly.map(projViewRing); });
 }
 
 // Звёзды — столицы государств (Москва и столицы стран Европы и Азии), точки —
@@ -515,7 +541,7 @@ var CAPITAL_DX = 10;                      // отступ подписи от ц
 function riverPx(order) { return order === 1 ? 11.5 : order === 2 ? 10.5 : 9.5; }
 
 // масштабы, на которых проверяется место для подписей: от самого мелкого
-// (вся Евразия) до самого крупного; заполняется после prepare()
+// (весь мир) до самого крупного; заполняется после prepare()
 var LEVELS = [];
 function buildLevels() {
   LEVELS = [];
@@ -823,11 +849,17 @@ function rotatedBox(b, k, r) {
 }
 function clampView() {
   view.k = Math.min(MAX_K, Math.max(MIN_K, view.k));
-  // карта должна закрывать окно (с запасом m), а если она уже окна — как при
-  // повороте на 90° на мелком масштабе, — то свободно двигаться внутри него
-  var m = 200, b = rotatedBox(extent, view.k, view.r);
-  view.x = clampRange(view.x, m - b[0], VW - b[2] - m);
-  view.y = clampRange(view.y, m - b[1], VH - b[3] - m);
+  // карта шире окна — она должна закрывать его (с запасом m по краям); карта
+  // уже окна (весь мир на мелком масштабе, поворот на 90°) — она видна целиком
+  // и свободно двигается внутри окна
+  var b = rotatedBox(extent, view.k, view.r);
+  view.x = clampAxis(view.x, b[0], b[2], VW);
+  view.y = clampAxis(view.y, b[1], b[3], VH);
+}
+function clampAxis(v, lo, hi, size) {
+  var m = 200;
+  if (hi - lo <= size) return clampRange(v, -lo, size - hi);
+  return clampRange(v, m - lo, size - hi - m);
 }
 function clampRange(v, a, b) {
   return Math.min(Math.max(a, b), Math.max(Math.min(a, b), v));
@@ -1197,10 +1229,14 @@ function flashRiver(rv) {
 }
 
 function updateScaleBar() {
-  // длина 1 внутренней единицы в километрах на широте центра экрана
+  // длина 1 внутренней единицы в километрах вдоль параллели на широте центра
+  // экрана: в проекции Миллера масштаб зависит от широты (1 радиан долготы —
+  // это 6371 · cos φ км)
   var px = 120;                                   // целевая длина плашки, px
   var units = px / metrics().s / view.k;
-  var kmPerUnit = 6371 / fit.k;                   // радианы проекции -> км
+  var c = toMap(VW / 2, VH / 2);
+  var lat = unprojectLat((c[1] - fit.dy) / fit.k);
+  var kmPerUnit = 6371 * Math.max(0.05, Math.cos(lat * RAD)) / fit.k;
   var km = units * kmPerUnit;
   var nice = [10, 25, 50, 100, 250, 500, 1000, 2000, 5000];
   var pick = nice[0];

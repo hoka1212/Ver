@@ -37,7 +37,12 @@ python3 russia-map/countries.py prep
 mapshaper eurasia_src.json \
   -simplify variable percentage="grp=='RU' ? 0.4 : 0.15" keep-shapes -clean \
   -o precision=0.001 format=geojson all_40.json
+# Чукотка и остров Врангеля в Natural Earth разрезаны по 180-му меридиану; на
+# плоской карте этот шов был бы виден линией, поэтому куски западнее 180°
+# сдвигаем на +360° и склеиваем с остальной частью субъекта
 mapshaper all_40.json -filter 'grp=="RU"' -filter-fields iso_3166_2,adm1_code,name,name_ru \
+  -explode -affine shift=360,0 where='this.bounds[2] <= 0' \
+  -dissolve iso_3166_2 copy-fields=adm1_code,name,name_ru \
   -o precision=0.001 format=geojson ru_regions_40.json
 mapshaper all_40.json -filter 'grp!="RU"' -dissolve grp \
   -o precision=0.001 format=geojson countries_40.json
@@ -107,7 +112,17 @@ cp russia-rivers.js ../russia/js/rivers.js
 линии разграничения на Кипре.
 
 Охват карты и стартовый вид по-прежнему считаются только по субъектам России;
-отдалить карту можно до всей Евразии.
+отдалить карту можно до всего мира.
+
+## Проекция
+
+Плоская карта мира в цилиндрической проекции Миллера (`project` в
+`russia/js/map.js`): меридианы — вертикальные прямые, параллели — горизонтальные,
+высокие широты растянуты заметно меньше, чем у Меркатора. Центральный меридиан —
+11,5° в. д., поэтому разрез карты (168,5° з. д.) проходит по Берингову проливу
+между островом Ратманова и Аляской: ни Россия, ни Америка не разрезаются.
+Серая подложка — вся суша мира, кроме Антарктиды. Масштабная линейка считает
+километры вдоль параллели на широте центра экрана.
 
 ## Источники
 
