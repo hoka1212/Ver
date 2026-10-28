@@ -1248,55 +1248,1116 @@ window.RU_REGIONS = [
 ];
 window.RU_COUNTRIES = [
 {
-"code": "UA",
-"name": "Украина",
-"short": "Украина",
+"code": "AUT",
+"name": "Австрия",
+"short": "Австрия",
 "type": "Государство",
-"capital": "Киев",
+"part": "Европа",
+"capital": "Вена",
 "capitalLL": [
-30.5234,
-50.4501
+16.3725,
+48.2083
 ],
-"area": 467841,
-"pop": 32367000,
-"popNote": "оценка на 1 января 2022 г.",
-"note": "Без Крыма, Севастополя, ЛНР, ДНР, Запорожской и Херсонской областей, которые на этой карте показаны в составе России."
+"area": 83879,
+"pop": 8979894,
+"popNote": "данные 2022 г.",
+"note": null,
+"color": 3
 },
 {
-"code": "BY",
+"code": "AZE",
+"name": "Азербайджан",
+"short": "Азербайджан",
+"type": "Государство",
+"part": "Азия",
+"capital": "Баку",
+"capitalLL": [
+49.8352,
+40.3667
+],
+"area": 86600,
+"pop": 10180770,
+"popNote": "данные 2023 г.",
+"note": null,
+"color": 1
+},
+{
+"code": "ALB",
+"name": "Албания",
+"short": "Албания",
+"type": "Государство",
+"part": "Европа",
+"capital": "Тирана",
+"capitalLL": [
+19.8181,
+41.3283
+],
+"area": 28748,
+"pop": 2811655,
+"popNote": "данные 2023 г.",
+"note": null,
+"color": 1
+},
+{
+"code": "AND",
+"name": "Андорра",
+"short": "Андорра",
+"type": "Государство",
+"part": "Европа",
+"capital": "Андорра-ла-Велья",
+"capitalLL": [
+1.5222,
+42.5072
+],
+"area": 468,
+"pop": 89752,
+"popNote": "данные 2026 г.",
+"note": null,
+"color": 1
+},
+{
+"code": "ARM",
+"name": "Армения",
+"short": "Армения",
+"type": "Государство",
+"part": "Азия",
+"capital": "Ереван",
+"capitalLL": [
+44.5144,
+40.1814
+],
+"area": 29743,
+"pop": 2930450,
+"popNote": "данные 2017 г.",
+"note": null,
+"color": 3
+},
+{
+"code": "AFG",
+"name": "Афганистан",
+"short": "Афганистан",
+"type": "Государство",
+"part": "Азия",
+"capital": "Кабул",
+"capitalLL": [
+69.1658,
+34.5328
+],
+"area": 652230,
+"pop": 41454761,
+"popNote": "данные 2023 г.",
+"note": null,
+"color": 5
+},
+{
+"code": "BGD",
+"name": "Бангладеш",
+"short": "Бангладеш",
+"type": "Государство",
+"part": "Азия",
+"capital": "Дакка",
+"capitalLL": [
+90.3944,
+23.7289
+],
+"area": 147570,
+"pop": 171466990,
+"popNote": "данные 2023 г.",
+"note": null,
+"color": 3
+},
+{
+"code": "BHR",
+"name": "Бахрейн",
+"short": "Бахрейн",
+"type": "Государство",
+"part": "Азия",
+"capital": "Манама",
+"capitalLL": [
+50.5833,
+26.2167
+],
+"area": 786,
+"pop": 1569666,
+"popNote": "данные 2023 г.",
+"note": null,
+"color": 1
+},
+{
+"code": "BLR",
 "name": "Республика Беларусь",
 "short": "Беларусь",
 "type": "Государство",
+"part": "Европа",
 "capital": "Минск",
 "capitalLL": [
-27.5615,
-53.9045
+27.5618,
+53.9022
 ],
 "area": 207600,
 "pop": 9413446,
 "popNote": "перепись 2019 г.",
-"note": null
+"note": null,
+"color": 1
 },
 {
-"code": "MD",
+"code": "BEL",
+"name": "Бельгия",
+"short": "Бельгия",
+"type": "Государство",
+"part": "Европа",
+"capital": "Брюссель",
+"capitalLL": [
+4.3517,
+50.8467
+],
+"area": 30688,
+"pop": 11825551,
+"popNote": "данные 2025 г.",
+"note": null,
+"color": 3
+},
+{
+"code": "BGR",
+"name": "Республика Болгария",
+"short": "Болгария",
+"type": "Государство",
+"part": "Европа",
+"capital": "София",
+"capitalLL": [
+23.3217,
+42.6979
+],
+"area": 110994,
+"pop": 6519789,
+"popNote": "перепись 2021 г.",
+"note": null,
+"color": 4
+},
+{
+"code": "BIH",
+"name": "Босния и Герцеговина",
+"short": "Босния и Герцеговина",
+"type": "Государство",
+"part": "Европа",
+"capital": "Сараево",
+"capitalLL": [
+18.4131,
+43.8564
+],
+"area": 51209,
+"pop": 3816459,
+"popNote": "данные 2022 г.",
+"note": null,
+"color": 1
+},
+{
+"code": "BRN",
+"name": "Бруней",
+"short": "Бруней",
+"type": "Государство",
+"part": "Азия",
+"capital": "Бандар-Сери-Бегаван",
+"capitalLL": [
+114.9167,
+4.9167
+],
+"area": 5765,
+"pop": 458949,
+"popNote": "данные 2023 г.",
+"note": null,
+"color": 4
+},
+{
+"code": "BTN",
+"name": "Бутан",
+"short": "Бутан",
+"type": "Государство",
+"part": "Азия",
+"capital": "Тхимпху",
+"capitalLL": [
+89.6337,
+27.4714
+],
+"area": 38394,
+"pop": 787424,
+"popNote": "данные 2023 г.",
+"note": null,
+"color": 5
+},
+{
+"code": "VAT",
+"name": "Ватикан",
+"short": "Ватикан",
+"type": "Государство",
+"part": "Европа",
+"capital": "Ватикан",
+"capitalLL": [
+12.453,
+41.904
+],
+"area": 0.44,
+"pop": 882,
+"popNote": "данные 2024 г.",
+"note": null,
+"color": 1
+},
+{
+"code": "GBR",
+"name": "Великобритания",
+"short": "Великобритания",
+"type": "Государство",
+"part": "Европа",
+"capital": "Лондон",
+"capitalLL": [
+-0.1275,
+51.5072
+],
+"area": 242495,
+"pop": 67326569,
+"popNote": "данные 2021 г.",
+"note": null,
+"color": 6
+},
+{
+"code": "HUN",
+"name": "Венгрия",
+"short": "Венгрия",
+"type": "Государство",
+"part": "Европа",
+"capital": "Будапешт",
+"capitalLL": [
+19.0408,
+47.4983
+],
+"area": 93030,
+"pop": 9603634,
+"popNote": "перепись 2022 г.",
+"note": null,
+"color": 4
+},
+{
+"code": "TLS",
+"name": "Восточный Тимор",
+"short": "Восточный Тимор",
+"type": "Государство",
+"part": "Азия",
+"capital": "Дили",
+"capitalLL": [
+125.5783,
+-8.5536
+],
+"area": 14919,
+"pop": 1400638,
+"popNote": "данные 2024 г.",
+"note": null,
+"color": 2
+},
+{
+"code": "VNM",
+"name": "Вьетнам",
+"short": "Вьетнам",
+"type": "Государство",
+"part": "Азия",
+"capital": "Ханой",
+"capitalLL": [
+105.8412,
+21.0245
+],
+"area": 331690,
+"pop": 96208984,
+"popNote": "данные 2019 г.",
+"note": null,
+"color": 5
+},
+{
+"code": "DEU",
+"name": "Германия",
+"short": "Германия",
+"type": "Государство",
+"part": "Европа",
+"capital": "Берлин",
+"capitalLL": [
+13.3833,
+52.5167
+],
+"area": 357588,
+"pop": 83467117,
+"popNote": "данные 2025 г.",
+"note": null,
+"color": 2
+},
+{
+"code": "GRC",
+"name": "Греция",
+"short": "Греция",
+"type": "Государство",
+"part": "Европа",
+"capital": "Афины",
+"capitalLL": [
+23.7281,
+37.9842
+],
+"area": 131957,
+"pop": 10482487,
+"popNote": "данные 2021 г.",
+"note": null,
+"color": 2
+},
+{
+"code": "GEO",
+"name": "Грузия",
+"short": "Грузия",
+"type": "Государство",
+"part": "Азия",
+"capital": "Тбилиси",
+"capitalLL": [
+44.7925,
+41.7225
+],
+"area": 69700,
+"pop": 3929581,
+"popNote": "данные 2024 г.",
+"note": null,
+"color": 5
+},
+{
+"code": "DNK",
+"name": "Дания",
+"short": "Дания",
+"type": "Государство",
+"part": "Европа",
+"capital": "Копенгаген",
+"capitalLL": [
+12.5689,
+55.6761
+],
+"area": 42925,
+"pop": 5822863,
+"popNote": "данные 2020 г.",
+"note": null,
+"color": 4
+},
+{
+"code": "ISR",
+"name": "Израиль",
+"short": "Израиль",
+"type": "Государство",
+"part": "Азия",
+"capital": "Иерусалим",
+"capitalLL": [
+35.2342,
+31.7767
+],
+"area": 20770,
+"pop": 9840000,
+"popNote": "данные 2023 г.",
+"note": "Статус Иерусалима как столицы признают не все государства; многие посольства находятся в Тель-Авиве.",
+"color": 3
+},
+{
+"code": "IND",
+"name": "Индия",
+"short": "Индия",
+"type": "Государство",
+"part": "Азия",
+"capital": "Нью-Дели",
+"capitalLL": [
+77.2089,
+28.6139
+],
+"area": 3287263,
+"pop": 1428627663,
+"popNote": "оценка ООН, 2023 г.",
+"note": null,
+"color": 1
+},
+{
+"code": "IDN",
+"name": "Индонезия",
+"short": "Индонезия",
+"type": "Государство",
+"part": "Азия",
+"capital": "Джакарта",
+"capitalLL": [
+106.8269,
+-6.1753
+],
+"area": 1904570,
+"pop": 275439000,
+"popNote": "данные 2021 г.",
+"note": null,
+"color": 6
+},
+{
+"code": "JOR",
+"name": "Иордания",
+"short": "Иордания",
+"type": "Государство",
+"part": "Азия",
+"capital": "Амман",
+"capitalLL": [
+35.9333,
+31.95
+],
+"area": 89341,
+"pop": 10428241,
+"popNote": "данные 2019 г.",
+"note": null,
+"color": 5
+},
+{
+"code": "IRQ",
+"name": "Ирак",
+"short": "Ирак",
+"type": "Государство",
+"part": "Азия",
+"capital": "Багдад",
+"capitalLL": [
+44.3661,
+33.3153
+],
+"area": 437072,
+"pop": 46118793,
+"popNote": "перепись 2024 г.",
+"note": null,
+"color": 1
+},
+{
+"code": "IRN",
+"name": "Иран",
+"short": "Иран",
+"type": "Государство",
+"part": "Азия",
+"capital": "Тегеран",
+"capitalLL": [
+51.3897,
+35.6889
+],
+"area": 1648195,
+"pop": 92417700,
+"popNote": "данные 2025 г.",
+"note": null,
+"color": 4
+},
+{
+"code": "IRL",
+"name": "Ирландия",
+"short": "Ирландия",
+"type": "Государство",
+"part": "Европа",
+"capital": "Дублин",
+"capitalLL": [
+-6.2603,
+53.3497
+],
+"area": 69797,
+"pop": 5149139,
+"popNote": "данные 2022 г.",
+"note": null,
+"color": 2
+},
+{
+"code": "ISL",
+"name": "Исландия",
+"short": "Исландия",
+"type": "Государство",
+"part": "Европа",
+"capital": "Рейкьявик",
+"capitalLL": [
+-21.935,
+64.1475
+],
+"area": 103004,
+"pop": 364260,
+"popNote": "данные 2019 г.",
+"note": null,
+"color": 1
+},
+{
+"code": "ESP",
+"name": "Испания",
+"short": "Испания",
+"type": "Государство",
+"part": "Европа",
+"capital": "Мадрид",
+"capitalLL": [
+-3.7033,
+40.4169
+],
+"area": 505990,
+"pop": 48592909,
+"popNote": "данные 2024 г.",
+"note": null,
+"color": 4
+},
+{
+"code": "ITA",
+"name": "Италия",
+"short": "Италия",
+"type": "Государство",
+"part": "Европа",
+"capital": "Рим",
+"capitalLL": [
+12.4828,
+41.8931
+],
+"area": 302068,
+"pop": 58850717,
+"popNote": "данные 2023 г.",
+"note": null,
+"color": 6
+},
+{
+"code": "YEM",
+"name": "Йемен",
+"short": "Йемен",
+"type": "Государство",
+"part": "Азия",
+"capital": "Сана",
+"capitalLL": [
+44.2064,
+15.3694
+],
+"area": 455503,
+"pop": 28250420,
+"popNote": "данные 2017 г.",
+"note": "С 2015 года правительство работает в Адене; Сану контролируют хуситы.",
+"color": 5
+},
+{
+"code": "PRK",
+"name": "КНДР",
+"short": "КНДР",
+"type": "Государство",
+"part": "Азия",
+"capital": "Пхеньян",
+"capitalLL": [
+125.7475,
+39.0167
+],
+"area": 120540,
+"pop": 26418204,
+"popNote": "данные 2023 г.",
+"note": null,
+"color": 3
+},
+{
+"code": "KAZ",
+"name": "Казахстан",
+"short": "Казахстан",
+"type": "Государство",
+"part": "Азия",
+"capital": "Астана",
+"capitalLL": [
+71.4333,
+51.1333
+],
+"area": 2724900,
+"pop": 20139914,
+"popNote": "данные 2024 г.",
+"note": null,
+"color": 6
+},
+{
+"code": "KHM",
+"name": "Камбоджа",
+"short": "Камбоджа",
+"type": "Государство",
+"part": "Азия",
+"capital": "Пномпень",
+"capitalLL": [
+104.921,
+11.5696
+],
+"area": 181035,
+"pop": 17423880,
+"popNote": "данные 2023 г.",
+"note": null,
+"color": 6
+},
+{
+"code": "QAT",
+"name": "Катар",
+"short": "Катар",
+"type": "Государство",
+"part": "Азия",
+"capital": "Доха",
+"capitalLL": [
+51.5294,
+25.2861
+],
+"area": 11437,
+"pop": 2639211,
+"popNote": "данные 2017 г.",
+"note": null,
+"color": 3
+},
+{
+"code": "CYP",
+"name": "Кипр",
+"short": "Кипр",
+"type": "Государство",
+"part": "Азия",
+"capital": "Никосия",
+"capitalLL": [
+33.365,
+35.1725
+],
+"area": 9242,
+"pop": 1344976,
+"popNote": "данные 2023 г.",
+"note": null,
+"color": 1
+},
+{
+"code": "CHN",
+"name": "Китай",
+"short": "Китай",
+"type": "Государство",
+"part": "Азия",
+"capital": "Пекин",
+"capitalLL": [
+116.4075,
+39.904
+],
+"area": 9596961,
+"pop": 1404890000,
+"popNote": "данные 2025 г.",
+"note": null,
+"color": 4
+},
+{
+"code": "KOS",
+"name": "Республика Косово",
+"short": "Косово",
+"type": "Частично признанное государство",
+"part": "Европа",
+"capital": "Приштина",
+"capitalLL": [
+21.1667,
+42.6667
+],
+"area": 10909,
+"pop": 1586659,
+"popNote": "данные 2024 г.",
+"note": null,
+"color": 2
+},
+{
+"code": "KWT",
+"name": "Кувейт",
+"short": "Кувейт",
+"type": "Государство",
+"part": "Азия",
+"capital": "Эль-Кувейт",
+"capitalLL": [
+47.98,
+29.375
+],
+"area": 17818,
+"pop": 4464000,
+"popNote": "данные 2020 г.",
+"note": null,
+"color": 2
+},
+{
+"code": "KGZ",
+"name": "Кыргызстан",
+"short": "Кыргызстан",
+"type": "Государство",
+"part": "Азия",
+"capital": "Бишкек",
+"capitalLL": [
+74.5667,
+42.8667
+],
+"area": 199951,
+"pop": 7281800,
+"popNote": "данные 2025 г.",
+"note": null,
+"color": 5
+},
+{
+"code": "LAO",
+"name": "Лаос",
+"short": "Лаос",
+"type": "Государство",
+"part": "Азия",
+"capital": "Вьентьян",
+"capitalLL": [
+102.63,
+17.98
+],
+"area": 236800,
+"pop": 6858160,
+"popNote": "данные 2017 г.",
+"note": null,
+"color": 1
+},
+{
+"code": "LVA",
+"name": "Латвия",
+"short": "Латвия",
+"type": "Государство",
+"part": "Европа",
+"capital": "Рига",
+"capitalLL": [
+24.1069,
+56.9475
+],
+"area": 64594,
+"pop": 1845096,
+"popNote": "данные 2026 г.",
+"note": null,
+"color": 4
+},
+{
+"code": "LBN",
+"name": "Ливан",
+"short": "Ливан",
+"type": "Государство",
+"part": "Азия",
+"capital": "Бейрут",
+"capitalLL": [
+35.5131,
+33.8869
+],
+"area": 10452,
+"pop": 6100075,
+"popNote": "данные 2018 г.",
+"note": null,
+"color": 4
+},
+{
+"code": "LTU",
+"name": "Литва",
+"short": "Литва",
+"type": "Государство",
+"part": "Европа",
+"capital": "Вильнюс",
+"capitalLL": [
+25.28,
+54.6872
+],
+"area": 65300,
+"pop": 2860002,
+"popNote": "данные 2023 г.",
+"note": null,
+"color": 6
+},
+{
+"code": "LIE",
+"name": "Лихтенштейн",
+"short": "Лихтенштейн",
+"type": "Государство",
+"part": "Европа",
+"capital": "Вадуц",
+"capitalLL": [
+9.5222,
+47.1406
+],
+"area": 160,
+"pop": 37922,
+"popNote": "данные 2017 г.",
+"note": null,
+"color": 2
+},
+{
+"code": "LUX",
+"name": "Люксембург",
+"short": "Люксембург",
+"type": "Государство",
+"part": "Европа",
+"capital": "Люксембург",
+"capitalLL": [
+6.13,
+49.6114
+],
+"area": 2593,
+"pop": 690959,
+"popNote": "данные 2026 г.",
+"note": null,
+"color": 1
+},
+{
+"code": "MYS",
+"name": "Малайзия",
+"short": "Малайзия",
+"type": "Государство",
+"part": "Азия",
+"capital": "Куала-Лумпур",
+"capitalLL": [
+101.6953,
+3.1478
+],
+"area": 330803,
+"pop": 34231700,
+"popNote": "данные 2025 г.",
+"note": null,
+"color": 2
+},
+{
+"code": "MDV",
+"name": "Мальдивы",
+"short": "Мальдивы",
+"type": "Государство",
+"part": "Азия",
+"capital": "Мале",
+"capitalLL": [
+73.5083,
+4.175
+],
+"area": 298,
+"pop": 436330,
+"popNote": "данные 2017 г.",
+"note": null,
+"color": 2
+},
+{
+"code": "MLT",
+"name": "Мальта",
+"short": "Мальта",
+"type": "Государство",
+"part": "Европа",
+"capital": "Валлетта",
+"capitalLL": [
+14.5125,
+35.8978
+],
+"area": 316,
+"pop": 553214,
+"popNote": "данные 2023 г.",
+"note": null,
+"color": 1
+},
+{
+"code": "MDA",
 "name": "Республика Молдова",
 "short": "Молдова",
 "type": "Государство",
+"part": "Европа",
 "capital": "Кишинёв",
 "capitalLL": [
-28.8638,
-47.0105
+28.8353,
+47.0228
 ],
 "area": 29683,
 "pop": 2423300,
 "popNote": "перепись 2024 г.",
-"note": "Без Приднестровья, которое на карте показано отдельно."
+"note": "Без Приднестровья, которое на карте показано отдельно.",
+"color": 3
+},
+{
+"code": "MCO",
+"name": "Монако",
+"short": "Монако",
+"type": "Государство",
+"part": "Европа",
+"capital": "Монако",
+"capitalLL": [
+7.42,
+43.7311
+],
+"area": 2,
+"pop": 38857,
+"popNote": "данные 2025 г.",
+"note": null,
+"color": 1
+},
+{
+"code": "MNG",
+"name": "Монголия",
+"short": "Монголия",
+"type": "Государство",
+"part": "Азия",
+"capital": "Улан-Батор",
+"capitalLL": [
+106.9055,
+47.9214
+],
+"area": 1564116,
+"pop": 3409939,
+"popNote": "данные 2021 г.",
+"note": null,
+"color": 3
+},
+{
+"code": "MMR",
+"name": "Мьянма",
+"short": "Мьянма",
+"type": "Государство",
+"part": "Азия",
+"capital": "Нейпьидо",
+"capitalLL": [
+96.115,
+19.7475
+],
+"area": 676577,
+"pop": 53370609,
+"popNote": "данные 2017 г.",
+"note": null,
+"color": 2
+},
+{
+"code": "NPL",
+"name": "Непал",
+"short": "Непал",
+"type": "Государство",
+"part": "Азия",
+"capital": "Катманду",
+"capitalLL": [
+85.32,
+27.71
+],
+"area": 147181,
+"pop": 29164578,
+"popNote": "данные 2021 г.",
+"note": null,
+"color": 2
+},
+{
+"code": "NLD",
+"name": "Нидерланды",
+"short": "Нидерланды",
+"type": "Государство",
+"part": "Европа",
+"capital": "Амстердам",
+"capitalLL": [
+4.8833,
+52.3667
+],
+"area": 37378,
+"pop": 17942942,
+"popNote": "данные 2024 г.",
+"note": null,
+"color": 4
+},
+{
+"code": "NOR",
+"name": "Норвегия",
+"short": "Норвегия",
+"type": "Государство",
+"part": "Европа",
+"capital": "Осло",
+"capitalLL": [
+10.7389,
+59.9133
+],
+"area": 385207,
+"pop": 5627400,
+"popNote": "данные 2026 г.",
+"note": null,
+"color": 5
+},
+{
+"code": "ARE",
+"name": "Объединённые Арабские Эмираты",
+"short": "ОАЭ",
+"type": "Государство",
+"part": "Азия",
+"capital": "Абу-Даби",
+"capitalLL": [
+54.3969,
+24.4511
+],
+"area": 83600,
+"pop": 9890400,
+"popNote": "данные 2020 г.",
+"note": null,
+"color": 2
+},
+{
+"code": "OMN",
+"name": "Оман",
+"short": "Оман",
+"type": "Государство",
+"part": "Азия",
+"capital": "Маскат",
+"capitalLL": [
+58.5922,
+23.6139
+],
+"area": 309500,
+"pop": 4829480,
+"popNote": "данные 2018 г.",
+"note": null,
+"color": 1
+},
+{
+"code": "PAK",
+"name": "Пакистан",
+"short": "Пакистан",
+"type": "Государство",
+"part": "Азия",
+"capital": "Исламабад",
+"capitalLL": [
+73.0369,
+33.6989
+],
+"area": 881913,
+"pop": 241499431,
+"popNote": "перепись 2023 г.",
+"note": null,
+"color": 2
+},
+{
+"code": "PSX",
+"name": "Государство Палестина",
+"short": "Палестина",
+"type": "Частично признанное государство",
+"part": "Азия",
+"capital": "Рамалла",
+"capitalLL": [
+35.2034,
+31.9038
+],
+"area": 6020,
+"pop": 5483450,
+"popNote": "оценка 2023 г.",
+"note": "Провозглашённая столица — Восточный Иерусалим; органы власти находятся в Рамалле. Площадь — Западный берег реки Иордан и сектор Газа.",
+"color": 6
+},
+{
+"code": "POL",
+"name": "Польша",
+"short": "Польша",
+"type": "Государство",
+"part": "Европа",
+"capital": "Варшава",
+"capitalLL": [
+21.0111,
+52.23
+],
+"area": 312683,
+"pop": 37563071,
+"popNote": "данные 2024 г.",
+"note": null,
+"color": 3
+},
+{
+"code": "PRT",
+"name": "Португалия",
+"short": "Португалия",
+"type": "Государство",
+"part": "Европа",
+"capital": "Лиссабон",
+"capitalLL": [
+-9.139,
+38.708
+],
+"area": 92225,
+"pop": 10347892,
+"popNote": "данные 2021 г.",
+"note": null,
+"color": 1
 },
 {
 "code": "PMR",
 "name": "Приднестровская Молдавская Республика",
 "short": "Приднестровье",
 "type": "Непризнанное государство",
+"part": "Европа",
 "capital": "Тирасполь",
 "capitalLL": [
 29.6433,
@@ -1305,3876 +2366,500 @@ window.RU_COUNTRIES = [
 "area": 4163,
 "pop": 475373,
 "popNote": "перепись 2015 г.",
-"note": null
+"note": null,
+"color": 6
 },
 {
-"code": "RO",
+"code": "KOR",
+"name": "Республика Корея",
+"short": "Республика Корея",
+"type": "Государство",
+"part": "Азия",
+"capital": "Сеул",
+"capitalLL": [
+126.99,
+37.56
+],
+"area": 100295,
+"pop": 51466201,
+"popNote": "данные 2017 г.",
+"note": null,
+"color": 4
+},
+{
+"code": "ROU",
 "name": "Румыния",
 "short": "Румыния",
 "type": "Государство",
+"part": "Европа",
 "capital": "Бухарест",
 "capitalLL": [
-26.1025,
-44.4268
+26.0978,
+44.4134
 ],
 "area": 238397,
 "pop": 19053815,
 "popNote": "перепись 2021 г.",
-"note": null
+"note": null,
+"color": 1
 },
 {
-"code": "BG",
-"name": "Республика Болгария",
-"short": "Болгария",
+"code": "SMR",
+"name": "Сан-Марино",
+"short": "Сан-Марино",
 "type": "Государство",
-"capital": "София",
+"part": "Европа",
+"capital": "Сан-Марино",
 "capitalLL": [
-23.3219,
-42.6977
+12.4484,
+43.932
 ],
-"area": 110994,
-"pop": 6519789,
-"popNote": "перепись 2021 г.",
-"note": null
+"area": 61,
+"pop": 34167,
+"popNote": "данные 2026 г.",
+"note": null,
+"color": 2
 },
 {
-"code": "HU",
-"name": "Венгрия",
-"short": "Венгрия",
+"code": "SAU",
+"name": "Саудовская Аравия",
+"short": "Саудовская Аравия",
 "type": "Государство",
-"capital": "Будапешт",
+"part": "Азия",
+"capital": "Эр-Рияд",
 "capitalLL": [
-19.0402,
-47.4979
+46.715,
+24.6383
 ],
-"area": 93030,
-"pop": 9603634,
+"area": 2250000,
+"pop": 32175224,
 "popNote": "перепись 2022 г.",
-"note": null
+"note": null,
+"color": 6
 },
 {
-"code": "TR",
+"code": "MKD",
+"name": "Северная Македония",
+"short": "Северная Македония",
+"type": "Государство",
+"part": "Европа",
+"capital": "Скопье",
+"capitalLL": [
+21.4317,
+41.9961
+],
+"area": 25713,
+"pop": 1836713,
+"popNote": "данные 2021 г.",
+"note": null,
+"color": 5
+},
+{
+"code": "CYN",
+"name": "Турецкая Республика Северного Кипра",
+"short": "Северный Кипр",
+"type": "Частично признанное государство",
+"part": "Азия",
+"capital": "Северная Никосия",
+"capitalLL": [
+33.3636,
+35.19
+],
+"area": 3355,
+"pop": 489308,
+"popNote": "данные 2024 г.",
+"note": "Признана только Турцией.",
+"color": 3
+},
+{
+"code": "SRB",
+"name": "Сербия",
+"short": "Сербия",
+"type": "Государство",
+"part": "Европа",
+"capital": "Белград",
+"capitalLL": [
+20.4569,
+44.8178
+],
+"area": 88499,
+"pop": 6605168,
+"popNote": "данные 2024 г.",
+"note": null,
+"color": 3
+},
+{
+"code": "SGP",
+"name": "Сингапур",
+"short": "Сингапур",
+"type": "Государство",
+"part": "Азия",
+"capital": "Сингапур",
+"capitalLL": [
+103.8,
+1.3
+],
+"area": 719,
+"pop": 5866139,
+"popNote": "данные 2021 г.",
+"note": null,
+"color": 5
+},
+{
+"code": "SYR",
+"name": "Сирия",
+"short": "Сирия",
+"type": "Государство",
+"part": "Азия",
+"capital": "Дамаск",
+"capitalLL": [
+36.2919,
+33.5131
+],
+"area": 185180,
+"pop": 23865423,
+"popNote": "данные 2024 г.",
+"note": null,
+"color": 2
+},
+{
+"code": "SVK",
+"name": "Словакия",
+"short": "Словакия",
+"type": "Государство",
+"part": "Европа",
+"capital": "Братислава",
+"capitalLL": [
+17.1093,
+48.1517
+],
+"area": 49034,
+"pop": 5409407,
+"popNote": "данные 2025 г.",
+"note": null,
+"color": 2
+},
+{
+"code": "SVN",
+"name": "Словения",
+"short": "Словения",
+"type": "Государство",
+"part": "Европа",
+"capital": "Любляна",
+"capitalLL": [
+14.5061,
+46.0514
+],
+"area": 20271,
+"pop": 2066880,
+"popNote": "данные 2018 г.",
+"note": null,
+"color": 2
+},
+{
+"code": "TJK",
+"name": "Таджикистан",
+"short": "Таджикистан",
+"type": "Государство",
+"part": "Азия",
+"capital": "Душанбе",
+"capitalLL": [
+68.7864,
+38.5731
+],
+"area": 143100,
+"pop": 9504000,
+"popNote": "данные 2021 г.",
+"note": null,
+"color": 3
+},
+{
+"code": "THA",
+"name": "Таиланд",
+"short": "Таиланд",
+"type": "Государство",
+"part": "Азия",
+"capital": "Бангкок",
+"capitalLL": [
+100.5167,
+13.75
+],
+"area": 513120,
+"pop": 66188503,
+"popNote": "данные 2017 г.",
+"note": null,
+"color": 3
+},
+{
+"code": "TWN",
+"name": "Китайская Республика (Тайвань)",
+"short": "Тайвань",
+"type": "Частично признанное государство",
+"part": "Азия",
+"capital": "Тайбэй",
+"capitalLL": [
+121.5625,
+25.0375
+],
+"area": 36193,
+"pop": 23262544,
+"popNote": "данные 2026 г.",
+"note": null,
+"color": 1
+},
+{
+"code": "TKM",
+"name": "Туркменистан",
+"short": "Туркменистан",
+"type": "Государство",
+"part": "Азия",
+"capital": "Ашхабад",
+"capitalLL": [
+58.3833,
+37.95
+],
+"area": 491210,
+"pop": 6117933,
+"popNote": "данные 2021 г.",
+"note": null,
+"color": 3
+},
+{
+"code": "TUR",
 "name": "Турецкая Республика",
 "short": "Турция",
 "type": "Государство",
-"capital": "Анкара",
-"capitalLL": [
-32.8597,
-39.9334
-],
-"area": 783562,
-"pop": 85372377,
-"popNote": "оценка на конец 2023 г.",
-"note": null
-}
-];
-window.RU_FREGIONS = [
-{
-"name": "Винницкая область",
-"short": "Винницкая обл.",
-"type": "Область",
-"capital": "Винница",
-"capitalLL": [
-28.4672,
-49.2372
-],
-"area": 26513,
-"areaApprox": false,
-"pop": 1509515,
-"popYear": "2022",
-"code": "UA-05",
-"country": "UA"
-},
-{
-"name": "Волынская область",
-"short": "Волынская обл.",
-"type": "Область",
-"capital": "Луцк",
-"capitalLL": [
-25.3244,
-50.7478
-],
-"area": 20143,
-"areaApprox": false,
-"pop": 1021356,
-"popYear": "2022",
-"code": "UA-07",
-"country": "UA"
-},
-{
-"name": "Днепропетровская область",
-"short": "Днепропетровская обл.",
-"type": "Область",
-"capital": "Днепр",
-"capitalLL": [
-35.04,
-48.4675
-],
-"area": 31914,
-"areaApprox": false,
-"pop": 3096485,
-"popYear": "2022",
-"code": "UA-12",
-"country": "UA"
-},
-{
-"name": "Житомирская область",
-"short": "Житомирская обл.",
-"type": "Область",
-"capital": "Житомир",
-"capitalLL": [
-28.6578,
-50.2544
-],
-"area": 29832,
-"areaApprox": false,
-"pop": 1179032,
-"popYear": "2022",
-"code": "UA-18",
-"country": "UA"
-},
-{
-"name": "Закарпатская область",
-"short": "Закарпатская обл.",
-"type": "Область",
-"capital": "Ужгород",
-"capitalLL": [
-22.295,
-48.6239
-],
-"area": 12777,
-"areaApprox": false,
-"pop": 1244476,
-"popYear": "2022",
-"code": "UA-21",
-"country": "UA"
-},
-{
-"name": "Ивано-Франковская область",
-"short": "Ивано-Франковская обл.",
-"type": "Область",
-"capital": "Ивано-Франковск",
-"capitalLL": [
-24.7106,
-48.9228
-],
-"area": 13900,
-"areaApprox": false,
-"pop": 1351822,
-"popYear": "2022",
-"code": "UA-26",
-"country": "UA"
-},
-{
-"name": "Киев",
-"short": "Киев",
-"type": "Город со специальным статусом",
-"capital": "Киев",
-"capitalLL": [
-30.5234,
-50.4501
-],
-"area": 839,
-"areaApprox": false,
-"pop": 2952301,
-"popYear": "2022",
-"code": "UA-30",
-"country": "UA"
-},
-{
-"name": "Киевская область",
-"short": "Киевская обл.",
-"type": "Область",
-"capital": "Киев",
-"capitalLL": [
-30.5234,
-50.4501
-],
-"area": 28131,
-"areaApprox": false,
-"pop": 1781044,
-"popYear": "2022",
-"code": "UA-32",
-"country": "UA"
-},
-{
-"name": "Кировоградская область",
-"short": "Кировоградская обл.",
-"type": "Область",
-"capital": "Кропивницкий",
-"capitalLL": [
-32.2667,
-48.5103
-],
-"area": 24588,
-"areaApprox": false,
-"pop": 903712,
-"popYear": "2022",
-"code": "UA-35",
-"country": "UA"
-},
-{
-"name": "Львовская область",
-"short": "Львовская обл.",
-"type": "Область",
-"capital": "Львов",
-"capitalLL": [
-24.0316,
-49.842
-],
-"area": 21833,
-"areaApprox": false,
-"pop": 2478133,
-"popYear": "2022",
-"code": "UA-46",
-"country": "UA"
-},
-{
-"name": "Николаевская область",
-"short": "Николаевская обл.",
-"type": "Область",
-"capital": "Николаев",
-"capitalLL": [
-31.995,
-46.975
-],
-"area": 24598,
-"areaApprox": false,
-"pop": 1091821,
-"popYear": "2022",
-"code": "UA-48",
-"country": "UA"
-},
-{
-"name": "Одесская область",
-"short": "Одесская обл.",
-"type": "Область",
-"capital": "Одесса",
-"capitalLL": [
-30.7326,
-46.4775
-],
-"area": 33310,
-"areaApprox": false,
-"pop": 2351392,
-"popYear": "2022",
-"code": "UA-51",
-"country": "UA"
-},
-{
-"name": "Полтавская область",
-"short": "Полтавская обл.",
-"type": "Область",
-"capital": "Полтава",
-"capitalLL": [
-34.5514,
-49.5894
-],
-"area": 28748,
-"areaApprox": false,
-"pop": 1352283,
-"popYear": "2022",
-"code": "UA-53",
-"country": "UA"
-},
-{
-"name": "Ровненская область",
-"short": "Ровненская обл.",
-"type": "Область",
-"capital": "Ровно",
-"capitalLL": [
-26.2514,
-50.6197
-],
-"area": 20047,
-"areaApprox": false,
-"pop": 1141784,
-"popYear": "2022",
-"code": "UA-56",
-"country": "UA"
-},
-{
-"name": "Сумская область",
-"short": "Сумская обл.",
-"type": "Область",
-"capital": "Сумы",
-"capitalLL": [
-34.7992,
-50.9067
-],
-"area": 23834,
-"areaApprox": false,
-"pop": 1035772,
-"popYear": "2022",
-"code": "UA-59",
-"country": "UA"
-},
-{
-"name": "Тернопольская область",
-"short": "Тернопольская обл.",
-"type": "Область",
-"capital": "Тернополь",
-"capitalLL": [
-25.6,
-49.5667
-],
-"area": 13823,
-"areaApprox": false,
-"pop": 1021713,
-"popYear": "2022",
-"code": "UA-61",
-"country": "UA"
-},
-{
-"name": "Харьковская область",
-"short": "Харьковская обл.",
-"type": "Область",
-"capital": "Харьков",
-"capitalLL": [
-36.2311,
-49.9925
-],
-"area": 31415,
-"areaApprox": false,
-"pop": 2598961,
-"popYear": "2022",
-"code": "UA-63",
-"country": "UA"
-},
-{
-"name": "Хмельницкая область",
-"short": "Хмельницкая обл.",
-"type": "Область",
-"capital": "Хмельницкий",
-"capitalLL": [
-27.0,
-49.42
-],
-"area": 20629,
-"areaApprox": false,
-"pop": 1228829,
-"popYear": "2022",
-"code": "UA-68",
-"country": "UA"
-},
-{
-"name": "Черкасская область",
-"short": "Черкасская обл.",
-"type": "Область",
-"capital": "Черкассы",
-"capitalLL": [
-32.0597,
-49.4444
-],
-"area": 20900,
-"areaApprox": false,
-"pop": 1160744,
-"popYear": "2022",
-"code": "UA-71",
-"country": "UA"
-},
-{
-"name": "Черниговская область",
-"short": "Черниговская обл.",
-"type": "Область",
-"capital": "Чернигов",
-"capitalLL": [
-31.2947,
-51.4939
-],
-"area": 31865,
-"areaApprox": false,
-"pop": 959315,
-"popYear": "2022",
-"code": "UA-74",
-"country": "UA"
-},
-{
-"name": "Черновицкая область",
-"short": "Черновицкая обл.",
-"type": "Область",
-"capital": "Черновцы",
-"capitalLL": [
-25.9344,
-48.2908
-],
-"area": 8097,
-"areaApprox": false,
-"pop": 890457,
-"popYear": "2022",
-"code": "UA-77",
-"country": "UA"
-},
-{
-"name": "Брестская область",
-"short": "Брестская обл.",
-"type": "Область",
-"capital": "Брест",
-"capitalLL": [
-23.6569,
-52.0847
-],
-"area": 32300,
-"areaApprox": false,
-"pop": 1290628,
-"popYear": "2026",
-"code": "BY-BR",
-"country": "BY"
-},
-{
-"name": "Витебская область",
-"short": "Витебская обл.",
-"type": "Область",
-"capital": "Витебск",
-"capitalLL": [
-30.1667,
-55.1833
-],
-"area": 40050,
-"areaApprox": false,
-"pop": 1060687,
-"popYear": "2026",
-"code": "BY-VI",
-"country": "BY"
-},
-{
-"name": "Гомельская область",
-"short": "Гомельская обл.",
-"type": "Область",
-"capital": "Гомель",
-"capitalLL": [
-30.9833,
-52.4417
-],
-"area": 40400,
-"areaApprox": false,
-"pop": 1316666,
-"popYear": "2026",
-"code": "BY-HO",
-"country": "BY"
-},
-{
-"name": "Гродненская область",
-"short": "Гродненская обл.",
-"type": "Область",
-"capital": "Гродно",
-"capitalLL": [
-23.8167,
-53.6667
-],
-"area": 25000,
-"areaApprox": false,
-"pop": 976218,
-"popYear": "2026",
-"code": "BY-HR",
-"country": "BY"
-},
-{
-"name": "Минск",
-"short": "Минск",
-"type": "Город",
-"capital": "Минск",
-"capitalLL": [
-27.5615,
-53.9045
-],
-"area": 409,
-"areaApprox": false,
-"pop": 1995091,
-"popYear": "2026",
-"code": "BY-HM",
-"country": "BY"
-},
-{
-"name": "Минская область",
-"short": "Минская обл.",
-"type": "Область",
-"capital": "Минск",
-"capitalLL": [
-27.5618,
-53.9022
-],
-"area": 40800,
-"areaApprox": false,
-"pop": 1454737,
-"popYear": "2026",
-"code": "BY-MI",
-"country": "BY"
-},
-{
-"name": "Могилёвская область",
-"short": "Могилёвская обл.",
-"type": "Область",
-"capital": "Могилёв",
-"capitalLL": [
-30.343,
-53.9089
-],
-"area": 29000,
-"areaApprox": false,
-"pop": 962053,
-"popYear": "2026",
-"code": "BY-MA",
-"country": "BY"
-},
-{
-"name": "Автономное территориальное образование Гагаузия",
-"short": "Гагаузия",
-"type": "Автономное территориальное образование",
-"capital": "Комрат",
-"capitalLL": [
-28.655,
-46.301
-],
-"area": 1832,
-"areaApprox": false,
-"pop": 103668,
-"popYear": "2024",
-"code": "MD-GA",
-"country": "MD"
-},
-{
-"name": "Бельцы",
-"short": "Бельцы",
-"type": "Муниципий",
-"capital": "Бельцы",
-"capitalLL": [
-27.9295,
-47.7615
-],
-"area": 100,
-"areaApprox": true,
-"pop": 90954,
-"popYear": "2024",
-"code": "MD-BA",
-"country": "MD"
-},
-{
-"name": "Бессарабский район",
-"short": "Бессарабский р-н",
-"type": "Район",
-"capital": "Басарабяска",
-"capitalLL": [
-28.9614,
-46.3336
-],
-"area": 499,
-"areaApprox": false,
-"pop": 14914,
-"popYear": "2024",
-"code": "MD-BS",
-"country": "MD"
-},
-{
-"name": "Бричанский район",
-"short": "Бричанский р-н",
-"type": "Район",
-"capital": "Бричаны",
-"capitalLL": [
-27.085,
-48.3628
-],
-"area": 741,
-"areaApprox": false,
-"pop": 46894,
-"popYear": "2024",
-"code": "MD-BR",
-"country": "MD"
-},
-{
-"name": "Глодянский район",
-"short": "Глодянский р-н",
-"type": "Район",
-"capital": "Глодяны",
-"capitalLL": [
-27.5144,
-47.7708
-],
-"area": 796,
-"areaApprox": false,
-"pop": 35829,
-"popYear": "2024",
-"code": "MD-GL",
-"country": "MD"
-},
-{
-"name": "Дондюшанский район",
-"short": "Дондюшанский р-н",
-"type": "Район",
-"capital": "Дондюшаны",
-"capitalLL": [
-27.5853,
-48.2244
-],
-"area": 850,
-"areaApprox": true,
-"pop": 28108,
-"popYear": "2024",
-"code": "MD-DO",
-"country": "MD"
-},
-{
-"name": "Дрокиевский район",
-"short": "Дрокиевский р-н",
-"type": "Район",
-"capital": "Дрокия",
-"capitalLL": [
-27.8126,
-48.0308
-],
-"area": 760,
-"areaApprox": true,
-"pop": 53738,
-"popYear": "2024",
-"code": "MD-DR",
-"country": "MD"
-},
-{
-"name": "Единецкий район",
-"short": "Единецкий р-н",
-"type": "Район",
-"capital": "Единец",
-"capitalLL": [
-27.305,
-48.1681
-],
-"area": 933,
-"areaApprox": false,
-"pop": 50429,
-"popYear": "2024",
-"code": "MD-ED",
-"country": "MD"
-},
-{
-"name": "Кагульский район",
-"short": "Кагульский р-н",
-"type": "Район",
-"capital": "Кагул",
-"capitalLL": [
-28.1944,
-45.9075
-],
-"area": 1447,
-"areaApprox": false,
-"pop": 72775,
-"popYear": "2024",
-"code": "MD-CA",
-"country": "MD"
-},
-{
-"name": "Кантемирский район",
-"short": "Кантемирский р-н",
-"type": "Район",
-"capital": "Кантемир",
-"capitalLL": [
-28.2008,
-46.2781
-],
-"area": 878,
-"areaApprox": false,
-"pop": 33181,
-"popYear": "2024",
-"code": "MD-CT",
-"country": "MD"
-},
-{
-"name": "Каушанский район",
-"short": "Каушанский р-н",
-"type": "Район",
-"capital": "Кэушень",
-"capitalLL": [
-29.4139,
-46.6442
-],
-"area": 1163,
-"areaApprox": false,
-"pop": 57261,
-"popYear": "2024",
-"code": "MD-CS",
-"country": "MD"
-},
-{
-"name": "Кишинёв",
-"short": "Кишинёв",
-"type": "Муниципий",
-"capital": "Кишинёв",
-"capitalLL": [
-28.8638,
-47.0105
-],
-"area": 563,
-"areaApprox": false,
-"pop": 720128,
-"popYear": "2024",
-"code": "MD-CU",
-"country": "MD"
-},
-{
-"name": "Криулянский район",
-"short": "Криулянский р-н",
-"type": "Район",
-"capital": "Криулень",
-"capitalLL": [
-29.1614,
-47.2167
-],
-"area": 688,
-"areaApprox": false,
-"pop": 52926,
-"popYear": "2024",
-"code": "MD-CR",
-"country": "MD"
-},
-{
-"name": "Кэлэрашский район",
-"short": "Кэлэрашский р-н",
-"type": "Район",
-"capital": "Кэлэрашь",
-"capitalLL": [
-28.306,
-47.255
-],
-"area": 753,
-"areaApprox": false,
-"pop": 43864,
-"popYear": "2024",
-"code": "MD-CL",
-"country": "MD"
-},
-{
-"name": "Леовский район",
-"short": "Леовский р-н",
-"type": "Район",
-"capital": "Леова",
-"capitalLL": [
-28.2553,
-46.4786
-],
-"area": 745,
-"areaApprox": false,
-"pop": 28835,
-"popYear": "2024",
-"code": "MD-LE",
-"country": "MD"
-},
-{
-"name": "Ниспоренский район",
-"short": "Ниспоренский р-н",
-"type": "Район",
-"capital": "Ниспорены",
-"capitalLL": [
-28.1783,
-47.0814
-],
-"area": 830,
-"areaApprox": true,
-"pop": 36413,
-"popYear": "2024",
-"code": "MD-NI",
-"country": "MD"
-},
-{
-"name": "Новоаненский район",
-"short": "Новоаненский р-н",
-"type": "Район",
-"capital": "Анений-Ной",
-"capitalLL": [
-29.2308,
-46.8817
-],
-"area": 860,
-"areaApprox": false,
-"pop": 57687,
-"popYear": "2024",
-"code": "MD-AN",
-"country": "MD"
-},
-{
-"name": "Окницкий район",
-"short": "Окницкий р-н",
-"type": "Район",
-"capital": "Окница",
-"capitalLL": [
-27.4833,
-48.4167
-],
-"area": 669,
-"areaApprox": false,
-"pop": 31610,
-"popYear": "2024",
-"code": "MD-OC",
-"country": "MD"
-},
-{
-"name": "Оргеевский район",
-"short": "Оргеевский р-н",
-"type": "Район",
-"capital": "Орхей",
-"capitalLL": [
-28.8231,
-47.3831
-],
-"area": 1094,
-"areaApprox": false,
-"pop": 79242,
-"popYear": "2024",
-"code": "MD-OR",
-"country": "MD"
-},
-{
-"name": "Резинский район",
-"short": "Резинский р-н",
-"type": "Район",
-"capital": "Резина",
-"capitalLL": [
-28.9622,
-47.7492
-],
-"area": 621,
-"areaApprox": false,
-"pop": 30243,
-"popYear": "2024",
-"code": "MD-RE",
-"country": "MD"
-},
-{
-"name": "Рышканский район",
-"short": "Рышканский р-н",
-"type": "Район",
-"capital": "Рышканы",
-"capitalLL": [
-27.5536,
-47.9561
-],
-"area": 936,
-"areaApprox": false,
-"pop": 43652,
-"popYear": "2024",
-"code": "MD-RI",
-"country": "MD"
-},
-{
-"name": "Сорокский район",
-"short": "Сорокский р-н",
-"type": "Район",
-"capital": "Сороки",
-"capitalLL": [
-28.2975,
-48.1558
-],
-"area": 865,
-"areaApprox": false,
-"pop": 58609,
-"popYear": "2024",
-"code": "MD-SO",
-"country": "MD"
-},
-{
-"name": "Страшенский район",
-"short": "Страшенский р-н",
-"type": "Район",
-"capital": "Страшены",
-"capitalLL": [
-28.6103,
-47.1414
-],
-"area": 730,
-"areaApprox": false,
-"pop": 61362,
-"popYear": "2024",
-"code": "MD-ST",
-"country": "MD"
-},
-{
-"name": "Сынжерейский район",
-"short": "Сынжерейский р-н",
-"type": "Район",
-"capital": "Сынжерея",
-"capitalLL": [
-28.1419,
-47.6406
-],
-"area": 1033,
-"areaApprox": false,
-"pop": 55933,
-"popYear": "2024",
-"code": "MD-SI",
-"country": "MD"
-},
-{
-"name": "Тараклийский район",
-"short": "Тараклийский р-н",
-"type": "Район",
-"capital": "Тараклия",
-"capitalLL": [
-28.6689,
-45.9
-],
-"area": 674,
-"areaApprox": false,
-"pop": 26435,
-"popYear": "2024",
-"code": "MD-TA",
-"country": "MD"
-},
-{
-"name": "Теленештский район",
-"short": "Теленештский р-н",
-"type": "Район",
-"capital": "Теленешть",
-"capitalLL": [
-28.3656,
-47.4997
-],
-"area": 849,
-"areaApprox": false,
-"pop": 41452,
-"popYear": "2024",
-"code": "MD-TE",
-"country": "MD"
-},
-{
-"name": "Унгенский район",
-"short": "Унгенский р-н",
-"type": "Район",
-"capital": "Унгень",
-"capitalLL": [
-27.7958,
-47.2042
-],
-"area": 1136,
-"areaApprox": false,
-"pop": 75804,
-"popYear": "2024",
-"code": "MD-UN",
-"country": "MD"
-},
-{
-"name": "Фалештский район",
-"short": "Фалештский р-н",
-"type": "Район",
-"capital": "Фалешты",
-"capitalLL": [
-27.7092,
-47.5736
-],
-"area": 1073,
-"areaApprox": false,
-"pop": 56039,
-"popYear": "2024",
-"code": "MD-FA",
-"country": "MD"
-},
-{
-"name": "Флорештский район",
-"short": "Флорештский р-н",
-"type": "Район",
-"capital": "Флорешты",
-"capitalLL": [
-28.3014,
-47.8933
-],
-"area": 790,
-"areaApprox": false,
-"pop": 53264,
-"popYear": "2024",
-"code": "MD-FL",
-"country": "MD"
-},
-{
-"name": "Хынчештский район",
-"short": "Хынчештский р-н",
-"type": "Район",
-"capital": "Хынчешты",
-"capitalLL": [
-28.5936,
-46.8258
-],
-"area": 1260,
-"areaApprox": true,
-"pop": 69462,
-"popYear": "2024",
-"code": "MD-HI",
-"country": "MD"
-},
-{
-"name": "Чимишлийский район",
-"short": "Чимишлийский р-н",
-"type": "Район",
-"capital": "Чимишлия",
-"capitalLL": [
-28.7842,
-46.52
-],
-"area": 1210,
-"areaApprox": true,
-"pop": 30986,
-"popYear": "2024",
-"code": "MD-CM",
-"country": "MD"
-},
-{
-"name": "Шолданештский район",
-"short": "Шолданештский р-н",
-"type": "Район",
-"capital": "Шолданешты",
-"capitalLL": [
-28.7967,
-47.8153
-],
-"area": 581,
-"areaApprox": false,
-"pop": 25394,
-"popYear": "2024",
-"code": "MD-SD",
-"country": "MD"
-},
-{
-"name": "Штефан-Водский район",
-"short": "Штефан-Водский р-н",
-"type": "Район",
-"capital": "Штефан-Водэ",
-"capitalLL": [
-29.6631,
-46.5153
-],
-"area": 1065,
-"areaApprox": false,
-"pop": 42285,
-"popYear": "2024",
-"code": "MD-SV",
-"country": "MD"
-},
-{
-"name": "Яловенский район",
-"short": "Яловенский р-н",
-"type": "Район",
-"capital": "Яловены",
-"capitalLL": [
-28.7778,
-46.9431
-],
-"area": 641,
-"areaApprox": false,
-"pop": 74458,
-"popYear": "2024",
-"code": "MD-IA",
-"country": "MD"
-},
-{
-"name": "Григориопольский район",
-"short": "Григориопольский р-н",
-"type": "Район",
-"capital": "Григориополь",
-"capitalLL": [
-29.297,
-47.153
-],
-"area": 680,
-"areaApprox": true,
-"pop": null,
-"popYear": null,
-"code": "PMR-GRI",
-"country": "PMR"
-},
-{
-"name": "Дубоссарский район",
-"short": "Дубоссарский р-н",
-"type": "Район",
-"capital": "Дубоссары",
-"capitalLL": [
-29.164,
-47.264
-],
-"area": 630,
-"areaApprox": true,
-"pop": null,
-"popYear": null,
-"code": "PMR-DUB",
-"country": "PMR"
-},
-{
-"name": "Каменский район",
-"short": "Каменский р-н",
-"type": "Район",
-"capital": "Каменка",
-"capitalLL": [
-28.7,
-48.033
-],
-"area": 670,
-"areaApprox": true,
-"pop": null,
-"popYear": null,
-"code": "PMR-KAM",
-"country": "PMR"
-},
-{
-"name": "Рыбницкий район",
-"short": "Рыбницкий р-н",
-"type": "Район",
-"capital": "Рыбница",
-"capitalLL": [
-29.002,
-47.768
-],
-"area": 730,
-"areaApprox": true,
-"pop": null,
-"popYear": null,
-"code": "PMR-RYB",
-"country": "PMR"
-},
-{
-"name": "Тирасполь, Бендеры и Слободзейский район",
-"short": "Тирасполь и Бендеры",
-"type": "Города и район",
-"capital": "Тирасполь",
-"capitalLL": [
-29.643,
-46.84
-],
-"area": 920,
-"areaApprox": true,
-"pop": null,
-"popYear": null,
-"code": "PMR-SLO",
-"country": "PMR"
-},
-{
-"name": "Бухарест",
-"short": "Бухарест",
-"type": "Муниципий",
-"capital": "Бухарест",
-"capitalLL": [
-26.1025,
-44.4268
-],
-"area": 228,
-"areaApprox": false,
-"pop": 1716961,
-"popYear": "2021",
-"code": "RO-B",
-"country": "RO"
-},
-{
-"name": "Жудец Алба",
-"short": "Алба",
-"type": "Жудец",
-"capital": "Алба-Юлия",
-"capitalLL": [
-23.5728,
-46.0764
-],
-"area": 6242,
-"areaApprox": false,
-"pop": 325941,
-"popYear": "2021",
-"code": "RO-AB",
-"country": "RO"
-},
-{
-"name": "Жудец Арад",
-"short": "Арад",
-"type": "Жудец",
-"capital": "Арад",
-"capitalLL": [
-21.3167,
-46.1667
-],
-"area": 7754,
-"areaApprox": false,
-"pop": 410143,
-"popYear": "2021",
-"code": "RO-AR",
-"country": "RO"
-},
-{
-"name": "Жудец Арджеш",
-"short": "Арджеш",
-"type": "Жудец",
-"capital": "Питешти",
-"capitalLL": [
-24.8833,
-44.8667
-],
-"area": 6862,
-"areaApprox": false,
-"pop": 569932,
-"popYear": "2021",
-"code": "RO-AG",
-"country": "RO"
-},
-{
-"name": "Жудец Бакэу",
-"short": "Бакэу",
-"type": "Жудец",
-"capital": "Бакэу",
-"capitalLL": [
-26.9167,
-46.5833
-],
-"area": 6621,
-"areaApprox": false,
-"pop": 601387,
-"popYear": "2021",
-"code": "RO-BC",
-"country": "RO"
-},
-{
-"name": "Жудец Бистрица-Нэсэуд",
-"short": "Бистрица-Нэсэуд",
-"type": "Жудец",
-"capital": "Бистрица",
-"capitalLL": [
-24.4833,
-47.1333
-],
-"area": 5355,
-"areaApprox": false,
-"pop": 295988,
-"popYear": "2021",
-"code": "RO-BN",
-"country": "RO"
-},
-{
-"name": "Жудец Бихор",
-"short": "Бихор",
-"type": "Жудец",
-"capital": "Орадя",
-"capitalLL": [
-21.9211,
-47.0722
-],
-"area": 7544,
-"areaApprox": false,
-"pop": 551297,
-"popYear": "2021",
-"code": "RO-BH",
-"country": "RO"
-},
-{
-"name": "Жудец Ботошани",
-"short": "Ботошани",
-"type": "Жудец",
-"capital": "Ботошани",
-"capitalLL": [
-26.6694,
-47.7486
-],
-"area": 4986,
-"areaApprox": false,
-"pop": 392821,
-"popYear": "2021",
-"code": "RO-BT",
-"country": "RO"
-},
-{
-"name": "Жудец Брашов",
-"short": "Брашов",
-"type": "Жудец",
-"capital": "Брашов",
-"capitalLL": [
-25.6106,
-45.6522
-],
-"area": 5363,
-"areaApprox": false,
-"pop": 546615,
-"popYear": "2021",
-"code": "RO-BV",
-"country": "RO"
-},
-{
-"name": "Жудец Брэила",
-"short": "Брэила",
-"type": "Жудец",
-"capital": "Брэила",
-"capitalLL": [
-27.9575,
-45.2692
-],
-"area": 4766,
-"areaApprox": false,
-"pop": 281452,
-"popYear": "2021",
-"code": "RO-BR",
-"country": "RO"
-},
-{
-"name": "Жудец Бузэу",
-"short": "Бузэу",
-"type": "Жудец",
-"capital": "Бузэу",
-"capitalLL": [
-26.8167,
-45.1517
-],
-"area": 6103,
-"areaApprox": false,
-"pop": 404979,
-"popYear": "2021",
-"code": "RO-BZ",
-"country": "RO"
-},
-{
-"name": "Жудец Васлуй",
-"short": "Васлуй",
-"type": "Жудец",
-"capital": "Васлуй",
-"capitalLL": [
-27.7292,
-46.6383
-],
-"area": 5318,
-"areaApprox": false,
-"pop": 374700,
-"popYear": "2021",
-"code": "RO-VS",
-"country": "RO"
-},
-{
-"name": "Жудец Вранча",
-"short": "Вранча",
-"type": "Жудец",
-"capital": "Фокшани",
-"capitalLL": [
-27.1797,
-45.6997
-],
-"area": 4857,
-"areaApprox": false,
-"pop": 335312,
-"popYear": "2021",
-"code": "RO-VN",
-"country": "RO"
-},
-{
-"name": "Жудец Вылча",
-"short": "Вылча",
-"type": "Жудец",
-"capital": "Рымнику-Вылча",
-"capitalLL": [
-24.3756,
-45.1047
-],
-"area": 5765,
-"areaApprox": false,
-"pop": 341861,
-"popYear": "2021",
-"code": "RO-VL",
-"country": "RO"
-},
-{
-"name": "Жудец Галац",
-"short": "Галац",
-"type": "Жудец",
-"capital": "Галац",
-"capitalLL": [
-28.0553,
-45.4336
-],
-"area": 4466,
-"areaApprox": false,
-"pop": 496892,
-"popYear": "2021",
-"code": "RO-GL",
-"country": "RO"
-},
-{
-"name": "Жудец Горж",
-"short": "Горж",
-"type": "Жудец",
-"capital": "Тыргу-Жиу",
-"capitalLL": [
-23.2747,
-45.0342
-],
-"area": 5602,
-"areaApprox": false,
-"pop": 314685,
-"popYear": "2021",
-"code": "RO-GJ",
-"country": "RO"
-},
-{
-"name": "Жудец Джурджу",
-"short": "Джурджу",
-"type": "Жудец",
-"capital": "Джурджу",
-"capitalLL": [
-25.9667,
-43.9
-],
-"area": 3526,
-"areaApprox": false,
-"pop": 262066,
-"popYear": "2021",
-"code": "RO-GR",
-"country": "RO"
-},
-{
-"name": "Жудец Долж",
-"short": "Долж",
-"type": "Жудец",
-"capital": "Крайова",
-"capitalLL": [
-23.8167,
-44.3333
-],
-"area": 7030,
-"areaApprox": true,
-"pop": 599442,
-"popYear": "2021",
-"code": "RO-DJ",
-"country": "RO"
-},
-{
-"name": "Жудец Дымбовица",
-"short": "Дымбовица",
-"type": "Жудец",
-"capital": "Тырговиште",
-"capitalLL": [
-25.4572,
-44.9244
-],
-"area": 4054,
-"areaApprox": false,
-"pop": 479404,
-"popYear": "2021",
-"code": "RO-DB",
-"country": "RO"
-},
-{
-"name": "Жудец Илфов",
-"short": "Илфов",
-"type": "Жудец",
-"capital": "Буфтя",
-"capitalLL": [
-25.949,
-44.561
-],
-"area": 1583,
-"areaApprox": false,
-"pop": 542704,
-"popYear": "2021",
-"code": "RO-IF",
-"country": "RO"
-},
-{
-"name": "Жудец Караш-Северин",
-"short": "Караш-Северин",
-"type": "Жудец",
-"capital": "Решица",
-"capitalLL": [
-21.8903,
-45.3
-],
-"area": 8514,
-"areaApprox": false,
-"pop": 246588,
-"popYear": "2021",
-"code": "RO-CS",
-"country": "RO"
-},
-{
-"name": "Жудец Клуж",
-"short": "Клуж",
-"type": "Жудец",
-"capital": "Клуж-Напока",
-"capitalLL": [
-23.5907,
-46.7689
-],
-"area": 6674,
-"areaApprox": false,
-"pop": 679141,
-"popYear": "2021",
-"code": "RO-CJ",
-"country": "RO"
-},
-{
-"name": "Жудец Ковасна",
-"short": "Ковасна",
-"type": "Жудец",
-"capital": "Сфынту-Георге",
-"capitalLL": [
-25.7878,
-45.8653
-],
-"area": 3710,
-"areaApprox": false,
-"pop": 200042,
-"popYear": "2021",
-"code": "RO-CV",
-"country": "RO"
-},
-{
-"name": "Жудец Констанца",
-"short": "Констанца",
-"type": "Жудец",
-"capital": "Констанца",
-"capitalLL": [
-28.6508,
-44.1767
-],
-"area": 7071,
-"areaApprox": false,
-"pop": 655997,
-"popYear": "2021",
-"code": "RO-CT",
-"country": "RO"
-},
-{
-"name": "Жудец Кэлэраши",
-"short": "Кэлэраши",
-"type": "Жудец",
-"capital": "Кэлэраши",
-"capitalLL": [
-27.3333,
-44.2
-],
-"area": 5088,
-"areaApprox": false,
-"pop": 283458,
-"popYear": "2021",
-"code": "RO-CL",
-"country": "RO"
-},
-{
-"name": "Жудец Марамуреш",
-"short": "Марамуреш",
-"type": "Жудец",
-"capital": "Бая-Маре",
-"capitalLL": [
-23.5719,
-47.6567
-],
-"area": 6304,
-"areaApprox": false,
-"pop": 452475,
-"popYear": "2021",
-"code": "RO-MM",
-"country": "RO"
-},
-{
-"name": "Жудец Мехединци",
-"short": "Мехединци",
-"type": "Жудец",
-"capital": "Дробета-Турну-Северин",
-"capitalLL": [
-22.6556,
-44.6361
-],
-"area": 4942,
-"areaApprox": false,
-"pop": 234339,
-"popYear": "2021",
-"code": "RO-MH",
-"country": "RO"
-},
-{
-"name": "Жудец Муреш",
-"short": "Муреш",
-"type": "Жудец",
-"capital": "Тыргу-Муреш",
-"capitalLL": [
-24.5597,
-46.5497
-],
-"area": 6714,
-"areaApprox": false,
-"pop": 518193,
-"popYear": "2021",
-"code": "RO-MS",
-"country": "RO"
-},
-{
-"name": "Жудец Нямц",
-"short": "Нямц",
-"type": "Жудец",
-"capital": "Пьятра-Нямц",
-"capitalLL": [
-26.3708,
-46.9275
-],
-"area": 5896,
-"areaApprox": false,
-"pop": 454203,
-"popYear": "2021",
-"code": "RO-NT",
-"country": "RO"
-},
-{
-"name": "Жудец Олт",
-"short": "Олт",
-"type": "Жудец",
-"capital": "Слатина",
-"capitalLL": [
-24.3642,
-44.4297
-],
-"area": 5498,
-"areaApprox": false,
-"pop": 383280,
-"popYear": "2021",
-"code": "RO-OT",
-"country": "RO"
-},
-{
-"name": "Жудец Прахова",
-"short": "Прахова",
-"type": "Жудец",
-"capital": "Плоешти",
-"capitalLL": [
-26.0225,
-44.9411
-],
-"area": 4716,
-"areaApprox": false,
-"pop": 695119,
-"popYear": "2021",
-"code": "RO-PH",
-"country": "RO"
-},
-{
-"name": "Жудец Сату-Маре",
-"short": "Сату-Маре",
-"type": "Жудец",
-"capital": "Сату-Маре",
-"capitalLL": [
-22.89,
-47.79
-],
-"area": 4418,
-"areaApprox": false,
-"pop": 330668,
-"popYear": "2021",
-"code": "RO-SM",
-"country": "RO"
-},
-{
-"name": "Жудец Сибиу",
-"short": "Сибиу",
-"type": "Жудец",
-"capital": "Сибиу",
-"capitalLL": [
-24.15,
-45.8
-],
-"area": 5432,
-"areaApprox": false,
-"pop": 388326,
-"popYear": "2021",
-"code": "RO-SB",
-"country": "RO"
-},
-{
-"name": "Жудец Сучава",
-"short": "Сучава",
-"type": "Жудец",
-"capital": "Сучава",
-"capitalLL": [
-26.2556,
-47.6514
-],
-"area": 8553,
-"areaApprox": false,
-"pop": 642551,
-"popYear": "2021",
-"code": "RO-SV",
-"country": "RO"
-},
-{
-"name": "Жудец Сэлаж",
-"short": "Сэлаж",
-"type": "Жудец",
-"capital": "Залэу",
-"capitalLL": [
-23.0572,
-47.1911
-],
-"area": 3864,
-"areaApprox": false,
-"pop": 212224,
-"popYear": "2021",
-"code": "RO-SJ",
-"country": "RO"
-},
-{
-"name": "Жудец Телеорман",
-"short": "Телеорман",
-"type": "Жудец",
-"capital": "Александрия",
-"capitalLL": [
-25.3333,
-43.9686
-],
-"area": 5790,
-"areaApprox": false,
-"pop": 323544,
-"popYear": "2021",
-"code": "RO-TR",
-"country": "RO"
-},
-{
-"name": "Жудец Тимиш",
-"short": "Тимиш",
-"type": "Жудец",
-"capital": "Тимишоара",
-"capitalLL": [
-21.23,
-45.7597
-],
-"area": 8697,
-"areaApprox": false,
-"pop": 765763,
-"popYear": "2026",
-"code": "RO-TM",
-"country": "RO"
-},
-{
-"name": "Жудец Тулча",
-"short": "Тулча",
-"type": "Жудец",
-"capital": "Тулча",
-"capitalLL": [
-28.8036,
-45.1775
-],
-"area": 8499,
-"areaApprox": false,
-"pop": 193355,
-"popYear": "2021",
-"code": "RO-TL",
-"country": "RO"
-},
-{
-"name": "Жудец Харгита",
-"short": "Харгита",
-"type": "Жудец",
-"capital": "Меркуря-Чук",
-"capitalLL": [
-25.8039,
-46.3594
-],
-"area": 6639,
-"areaApprox": false,
-"pop": 291950,
-"popYear": "2021",
-"code": "RO-HR",
-"country": "RO"
-},
-{
-"name": "Жудец Хунедоара",
-"short": "Хунедоара",
-"type": "Жудец",
-"capital": "Дева",
-"capitalLL": [
-22.9117,
-45.8719
-],
-"area": 7063,
-"areaApprox": false,
-"pop": 361657,
-"popYear": "2021",
-"code": "RO-HD",
-"country": "RO"
-},
-{
-"name": "Жудец Яломица",
-"short": "Яломица",
-"type": "Жудец",
-"capital": "Слобозия",
-"capitalLL": [
-27.3661,
-44.5639
-],
-"area": 4453,
-"areaApprox": false,
-"pop": 250816,
-"popYear": "2021",
-"code": "RO-IL",
-"country": "RO"
-},
-{
-"name": "Жудец Яссы",
-"short": "Яссы",
-"type": "Жудец",
-"capital": "Яссы",
-"capitalLL": [
-27.5889,
-47.1622
-],
-"area": 5476,
-"areaApprox": false,
-"pop": 760774,
-"popYear": "2021",
-"code": "RO-IS",
-"country": "RO"
-},
-{
-"name": "Благоевградская область",
-"short": "Благоевградская обл.",
-"type": "Область",
-"capital": "Благоевград",
-"capitalLL": [
-23.0897,
-42.0119
-],
-"area": 6449,
-"areaApprox": false,
-"pop": 285644,
-"popYear": "2025",
-"code": "BG-01",
-"country": "BG"
-},
-{
-"name": "Бургасская область",
-"short": "Бургасская обл.",
-"type": "Область",
-"capital": "Бургас",
-"capitalLL": [
-27.4702,
-42.503
-],
-"area": 7748,
-"areaApprox": false,
-"pop": 388919,
-"popYear": "2024",
-"code": "BG-02",
-"country": "BG"
-},
-{
-"name": "Варненская область",
-"short": "Варненская обл.",
-"type": "Область",
-"capital": "Варна",
-"capitalLL": [
-27.9111,
-43.2114
-],
-"area": 3818,
-"areaApprox": false,
-"pop": 440532,
-"popYear": "2025",
-"code": "BG-03",
-"country": "BG"
-},
-{
-"name": "Великотырновская область",
-"short": "Великотырновская обл.",
-"type": "Область",
-"capital": "Велико-Тырново",
-"capitalLL": [
-25.6283,
-43.0787
-],
-"area": 4662,
-"areaApprox": false,
-"pop": 198803,
-"popYear": "2025",
-"code": "BG-04",
-"country": "BG"
-},
-{
-"name": "Видинская область",
-"short": "Видинская обл.",
-"type": "Область",
-"capital": "Видин",
-"capitalLL": [
-22.8741,
-43.9887
-],
-"area": 3033,
-"areaApprox": false,
-"pop": 69465,
-"popYear": "2025",
-"code": "BG-05",
-"country": "BG"
-},
-{
-"name": "Врачанская область",
-"short": "Врачанская обл.",
-"type": "Область",
-"capital": "Враца",
-"capitalLL": [
-23.5444,
-43.2121
-],
-"area": 4400,
-"areaApprox": true,
-"pop": 144502,
-"popYear": "2025",
-"code": "BG-06",
-"country": "BG"
-},
-{
-"name": "Габровская область",
-"short": "Габровская обл.",
-"type": "Область",
-"capital": "Габрово",
-"capitalLL": [
-25.3178,
-42.8742
-],
-"area": 2023,
-"areaApprox": false,
-"pop": 92722,
-"popYear": "2025",
-"code": "BG-07",
-"country": "BG"
-},
-{
-"name": "Добричская область",
-"short": "Добричская обл.",
-"type": "Область",
-"capital": "Добрич",
-"capitalLL": [
-27.8319,
-43.5622
-],
-"area": 4720,
-"areaApprox": false,
-"pop": 143858,
-"popYear": "2025",
-"code": "BG-08",
-"country": "BG"
-},
-{
-"name": "Кырджалийская область",
-"short": "Кырджалийская обл.",
-"type": "Область",
-"capital": "Кырджали",
-"capitalLL": [
-25.375,
-41.6447
-],
-"area": 4070,
-"areaApprox": true,
-"pop": 152028,
-"popYear": "2025",
-"code": "BG-09",
-"country": "BG"
-},
-{
-"name": "Кюстендилская область",
-"short": "Кюстендилская обл.",
-"type": "Область",
-"capital": "Кюстендил",
-"capitalLL": [
-22.687,
-42.2797
-],
-"area": 3084,
-"areaApprox": false,
-"pop": 104740,
-"popYear": "2025",
-"code": "BG-10",
-"country": "BG"
-},
-{
-"name": "Ловечская область",
-"short": "Ловечская обл.",
-"type": "Область",
-"capital": "Ловеч",
-"capitalLL": [
-24.7115,
-43.1348
-],
-"area": 4132,
-"areaApprox": false,
-"pop": 109446,
-"popYear": "2025",
-"code": "BG-11",
-"country": "BG"
-},
-{
-"name": "Монтанская область",
-"short": "Монтанская обл.",
-"type": "Область",
-"capital": "Монтана",
-"capitalLL": [
-23.2242,
-43.4055
-],
-"area": 3635,
-"areaApprox": false,
-"pop": 110970,
-"popYear": "2025",
-"code": "BG-12",
-"country": "BG"
-},
-{
-"name": "Пазарджикская область",
-"short": "Пазарджикская обл.",
-"type": "Область",
-"capital": "Пазарджик",
-"capitalLL": [
-24.3328,
-42.1935
-],
-"area": 4459,
-"areaApprox": false,
-"pop": 221176,
-"popYear": "2025",
-"code": "BG-13",
-"country": "BG"
-},
-{
-"name": "Перникская область",
-"short": "Перникская обл.",
-"type": "Область",
-"capital": "Перник",
-"capitalLL": [
-23.0308,
-42.5998
-],
-"area": 2392,
-"areaApprox": false,
-"pop": 108871,
-"popYear": "2025",
-"code": "BG-14",
-"country": "BG"
-},
-{
-"name": "Плевенская область",
-"short": "Плевенская обл.",
-"type": "Область",
-"capital": "Плевен",
-"capitalLL": [
-24.6169,
-43.4132
-],
-"area": 4337,
-"areaApprox": false,
-"pop": 212890,
-"popYear": "2025",
-"code": "BG-15",
-"country": "BG"
-},
-{
-"name": "Пловдивская область",
-"short": "Пловдивская обл.",
-"type": "Область",
-"capital": "Пловдив",
-"capitalLL": [
-24.7415,
-42.1421
-],
-"area": 5973,
-"areaApprox": false,
-"pop": 638290,
-"popYear": "2025",
-"code": "BG-16",
-"country": "BG"
-},
-{
-"name": "Разградская область",
-"short": "Разградская обл.",
-"type": "Область",
-"capital": "Разград",
-"capitalLL": [
-26.5288,
-43.5409
-],
-"area": 2637,
-"areaApprox": false,
-"pop": 98083,
-"popYear": "2025",
-"code": "BG-17",
-"country": "BG"
-},
-{
-"name": "Русенская область",
-"short": "Русенская обл.",
-"type": "Область",
-"capital": "Русе",
-"capitalLL": [
-25.9539,
-43.8445
-],
-"area": 2791,
-"areaApprox": false,
-"pop": 184251,
-"popYear": "2025",
-"code": "BG-18",
-"country": "BG"
-},
-{
-"name": "Силистренская область",
-"short": "Силистренская обл.",
-"type": "Область",
-"capital": "Силистра",
-"capitalLL": [
-27.2654,
-44.1092
-],
-"area": 2846,
-"areaApprox": false,
-"pop": 92365,
-"popYear": "2025",
-"code": "BG-19",
-"country": "BG"
-},
-{
-"name": "Сливенская область",
-"short": "Сливенская обл.",
-"type": "Область",
-"capital": "Сливен",
-"capitalLL": [
-26.326,
-42.6781
-],
-"area": 3544,
-"areaApprox": false,
-"pop": 168267,
-"popYear": "2025",
-"code": "BG-20",
-"country": "BG"
-},
-{
-"name": "Смолянская область",
-"short": "Смолянская обл.",
-"type": "Область",
-"capital": "Смолян",
-"capitalLL": [
-24.7128,
-41.5753
-],
-"area": 3193,
-"areaApprox": false,
-"pop": 88816,
-"popYear": "2025",
-"code": "BG-21",
-"country": "BG"
-},
-{
-"name": "Софийская область",
-"short": "Софийская обл.",
-"type": "Область",
-"capital": "София",
-"capitalLL": [
-23.3217,
-42.6979
-],
-"area": 7059,
-"areaApprox": false,
-"pop": 222946,
-"popYear": "2025",
-"code": "BG-23",
-"country": "BG"
-},
-{
-"name": "София (столичная область)",
-"short": "София",
-"type": "Столичная область",
-"capital": "София",
-"capitalLL": [
-23.3217,
-42.6979
-],
-"area": 1349,
-"areaApprox": false,
-"pop": 1303813,
-"popYear": "2025",
-"code": "BG-22",
-"country": "BG"
-},
-{
-"name": "Старозагорская область",
-"short": "Старозагорская обл.",
-"type": "Область",
-"capital": "Стара-Загора",
-"capitalLL": [
-25.6346,
-42.4257
-],
-"area": 5152,
-"areaApprox": false,
-"pop": 286722,
-"popYear": "2025",
-"code": "BG-24",
-"country": "BG"
-},
-{
-"name": "Тырговиштская область",
-"short": "Тырговиштская обл.",
-"type": "Область",
-"capital": "Тырговиште",
-"capitalLL": [
-26.5719,
-43.2414
-],
-"area": 2558,
-"areaApprox": false,
-"pop": 93633,
-"popYear": "2025",
-"code": "BG-25",
-"country": "BG"
-},
-{
-"name": "Хасковская область",
-"short": "Хасковская обл.",
-"type": "Область",
-"capital": "Хасково",
-"capitalLL": [
-25.5556,
-41.9346
-],
-"area": 4020,
-"areaApprox": true,
-"pop": 205702,
-"popYear": "2025",
-"code": "BG-26",
-"country": "BG"
-},
-{
-"name": "Шуменская область",
-"short": "Шуменская обл.",
-"type": "Область",
-"capital": "Шумен",
-"capitalLL": [
-26.9349,
-43.2746
-],
-"area": 3390,
-"areaApprox": false,
-"pop": 148601,
-"popYear": "2025",
-"code": "BG-27",
-"country": "BG"
-},
-{
-"name": "Ямболская область",
-"short": "Ямболская обл.",
-"type": "Область",
-"capital": "Ямбол",
-"capitalLL": [
-26.5038,
-42.4824
-],
-"area": 4380,
-"areaApprox": true,
-"pop": 104571,
-"popYear": "2025",
-"code": "BG-28",
-"country": "BG"
-},
-{
-"name": "Будапешт",
-"short": "Будапешт",
-"type": "Столичный город",
-"capital": "Будапешт",
-"capitalLL": [
-19.0402,
-47.4979
-],
-"area": 525,
-"areaApprox": false,
-"pop": 1675777,
-"popYear": "2026",
-"code": "HU-BU",
-"country": "HU"
-},
-{
-"name": "Медье Баранья",
-"short": "Баранья",
-"type": "Медье",
-"capital": "Печ",
-"capitalLL": [
-18.2331,
-46.0708
-],
-"area": 4430,
-"areaApprox": false,
-"pop": 354022,
-"popYear": "2022",
-"code": "HU-BA",
-"country": "HU"
-},
-{
-"name": "Медье Бач-Кишкун",
-"short": "Бач-Кишкун",
-"type": "Медье",
-"capital": "Кечкемет",
-"capitalLL": [
-19.6917,
-46.9075
-],
-"area": 8445,
-"areaApprox": false,
-"pop": 495318,
-"popYear": "2022",
-"code": "HU-BK",
-"country": "HU"
-},
-{
-"name": "Медье Бекеш",
-"short": "Бекеш",
-"type": "Медье",
-"capital": "Бекешчаба",
-"capitalLL": [
-21.0833,
-46.6833
-],
-"area": 5630,
-"areaApprox": false,
-"pop": 315222,
-"popYear": "2022",
-"code": "HU-BE",
-"country": "HU"
-},
-{
-"name": "Медье Боршод-Абауй-Земплен",
-"short": "Боршод-Абауй-Земплен",
-"type": "Медье",
-"capital": "Мишкольц",
-"capitalLL": [
-20.7833,
-48.1
-],
-"area": 7250,
-"areaApprox": false,
-"pop": 623024,
-"popYear": "2022",
-"code": "HU-BZ",
-"country": "HU"
-},
-{
-"name": "Медье Ваш",
-"short": "Ваш",
-"type": "Медье",
-"capital": "Сомбатхей",
-"capitalLL": [
-16.6333,
-47.2333
-],
-"area": 3336,
-"areaApprox": false,
-"pop": 249513,
-"popYear": "2022",
-"code": "HU-VA",
-"country": "HU"
-},
-{
-"name": "Медье Веспрем",
-"short": "Веспрем",
-"type": "Медье",
-"capital": "Веспрем",
-"capitalLL": [
-17.9167,
-47.1
-],
-"area": 4464,
-"areaApprox": false,
-"pop": 335361,
-"popYear": "2022",
-"code": "HU-VE",
-"country": "HU"
-},
-{
-"name": "Медье Дьёр-Мошон-Шопрон",
-"short": "Дьёр-Мошон-Шопрон",
-"type": "Медье",
-"capital": "Дьёр",
-"capitalLL": [
-17.6344,
-47.6842
-],
-"area": 4208,
-"areaApprox": false,
-"pop": 465945,
-"popYear": "2022",
-"code": "HU-GS",
-"country": "HU"
-},
-{
-"name": "Медье Зала",
-"short": "Зала",
-"type": "Медье",
-"capital": "Залаэгерсег",
-"capitalLL": [
-16.8511,
-46.8392
-],
-"area": 3784,
-"areaApprox": false,
-"pop": 260800,
-"popYear": "2022",
-"code": "HU-ZA",
-"country": "HU"
-},
-{
-"name": "Медье Комаром-Эстергом",
-"short": "Комаром-Эстергом",
-"type": "Медье",
-"capital": "Татабанья",
-"capitalLL": [
-18.3949,
-47.5862
-],
-"area": 2265,
-"areaApprox": false,
-"pop": 300631,
-"popYear": "2022",
-"code": "HU-KE",
-"country": "HU"
-},
-{
-"name": "Медье Ноград",
-"short": "Ноград",
-"type": "Медье",
-"capital": "Шальготарьян",
-"capitalLL": [
-19.7867,
-48.0853
-],
-"area": 2545,
-"areaApprox": false,
-"pop": 182459,
-"popYear": "2022",
-"code": "HU-NO",
-"country": "HU"
-},
-{
-"name": "Медье Пешт",
-"short": "Пешт",
-"type": "Медье",
-"capital": "Будапешт",
-"capitalLL": [
-19.0408,
-47.4983
-],
-"area": 6393,
-"areaApprox": false,
-"pop": 1333533,
-"popYear": "2022",
-"code": "HU-PE",
-"country": "HU"
-},
-{
-"name": "Медье Сабольч-Сатмар-Берег",
-"short": "Сабольч-Сатмар-Берег",
-"type": "Медье",
-"capital": "Ньиредьхаза",
-"capitalLL": [
-21.7167,
-47.95
-],
-"area": 5936,
-"areaApprox": false,
-"pop": 529381,
-"popYear": "2022",
-"code": "HU-SZ",
-"country": "HU"
-},
-{
-"name": "Медье Тольна",
-"short": "Тольна",
-"type": "Медье",
-"capital": "Сексард",
-"capitalLL": [
-18.7039,
-46.3558
-],
-"area": 3703,
-"areaApprox": false,
-"pop": 207931,
-"popYear": "2022",
-"code": "HU-TO",
-"country": "HU"
-},
-{
-"name": "Медье Фейер",
-"short": "Фейер",
-"type": "Медье",
-"capital": "Секешфехервар",
-"capitalLL": [
-18.4108,
-47.191
-],
-"area": 4358,
-"areaApprox": false,
-"pop": 419656,
-"popYear": "2022",
-"code": "HU-FE",
-"country": "HU"
-},
-{
-"name": "Медье Хайду-Бихар",
-"short": "Хайду-Бихар",
-"type": "Медье",
-"capital": "Дебрецен",
-"capitalLL": [
-21.6392,
-47.53
-],
-"area": 6211,
-"areaApprox": false,
-"pop": 519141,
-"popYear": "2022",
-"code": "HU-HB",
-"country": "HU"
-},
-{
-"name": "Медье Хевеш",
-"short": "Хевеш",
-"type": "Медье",
-"capital": "Эгер",
-"capitalLL": [
-20.3747,
-47.8989
-],
-"area": 3637,
-"areaApprox": false,
-"pop": 285892,
-"popYear": "2022",
-"code": "HU-HE",
-"country": "HU"
-},
-{
-"name": "Медье Чонград-Чанад",
-"short": "Чонград-Чанад",
-"type": "Медье",
-"capital": "Сегед",
-"capitalLL": [
-20.1667,
-46.25
-],
-"area": 4400,
-"areaApprox": true,
-"pop": 391184,
-"popYear": "2022",
-"code": "HU-CS",
-"country": "HU"
-},
-{
-"name": "Медье Шомодь",
-"short": "Шомодь",
-"type": "Медье",
-"capital": "Капошвар",
-"capitalLL": [
-17.7833,
-46.3667
-],
-"area": 6065,
-"areaApprox": false,
-"pop": 293470,
-"popYear": "2022",
-"code": "HU-SO",
-"country": "HU"
-},
-{
-"name": "Медье Яс-Надькун-Сольнок",
-"short": "Яс-Надькун-Сольнок",
-"type": "Медье",
-"capital": "Сольнок",
-"capitalLL": [
-20.1764,
-47.1747
-],
-"area": 5582,
-"areaApprox": false,
-"pop": 355809,
-"popYear": "2022",
-"code": "HU-JN",
-"country": "HU"
-},
-{
-"name": "Ил Агры",
-"short": "Агры",
-"type": "Ил",
-"capital": "Агры",
-"capitalLL": [
-43.0544,
-39.7225
-],
-"area": 11099,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-04",
-"country": "TR"
-},
-{
-"name": "Ил Адана",
-"short": "Адана",
-"type": "Ил",
-"capital": "Адана",
-"capitalLL": [
-35.3253,
-36.9864
-],
-"area": 13844,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-01",
-"country": "TR"
-},
-{
-"name": "Ил Адыяман",
-"short": "Адыяман",
-"type": "Ил",
-"capital": "Адыяман",
-"capitalLL": [
-38.2771,
-37.7634
-],
-"area": 7332,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-02",
-"country": "TR"
-},
-{
-"name": "Ил Айдын",
-"short": "Айдын",
-"type": "Ил",
-"capital": "Айдын",
-"capitalLL": [
-27.8453,
-37.8481
-],
-"area": 8007,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-09",
-"country": "TR"
-},
-{
-"name": "Ил Аксарай",
-"short": "Аксарай",
-"type": "Ил",
-"capital": "Аксарай",
-"capitalLL": [
-34.0297,
-38.3686
-],
-"area": 7626,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-68",
-"country": "TR"
-},
-{
-"name": "Ил Амасья",
-"short": "Амасья",
-"type": "Ил",
-"capital": "Амасья",
-"capitalLL": [
-35.8333,
-40.65
-],
-"area": 5520,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-05",
-"country": "TR"
-},
-{
-"name": "Ил Анкара",
-"short": "Анкара",
-"type": "Ил",
+"part": "Азия",
 "capital": "Анкара",
 "capitalLL": [
 32.8387,
 39.9358
 ],
-"area": 25615,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-06",
-"country": "TR"
-},
-{
-"name": "Ил Анталья",
-"short": "Анталья",
-"type": "Ил",
-"capital": "Анталья",
-"capitalLL": [
-30.6956,
-36.9081
-],
-"area": 20177,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-07",
-"country": "TR"
-},
-{
-"name": "Ил Ардахан",
-"short": "Ардахан",
-"type": "Ил",
-"capital": "Ардахан",
-"capitalLL": [
-42.7,
-41.1167
-],
-"area": 4934,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-75",
-"country": "TR"
-},
-{
-"name": "Ил Артвин",
-"short": "Артвин",
-"type": "Ил",
-"capital": "Артвин",
-"capitalLL": [
-41.8287,
-41.1831
-],
-"area": 7393,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-08",
-"country": "TR"
-},
-{
-"name": "Ил Афьонкарахисар",
-"short": "Афьонкарахисар",
-"type": "Ил",
-"capital": "Афьонкарахисар",
-"capitalLL": [
-30.5386,
-38.7581
-],
-"area": 14016,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-03",
-"country": "TR"
-},
-{
-"name": "Ил Байбурт",
-"short": "Байбурт",
-"type": "Ил",
-"capital": "Байбурт",
-"capitalLL": [
-40.226,
-40.2546
-],
-"area": 3652,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-69",
-"country": "TR"
-},
-{
-"name": "Ил Балыкесир",
-"short": "Балыкесир",
-"type": "Ил",
-"capital": "Балыкесир",
-"capitalLL": [
-27.8842,
-39.6511
-],
-"area": 14442,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-10",
-"country": "TR"
-},
-{
-"name": "Ил Бартын",
-"short": "Бартын",
-"type": "Ил",
-"capital": "Бартын",
-"capitalLL": [
-32.3375,
-41.6344
-],
-"area": 2120,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-74",
-"country": "TR"
-},
-{
-"name": "Ил Батман",
-"short": "Батман",
-"type": "Ил",
-"capital": "Батман",
-"capitalLL": [
-41.1333,
-37.8833
-],
-"area": 4477,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-72",
-"country": "TR"
-},
-{
-"name": "Ил Биледжик",
-"short": "Биледжик",
-"type": "Ил",
-"capital": "Биледжик",
-"capitalLL": [
-29.9792,
-40.1431
-],
-"area": 5280,
-"areaApprox": true,
-"pop": null,
-"popYear": null,
-"code": "TR-11",
-"country": "TR"
-},
-{
-"name": "Ил Бингёль",
-"short": "Бингёль",
-"type": "Ил",
-"capital": "Бингёль",
-"capitalLL": [
-40.4986,
-38.8847
-],
-"area": 8003,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-12",
-"country": "TR"
-},
-{
-"name": "Ил Битлис",
-"short": "Битлис",
-"type": "Ил",
-"capital": "Битлис",
-"capitalLL": [
-42.1167,
-38.4
-],
-"area": 8294,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-13",
-"country": "TR"
-},
-{
-"name": "Ил Болу",
-"short": "Болу",
-"type": "Ил",
-"capital": "Болу",
-"capitalLL": [
-31.6,
-40.7333
-],
-"area": 7410,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-14",
-"country": "TR"
-},
-{
-"name": "Ил Бурдур",
-"short": "Бурдур",
-"type": "Ил",
-"capital": "Бурдур",
-"capitalLL": [
-30.2833,
-37.7167
-],
-"area": 6887,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-15",
-"country": "TR"
-},
-{
-"name": "Ил Бурса",
-"short": "Бурса",
-"type": "Ил",
-"capital": "Бурса",
-"capitalLL": [
-29.0805,
-40.1913
-],
-"area": 10813,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-16",
-"country": "TR"
-},
-{
-"name": "Ил Ван",
-"short": "Ван",
-"type": "Ил",
-"capital": "Ван",
-"capitalLL": [
-43.4167,
-38.5019
-],
-"area": 20921,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-65",
-"country": "TR"
-},
-{
-"name": "Ил Газиантеп",
-"short": "Газиантеп",
-"type": "Ил",
-"capital": "Газиантеп",
-"capitalLL": [
-37.3792,
-37.0628
-],
-"area": 7320,
-"areaApprox": true,
-"pop": null,
-"popYear": null,
-"code": "TR-27",
-"country": "TR"
-},
-{
-"name": "Ил Гиресун",
-"short": "Гиресун",
-"type": "Ил",
-"capital": "Гиресун",
-"capitalLL": [
-38.4167,
-40.9
-],
-"area": 6934,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-28",
-"country": "TR"
-},
-{
-"name": "Ил Гюмюшхане",
-"short": "Гюмюшхане",
-"type": "Ил",
-"capital": "Гюмюшхане",
-"capitalLL": [
-39.4778,
-40.4597
-],
-"area": 6575,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-29",
-"country": "TR"
-},
-{
-"name": "Ил Денизли",
-"short": "Денизли",
-"type": "Ил",
-"capital": "Денизли",
-"capitalLL": [
-29.0964,
-37.7833
-],
-"area": 11868,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-20",
-"country": "TR"
-},
-{
-"name": "Ил Диярбакыр",
-"short": "Диярбакыр",
-"type": "Ил",
-"capital": "Диярбакыр",
-"capitalLL": [
-40.2189,
-37.9158
-],
-"area": 15101,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-21",
-"country": "TR"
-},
-{
-"name": "Ил Дюздже",
-"short": "Дюздже",
-"type": "Ил",
-"capital": "Дюздже",
-"capitalLL": [
-31.1583,
-40.8417
-],
-"area": 2492,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-81",
-"country": "TR"
-},
-{
-"name": "Ил Зонгулдак",
-"short": "Зонгулдак",
-"type": "Ил",
-"capital": "Зонгулдак",
-"capitalLL": [
-31.7833,
-41.45
-],
-"area": 3342,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-67",
-"country": "TR"
-},
-{
-"name": "Ил Измир",
-"short": "Измир",
-"type": "Ил",
-"capital": "Измир",
-"capitalLL": [
-27.1384,
-38.4127
-],
-"area": 11891,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-35",
-"country": "TR"
-},
-{
-"name": "Ил Йозгат",
-"short": "Йозгат",
-"type": "Ил",
-"capital": "Йозгат",
-"capitalLL": [
-34.8083,
-39.8208
-],
-"area": 13690,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-66",
-"country": "TR"
-},
-{
-"name": "Ил Кайсери",
-"short": "Кайсери",
-"type": "Ил",
-"capital": "Кайсери",
-"capitalLL": [
-35.4875,
-38.7225
-],
-"area": 16917,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-38",
-"country": "TR"
-},
-{
-"name": "Ил Карабюк",
-"short": "Карабюк",
-"type": "Ил",
-"capital": "Карабюк",
-"capitalLL": [
-32.6333,
-41.2
-],
-"area": 3960,
-"areaApprox": true,
-"pop": null,
-"popYear": null,
-"code": "TR-78",
-"country": "TR"
-},
-{
-"name": "Ил Караман",
-"short": "Караман",
-"type": "Ил",
-"capital": "Караман",
-"capitalLL": [
-33.2167,
-37.1833
-],
-"area": 8678,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-70",
-"country": "TR"
-},
-{
-"name": "Ил Карс",
-"short": "Карс",
-"type": "Ил",
-"capital": "Карс",
-"capitalLL": [
-43.0958,
-40.6078
-],
-"area": 9442,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-36",
-"country": "TR"
-},
-{
-"name": "Ил Кастамону",
-"short": "Кастамону",
-"type": "Ил",
-"capital": "Кастамону",
-"capitalLL": [
-33.7833,
-41.3833
-],
-"area": 13064,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-37",
-"country": "TR"
-},
-{
-"name": "Ил Кахраманмараш",
-"short": "Кахраманмараш",
-"type": "Ил",
-"capital": "Кахраманмараш",
-"capitalLL": [
-36.9453,
-37.5875
-],
-"area": 14327,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-46",
-"country": "TR"
-},
-{
-"name": "Ил Килис",
-"short": "Килис",
-"type": "Ил",
-"capital": "Килис",
-"capitalLL": [
-37.1167,
-36.7167
-],
-"area": 1412,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-79",
-"country": "TR"
-},
-{
-"name": "Ил Коджаэли",
-"short": "Коджаэли",
-"type": "Ил",
-"capital": "Измит",
-"capitalLL": [
-29.9498,
-40.7719
-],
-"area": 3397,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-41",
-"country": "TR"
-},
-{
-"name": "Ил Конья",
-"short": "Конья",
-"type": "Ил",
-"capital": "Конья",
-"capitalLL": [
-32.5161,
-37.8471
-],
-"area": 40838,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-42",
-"country": "TR"
-},
-{
-"name": "Ил Кыркларели",
-"short": "Кыркларели",
-"type": "Ил",
-"capital": "Кыркларели",
-"capitalLL": [
-27.2253,
-41.7347
-],
-"area": 6459,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-39",
-"country": "TR"
-},
-{
-"name": "Ил Кыршехир",
-"short": "Кыршехир",
-"type": "Ил",
-"capital": "Кыршехир",
-"capitalLL": [
-34.1608,
-39.145
-],
-"area": 6584,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-40",
-"country": "TR"
-},
-{
-"name": "Ил Кырыккале",
-"short": "Кырыккале",
-"type": "Ил",
-"capital": "Кырыккале",
-"capitalLL": [
-33.5139,
-39.8417
-],
-"area": 4365,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-71",
-"country": "TR"
-},
-{
-"name": "Ил Кютахья",
-"short": "Кютахья",
-"type": "Ил",
-"capital": "Кютахья",
-"capitalLL": [
-29.9833,
-39.4242
-],
-"area": 11634,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-43",
-"country": "TR"
-},
-{
-"name": "Ил Малатья",
-"short": "Малатья",
-"type": "Ил",
-"capital": "Малатья",
-"capitalLL": [
-38.3094,
-38.3506
-],
-"area": 12146,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-44",
-"country": "TR"
-},
-{
-"name": "Ил Маниса",
-"short": "Маниса",
-"type": "Ил",
-"capital": "Маниса",
-"capitalLL": [
-27.4264,
-38.6119
-],
-"area": 13339,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-45",
-"country": "TR"
-},
-{
-"name": "Ил Мардин",
-"short": "Мардин",
-"type": "Ил",
-"capital": "Мардин",
-"capitalLL": [
-40.735,
-37.3131
-],
-"area": 8780,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-47",
-"country": "TR"
-},
-{
-"name": "Ил Мерсин",
-"short": "Мерсин",
-"type": "Ил",
-"capital": "Мерсин",
-"capitalLL": [
-34.6167,
-36.8
-],
-"area": 15737,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-33",
-"country": "TR"
-},
-{
-"name": "Ил Мугла",
-"short": "Мугла",
-"type": "Ил",
-"capital": "Мугла",
-"capitalLL": [
-28.3667,
-37.2167
-],
-"area": 12654,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-48",
-"country": "TR"
-},
-{
-"name": "Ил Муш",
-"short": "Муш",
-"type": "Ил",
-"capital": "Муш",
-"capitalLL": [
-41.4911,
-38.7333
-],
-"area": 8196,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-49",
-"country": "TR"
-},
-{
-"name": "Ил Невшехир",
-"short": "Невшехир",
-"type": "Ил",
-"capital": "Невшехир",
-"capitalLL": [
-34.7122,
-38.625
-],
-"area": 5485,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-50",
-"country": "TR"
-},
-{
-"name": "Ил Нигде",
-"short": "Нигде",
-"type": "Ил",
-"capital": "Нигде",
-"capitalLL": [
-34.6792,
-37.9667
-],
-"area": 7234,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-51",
-"country": "TR"
-},
-{
-"name": "Ил Орду",
-"short": "Орду",
-"type": "Ил",
-"capital": "Орду",
-"capitalLL": [
-37.8833,
-40.9833
-],
-"area": 5914,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-52",
-"country": "TR"
-},
-{
-"name": "Ил Османие",
-"short": "Османие",
-"type": "Ил",
-"capital": "Османие",
-"capitalLL": [
-36.25,
-37.075
-],
-"area": 3320,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-80",
-"country": "TR"
-},
-{
-"name": "Ил Ризе",
-"short": "Ризе",
-"type": "Ил",
-"capital": "Ризе",
-"capitalLL": [
-40.5199,
-41.0248
-],
-"area": 3835,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-53",
-"country": "TR"
-},
-{
-"name": "Ил Сакарья",
-"short": "Сакарья",
-"type": "Ил",
-"capital": "Адапазары",
-"capitalLL": [
-30.4026,
-40.7762
-],
-"area": 4824,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-54",
-"country": "TR"
-},
-{
-"name": "Ил Самсун",
-"short": "Самсун",
-"type": "Ил",
-"capital": "Самсун",
-"capitalLL": [
-36.33,
-41.2867
-],
-"area": 9579,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-55",
-"country": "TR"
-},
-{
-"name": "Ил Сивас",
-"short": "Сивас",
-"type": "Ил",
-"capital": "Сивас",
-"capitalLL": [
-37.0167,
-39.75
-],
-"area": 28164,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-58",
-"country": "TR"
-},
-{
-"name": "Ил Сиирт",
-"short": "Сиирт",
-"type": "Ил",
-"capital": "Сиирт",
-"capitalLL": [
-41.9458,
-37.8417
-],
-"area": 5717,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-56",
-"country": "TR"
-},
-{
-"name": "Ил Синоп",
-"short": "Синоп",
-"type": "Ил",
-"capital": "Синоп",
-"capitalLL": [
-35.1511,
-42.0267
-],
-"area": 5717,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-57",
-"country": "TR"
-},
-{
-"name": "Ил Стамбул",
-"short": "Стамбул",
-"type": "Ил",
-"capital": "Стамбул",
-"capitalLL": [
-28.9603,
-41.01
-],
-"area": 5343,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-34",
-"country": "TR"
-},
-{
-"name": "Ил Текирдаг",
-"short": "Текирдаг",
-"type": "Ил",
-"capital": "Текирдаг",
-"capitalLL": [
-27.5167,
-40.9833
-],
-"area": 6190,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-59",
-"country": "TR"
-},
-{
-"name": "Ил Токат",
-"short": "Токат",
-"type": "Ил",
-"capital": "Токат",
-"capitalLL": [
-36.5542,
-40.3097
-],
-"area": 9998,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-60",
-"country": "TR"
-},
-{
-"name": "Ил Трабзон",
-"short": "Трабзон",
-"type": "Ил",
-"capital": "Трабзон",
-"capitalLL": [
-39.7225,
-41.005
-],
-"area": 4495,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-61",
-"country": "TR"
-},
-{
-"name": "Ил Тунджели",
-"short": "Тунджели",
-"type": "Ил",
-"capital": "Тунджели",
-"capitalLL": [
-39.5481,
-39.1061
-],
-"area": 7582,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-62",
-"country": "TR"
-},
-{
-"name": "Ил Ушак",
-"short": "Ушак",
-"type": "Ил",
-"capital": "Ушак",
-"capitalLL": [
-29.4,
-38.6833
-],
-"area": 4440,
-"areaApprox": true,
-"pop": null,
-"popYear": null,
-"code": "TR-64",
-"country": "TR"
-},
-{
-"name": "Ил Хаккяри",
-"short": "Хаккяри",
-"type": "Ил",
-"capital": "Хаккяри",
-"capitalLL": [
-43.7408,
-37.5744
-],
-"area": 7095,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-30",
-"country": "TR"
-},
-{
-"name": "Ил Хатай",
-"short": "Хатай",
-"type": "Ил",
-"capital": "Антакья",
-"capitalLL": [
-36.1606,
-36.2025
-],
-"area": 5403,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-31",
-"country": "TR"
-},
-{
-"name": "Ил Чанаккале",
-"short": "Чанаккале",
-"type": "Ил",
-"capital": "Чанаккале",
-"capitalLL": [
-26.4,
-40.15
-],
-"area": 9737,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-17",
-"country": "TR"
-},
-{
-"name": "Ил Чанкыры",
-"short": "Чанкыры",
-"type": "Ил",
-"capital": "Чанкыры",
-"capitalLL": [
-33.5145,
-40.6474
-],
-"area": 7388,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-18",
-"country": "TR"
-},
-{
-"name": "Ил Чорум",
-"short": "Чорум",
-"type": "Ил",
-"capital": "Чорум",
-"capitalLL": [
-34.9533,
-40.5489
-],
-"area": 12428,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-19",
-"country": "TR"
-},
-{
-"name": "Ил Шанлыурфа",
-"short": "Шанлыурфа",
-"type": "Ил",
-"capital": "Шанлыурфа",
-"capitalLL": [
-38.7917,
-37.1583
-],
-"area": 19091,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-63",
-"country": "TR"
-},
-{
-"name": "Ил Ширнак",
-"short": "Ширнак",
-"type": "Ил",
-"capital": "Ширнак",
-"capitalLL": [
-42.4611,
-37.5164
-],
-"area": 7078,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-73",
-"country": "TR"
-},
-{
-"name": "Ил Ыгдыр",
-"short": "Ыгдыр",
-"type": "Ил",
-"capital": "Ыгдыр",
-"capitalLL": [
-44.045,
-39.9237
-],
-"area": 3588,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-76",
-"country": "TR"
-},
-{
-"name": "Ил Ыспарта",
-"short": "Ыспарта",
-"type": "Ил",
-"capital": "Ыспарта",
-"capitalLL": [
-30.55,
-37.7667
-],
-"area": 8946,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-32",
-"country": "TR"
-},
-{
-"name": "Ил Эдирне",
-"short": "Эдирне",
-"type": "Ил",
-"capital": "Эдирне",
-"capitalLL": [
-26.5736,
-41.673
-],
-"area": 6145,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-22",
-"country": "TR"
-},
-{
-"name": "Ил Элязыг",
-"short": "Элязыг",
-"type": "Ил",
-"capital": "Элязыг",
-"capitalLL": [
-39.2167,
-38.6667
-],
-"area": 9383,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-23",
-"country": "TR"
-},
-{
-"name": "Ил Эрзинджан",
-"short": "Эрзинджан",
-"type": "Ил",
-"capital": "Эрзинджан",
-"capitalLL": [
-39.4914,
-39.7464
-],
-"area": 11815,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-24",
-"country": "TR"
-},
-{
-"name": "Ил Эрзурум",
-"short": "Эрзурум",
-"type": "Ил",
-"capital": "Эрзурум",
-"capitalLL": [
-41.2756,
-39.9097
-],
-"area": 25006,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-25",
-"country": "TR"
-},
-{
-"name": "Ил Эскишехир",
-"short": "Эскишехир",
-"type": "Ил",
-"capital": "Эскишехир",
-"capitalLL": [
-30.5206,
-39.7767
-],
-"area": 13652,
-"areaApprox": false,
-"pop": null,
-"popYear": null,
-"code": "TR-26",
-"country": "TR"
-},
-{
-"name": "Ил Ялова",
-"short": "Ялова",
-"type": "Ил",
-"capital": "Ялова",
-"capitalLL": [
-29.275,
-40.6556
-],
-"area": 690,
-"areaApprox": true,
-"pop": null,
-"popYear": null,
-"code": "TR-77",
-"country": "TR"
+"area": 783562,
+"pop": 85372377,
+"popNote": "оценка на конец 2023 г.",
+"note": null,
+"color": 6
+},
+{
+"code": "UZB",
+"name": "Узбекистан",
+"short": "Узбекистан",
+"type": "Государство",
+"part": "Азия",
+"capital": "Ташкент",
+"capitalLL": [
+69.2797,
+41.3111
+],
+"area": 448978,
+"pop": 34915100,
+"popNote": "данные 2021 г.",
+"note": null,
+"color": 2
+},
+{
+"code": "UKR",
+"name": "Украина",
+"short": "Украина",
+"type": "Государство",
+"part": "Европа",
+"capital": "Киев",
+"capitalLL": [
+30.5236,
+50.45
+],
+"area": 467841,
+"pop": 32367000,
+"popNote": "оценка на 1 января 2022 г.",
+"note": "Без Крыма, Севастополя, ЛНР, ДНР, Запорожской и Херсонской областей, которые на этой карте показаны в составе России.",
+"color": 5
+},
+{
+"code": "PHL",
+"name": "Филиппины",
+"short": "Филиппины",
+"type": "Государство",
+"part": "Азия",
+"capital": "Манила",
+"capitalLL": [
+120.9772,
+14.5958
+],
+"area": 343448,
+"pop": 112729484,
+"popNote": "данные 2024 г.",
+"note": null,
+"color": 3
+},
+{
+"code": "FIN",
+"name": "Финляндия",
+"short": "Финляндия",
+"type": "Государство",
+"part": "Европа",
+"capital": "Хельсинки",
+"capitalLL": [
+24.9375,
+60.1708
+],
+"area": 338478,
+"pop": 5652881,
+"popNote": "данные 2025 г.",
+"note": null,
+"color": 4
+},
+{
+"code": "FRA",
+"name": "Франция",
+"short": "Франция",
+"type": "Государство",
+"part": "Европа",
+"capital": "Париж",
+"capitalLL": [
+2.3522,
+48.8567
+],
+"area": 643801,
+"pop": 68605616,
+"popNote": "данные 2025 г.",
+"note": null,
+"color": 7
+},
+{
+"code": "HRV",
+"name": "Хорватия",
+"short": "Хорватия",
+"type": "Государство",
+"part": "Европа",
+"capital": "Загреб",
+"capitalLL": [
+15.9772,
+45.8131
+],
+"area": 56594,
+"pop": 3871833,
+"popNote": "данные 2021 г.",
+"note": null,
+"color": 5
+},
+{
+"code": "MNE",
+"name": "Черногория",
+"short": "Черногория",
+"type": "Государство",
+"part": "Европа",
+"capital": "Подгорица",
+"capitalLL": [
+19.2628,
+42.4414
+],
+"area": 13883,
+"pop": 617213,
+"popNote": "данные 2022 г.",
+"note": null,
+"color": 4
+},
+{
+"code": "CZE",
+"name": "Чехия",
+"short": "Чехия",
+"type": "Государство",
+"part": "Европа",
+"capital": "Прага",
+"capitalLL": [
+14.4214,
+50.0875
+],
+"area": 78871,
+"pop": 10909500,
+"popNote": "данные 2025 г.",
+"note": null,
+"color": 1
+},
+{
+"code": "CHE",
+"name": "Швейцария",
+"short": "Швейцария",
+"type": "Государство",
+"part": "Европа",
+"capital": "Берн",
+"capitalLL": [
+7.4474,
+46.948
+],
+"area": 41291,
+"pop": 9104063,
+"popNote": "данные 2025 г.",
+"note": null,
+"color": 5
+},
+{
+"code": "SWE",
+"name": "Швеция",
+"short": "Швеция",
+"type": "Государство",
+"part": "Европа",
+"capital": "Стокгольм",
+"capitalLL": [
+18.0686,
+59.3294
+],
+"area": 447425,
+"pop": 10609460,
+"popNote": "данные 2025 г.",
+"note": null,
+"color": 1
+},
+{
+"code": "LKA",
+"name": "Шри-Ланка",
+"short": "Шри-Ланка",
+"type": "Государство",
+"part": "Азия",
+"capital": "Шри-Джаяварденепура-Котте",
+"capitalLL": [
+79.9164,
+6.9
+],
+"area": 65610,
+"pop": 21444000,
+"popNote": "данные 2017 г.",
+"note": null,
+"color": 3
+},
+{
+"code": "EST",
+"name": "Эстония",
+"short": "Эстония",
+"type": "Государство",
+"part": "Европа",
+"capital": "Таллин",
+"capitalLL": [
+24.745,
+59.4372
+],
+"area": 45335,
+"pop": 1369995,
+"popNote": "данные 2025 г.",
+"note": null,
+"color": 3
+},
+{
+"code": "JPN",
+"name": "Япония",
+"short": "Япония",
+"type": "Государство",
+"part": "Азия",
+"capital": "Токио",
+"capitalLL": [
+139.6917,
+35.6894
+],
+"area": 377974,
+"pop": 123802000,
+"popNote": "данные 2024 г.",
+"note": null,
+"color": 5
 }
 ];

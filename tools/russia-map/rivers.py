@@ -173,7 +173,7 @@ def in_russia(x, y):
     return False
 
 def in_area(x, y):
-    # Россия и соседние страны, показанные на карте по регионам
+    # Россия и её соседи от Венгрии до Турции
     return in_russia(x, y) or (16 <= x <= 45 and 35.5 <= y <= 57)
 
 def rdp(pts, eps):

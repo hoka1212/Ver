@@ -144,18 +144,8 @@ body.panel-hidden .sidebar { display: none; }
 .card-note { margin: 10px 0 0; font-size: 12px; line-height: 1.45; color: var(--text-muted); }
 /* образец заливки соседних стран — полосы их цветов */
 .sw-foreign {
-  background: linear-gradient(135deg, #d9c98c 0 25%, #b7c99a 25% 50%, #b8b3d6 50% 75%, #dfb59a 75%);
+  background: linear-gradient(135deg, #d9cfa0 0 25%, #bcd0a6 25% 50%, #b9b6d9 50% 75%, #e2bea0 75%);
 }
-.card-type .card-link, .card-reg {
-  border: 0; background: none; padding: 0; font: inherit; color: var(--navy);
-  text-decoration: underline; text-underline-offset: 2px; cursor: pointer;
-}
-.card-sub { margin: 12px 0 4px; font-size: 12.5px; color: var(--text-muted); }
-.card-regs {
-  list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 2px 10px;
-  max-height: 168px; overflow-y: auto; font-size: 13px;
-}
-.card-reg { min-height: 28px; text-align: left; }
 .hint { margin: 0; font-size: 13.5px; color: var(--text-muted); line-height: 1.5; }
 
 .panel-title {
