@@ -78,7 +78,9 @@ for code, polys in countries.items():
 after = sum(len(r) for v in countries.values() for p in v for r in p)
 print('countries:', len(countries), 'points:', before, '->', after)
 
-# ---- остальная суша (Африка, Америка, Австралия) — серой подложкой ------------
+# ---- остальная суша мира (Африка, Америка, Австралия, Океания) — серой подложкой
+# Антарктида не показывается: на плоской карте она растянулась бы в широкую
+# полосу по всему низу
 from countries import MERGE
 shown = set(countries) | set(MERGE) | {'RUS'}
 land = []
@@ -87,8 +89,7 @@ def keep(polys):
     out = []
     for poly in polys:
         xs = [c[0] for c in poly[0]]; ys = [c[1] for c in poly[0]]
-        if max(ys) < -15 or min(ys) > 85: continue
-        if not ((max(xs) > -40 and min(xs) < 180) or max(xs) < -140): continue
+        if max(ys) < -58: continue                       # Антарктида
         if (max(xs) - min(xs)) * (max(ys) - min(ys)) < 0.35: continue
         out.append(poly)
     return out
@@ -127,9 +128,11 @@ for f in lk['features']:
     size = (x1 - x0) * (y1 - y0)
     rank = p.get('scalerank') or 9
     if size < 0.12 and rank > 4: continue
-    # озёра России и показанных стран Европы и Азии
+    # озёра России и показанных стран Европы и Азии, а в остальном мире —
+    # только крупнейшие (Великие озёра, Виктория, Танганьика, Титикака…)
     if not ((y1 > 40 and ((x0 > 18 and x1 < 181) or x0 < -165)) or
-            in_countries((x0 + x1) / 2, (y0 + y1) / 2)): continue
+            in_countries((x0 + x1) / 2, (y0 + y1) / 2) or
+            (rank <= 1 and y0 > -58)): continue
     polys = round_poly(polys, 3)
     if not polys: continue
     lakes.append({'name': p.get('name_ru'), 'rank': rank, 'size': round(size, 3),
