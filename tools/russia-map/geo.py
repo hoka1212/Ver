@@ -43,6 +43,12 @@ for f in src['features']:
 regions = {k: round_poly(v, 3) for k, v in regions.items()}
 print('regions:', len(regions))
 
+# Россия одним контуром: показывается, когда субъекты на карте выключены
+russia = []
+for f in json.load(open(os.path.join(SC, 'russia_40.json')))['features']:
+    russia.extend(rings(f['geometry']))
+russia = round_poly(russia, 3)
+
 # ---- страны Европы и Азии -----------------------------------------------------
 # Собраны из тех же областей admin-1, что и субъекты, и генерализованы с ними
 # одним прогоном mapshaper (countries.py prep), поэтому общие границы совпадают
@@ -140,7 +146,8 @@ for f in lk['features']:
 lakes.sort(key=lambda l: -l['size'])
 print('lakes:', len(lakes))
 
-bundle = {'regions': regions, 'countries': countries, 'land': land, 'lakes': lakes}
+bundle = {'regions': regions, 'russia': russia, 'countries': countries,
+          'land': land, 'lakes': lakes}
 out = os.path.join(SC, 'russia-geo.js')
 with open(out, 'w') as fh:
     fh.write('window.RU_GEO = ')
