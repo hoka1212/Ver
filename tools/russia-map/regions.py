@@ -159,7 +159,7 @@ def main():
             for f in geo['features']}
     print('no geometry for:', [r['code'] for r in out if r['code'] not in have])
     print('no metadata for:', [c for c in have if c not in {r['code'] for r in out} and c != 'RU-X01~'])
-    # страны Европы и Азии — таблицу собирает countries.py meta
+    # страны Европы, Азии и Северной Африки — таблицу собирает countries.py meta
     countries = json.load(open(os.path.join(SC, 'russia-countries.json')))
     have_c = {f['properties']['grp'] for f in
               json.load(open(os.path.join(SC, 'countries_40.json')))['features']}

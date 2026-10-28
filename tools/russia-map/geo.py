@@ -49,7 +49,7 @@ for f in json.load(open(os.path.join(SC, 'russia_40.json')))['features']:
     russia.extend(rings(f['geometry']))
 russia = round_poly(russia, 3)
 
-# ---- страны Европы и Азии -----------------------------------------------------
+# ---- страны Европы, Азии и Северной Африки ---------------------------------------
 # Собраны из тех же областей admin-1, что и субъекты, и генерализованы с ними
 # одним прогоном mapshaper (countries.py prep), поэтому общие границы совпадают
 # точка в точку
@@ -106,6 +106,12 @@ for f in cn['features']:
     polys = round_poly(polys, 2)
     if not polys: continue
     land.append({'polys': polys})
+# Ничейный Бир-Тавиль между Египтом и Суданом и ледник Сиачен на стыке Индии,
+# Пакистана и Китая есть только в слое стран 1:10 млн; без них между цветными
+# странами остались бы дыры цвета моря
+for f in json.load(open(os.path.join(SC, 'ne10_admin0.geojson')))['features']:
+    if f['properties']['ADM0_A3'] in ('BRT', 'KAS'):
+        land.append({'polys': round_poly(rings(f['geometry']), 3)})
 print('land polygons:', sum(len(l['polys']) for l in land))
 
 # точка внутри какой-нибудь из показанных стран (для отбора озёр)
@@ -134,7 +140,7 @@ for f in lk['features']:
     size = (x1 - x0) * (y1 - y0)
     rank = p.get('scalerank') or 9
     if size < 0.12 and rank > 4: continue
-    # озёра России и показанных стран Европы и Азии, а в остальном мире —
+    # озёра России и показанных стран Европы, Азии и Северной Африки, а в остальном мире —
     # только крупнейшие (Великие озёра, Виктория, Танганьика, Титикака…)
     if not ((y1 > 40 and ((x0 > 18 and x1 < 181) or x0 < -165)) or
             in_countries((x0 + x1) / 2, (y0 + y1) / 2) or

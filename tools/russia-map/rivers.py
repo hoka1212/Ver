@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-"""Extract the largest rivers of Russia and of the countries of Europe and Asia
-shown on the map from Natural Earth 10m river centerlines."""
+"""Extract the largest rivers of Russia and of the countries of Europe, Asia and
+North Africa shown on the map from Natural Earth 10m river centerlines."""
 import json, math, os, sys
 
 SC = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -114,6 +114,12 @@ RIVERS = {
  'Narmada':      ('Нармада', 1312, 2),
  'Helmand':      ('Гильменд', 1150, 2),
  'Kapuas':       ('Капуас', 1143, 2),
+ # --- Северная Африка: Нил с рукавами дельты, Белый и Голубой Нил в Судане
+ 'Nile':         ('Нил', 6650, 1),
+ 'Rosetta Branch': ('Нил', 6650, 1),
+ 'Damietta Branch': ('Нил', 6650, 1),
+ 'El Bahr el Abyad': ('Белый Нил', 3700, 2),
+ 'El Bahr el Azraq': ('Голубой Нил', 1450, 2),
  'Kiz?lirmak':   ('Кызылырмак', 1355, 2),
 }
 
@@ -125,7 +131,7 @@ def in_russia(x, y):
     return False
 
 def in_area(x, y):
-    # Россия и страны Европы и Азии (названия рек и так выбраны поимённо)
+    # Россия и страны Европы, Азии и Северной Африки (реки и так выбраны поимённо)
     return in_russia(x, y) or (-25 <= x <= 180 and -12 <= y <= 83)
 
 def rdp(pts, eps):
