@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router'
 import { ChessBoard } from '../components/ChessBoard'
 import { ChevronLeftIcon, ChevronRightIcon, DownloadIcon, EditIcon, EyeIcon, LightbulbIcon, PlayIcon, TrashIcon } from '../components/icons'
 import { MoveList } from '../components/MoveList'
-import { Badge, Button, ButtonLink, Card, PageHeader, ProgressBar } from '../components/ui'
+import { Badge, Button, ButtonLink, Card, ConfirmButton, PageHeader, ProgressBar } from '../components/ui'
 import { useCourse } from '../data'
 import { findConflicts, KIND_LABEL, LEVEL_LABEL, type CourseLine } from '../lib/courses'
 import { linesToPgn, moveLabel, ruSan } from '../lib/pgn'
@@ -75,7 +75,6 @@ export function CoursePage() {
   const comment = lastMove?.comment
 
   const remove = () => {
-    if (!confirm(`Удалить курс «${course.name}»? Это действие нельзя отменить.`)) return
     repertoireStore.set((list) => list.filter((c) => c.id !== course.id))
     progressStore.set((p) => Object.fromEntries(Object.entries(p).filter(([k]) => !k.startsWith(`${course.id}/`))))
     navigate('/openings')
@@ -106,9 +105,9 @@ export function CoursePage() {
                 <ButtonLink to={`/openings/${course.id}/edit`} size="sm">
                   <EditIcon size={16} /> Изменить
                 </ButtonLink>
-                <Button size="sm" variant="danger" onClick={remove}>
+                <ConfirmButton size="sm" variant="danger" onConfirm={remove} confirmLabel="Удалить курс навсегда?">
                   <TrashIcon size={16} /> Удалить
-                </Button>
+                </ConfirmButton>
               </>
             )}
             <Button size="sm" onClick={() => download(`${course.id}.pgn`, linesToPgn(course.name, course.lines))}>

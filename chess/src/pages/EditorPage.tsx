@@ -4,7 +4,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router'
 import { ChessBoard, type BoardMove } from '../components/ChessBoard'
 import { FlipIcon, PlusIcon, RotateIcon, TrashIcon, UndoIcon, UploadIcon } from '../components/icons'
 import { MoveList } from '../components/MoveList'
-import { Badge, Button, Card, PageHeader, Segmented } from '../components/ui'
+import { Badge, Button, Card, ConfirmButton, PageHeader, Segmented } from '../components/ui'
 import { useCourses } from '../data'
 import { compileCourse, findConflicts, type CourseDef, type CourseKind, type Side } from '../lib/courses'
 import { importPgn, moveLabel, movesToPgn, ruSan } from '../lib/pgn'
@@ -165,9 +165,9 @@ export function EditorPage() {
             <div className="flex items-center justify-between border-b border-line px-4 py-3">
               <h2 className="font-semibold">Линии ({lines.length})</h2>
               {lines.length > 0 && (
-                <Button size="sm" variant="ghost" onClick={() => confirm('Удалить все линии?') && setLines([])}>
+                <ConfirmButton size="sm" variant="ghost" onConfirm={() => setLines([])} confirmLabel="Удалить все линии?">
                   Очистить
-                </Button>
+                </ConfirmButton>
               )}
             </div>
             {lines.length === 0 ? (

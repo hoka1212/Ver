@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { DownloadIcon, TrashIcon, UploadIcon } from '../components/icons'
-import { Button, Card, PageHeader, Segmented, Toggle } from '../components/ui'
+import { Button, Card, ConfirmButton, PageHeader, Segmented, Toggle } from '../components/ui'
 import { useStore } from '../lib/storage'
 import {
   activityStore,
@@ -47,7 +47,6 @@ export function SettingsPage() {
   }
 
   const resetProgress = () => {
-    if (!confirm('Сбросить весь прогресс (координаты и дебюты)? Ваши собственные курсы останутся.')) return
     progressStore.reset()
     coordStore.set((d) => ({ ...d, sessions: [], best: {}, squares: {} }))
     activityStore.reset()
@@ -55,7 +54,6 @@ export function SettingsPage() {
   }
 
   const deleteRepertoire = () => {
-    if (!confirm('Удалить все собственные курсы? Это действие нельзя отменить.')) return
     const ids = new Set(repertoireStore.get().map((c) => c.id))
     repertoireStore.reset()
     progressStore.set((p) => Object.fromEntries(Object.entries(p).filter(([k]) => !ids.has(k.split('/')[0]))))
@@ -138,13 +136,14 @@ export function SettingsPage() {
           />
         </div>
         <div className="mt-4 flex flex-wrap gap-2 border-t border-line pt-4">
-          <Button variant="danger" onClick={resetProgress}>
+          <ConfirmButton variant="danger" onConfirm={resetProgress} confirmLabel="Сбросить весь прогресс?">
             <TrashIcon size={16} /> Сбросить прогресс
-          </Button>
-          <Button variant="danger" onClick={deleteRepertoire}>
+          </ConfirmButton>
+          <ConfirmButton variant="danger" onConfirm={deleteRepertoire} confirmLabel="Удалить все мои курсы?">
             <TrashIcon size={16} /> Удалить мои курсы
-          </Button>
+          </ConfirmButton>
         </div>
+        <p className="mt-2 text-xs text-faint">Сброс прогресса не трогает ваши курсы. Опасные действия подтверждаются повторным нажатием.</p>
         {message && <p className="mt-3 text-sm text-accent">{message}</p>}
       </Card>
     </div>

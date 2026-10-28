@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react'
+import { useEffect, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { Link } from 'react-router'
 import { ArrowLeftIcon } from './icons'
 
@@ -24,6 +24,38 @@ export function Button({
       className={`inline-flex items-center justify-center rounded-lg font-semibold transition disabled:pointer-events-none disabled:opacity-40 ${VARIANTS[variant]} ${sizes[size]} ${className}`}
       {...rest}
     />
+  )
+}
+
+/** Кнопка опасного действия: первое нажатие просит подтвердить, второе — выполняет. */
+export function ConfirmButton({
+  onConfirm,
+  confirmLabel = 'Точно? Нажмите ещё раз',
+  children,
+  ...rest
+}: Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> & {
+  onConfirm: () => void
+  confirmLabel?: ReactNode
+  variant?: Variant
+  size?: 'sm' | 'md' | 'lg'
+}) {
+  const [armed, setArmed] = useState(false)
+  useEffect(() => {
+    if (!armed) return
+    const t = window.setTimeout(() => setArmed(false), 3000)
+    return () => window.clearTimeout(t)
+  }, [armed])
+  return (
+    <Button
+      {...rest}
+      onClick={() => {
+        if (!armed) return setArmed(true)
+        setArmed(false)
+        onConfirm()
+      }}
+    >
+      {armed ? confirmLabel : children}
+    </Button>
   )
 }
 
