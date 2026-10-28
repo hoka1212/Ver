@@ -47,14 +47,14 @@ function projRing(ring) {
 // --------------------------------------------------------------- состояние
 var VW = 2000, VH = 1160;           // внутренняя система координат карты
 var fit = { k: 1, dx: 0, dy: 0 };   // проекция -> внутренние координаты
-var extent = [0, 0, VW, VH];        // докуда можно сдвинуть карту: Россия + страны Европы и Азии
+var extent = [0, 0, VW, VH];        // докуда можно сдвинуть карту: Россия + страны Европы, Азии и Северной Африки
 var view = { k: 1, x: 0, y: 0, r: 0 };  // зум, панорама и поворот (r, градусы)
 var MIN_K = 0.85, MAX_K = 90;       // MIN_K уменьшается, чтобы влез весь мир
 var geo = window.RU_GEO, meta = window.RU_REGIONS, rivers = window.RU_RIVERS;
 var countryMeta = window.RU_COUNTRIES || [], russiaMeta = window.RU_RUSSIA;
 
 var regions = [];                   // субъекты России
-var countries = [];                 // страны Европы и Азии
+var countries = [];                 // страны Европы, Азии и Северной Африки
 var areas = [];                     // и то и другое: всё, что можно навести и выбрать
 var markers = [];                   // звёзды столиц и точки центров регионов
 var byCode = {};
@@ -87,7 +87,7 @@ var TYPES = [
 var TCOLOR = {};
 TYPES.forEach(function (t) { TCOLOR[t[0]] = t[1]; });
 
-// страны Европы и Азии раскрашены приглушённо и не зависят от выбранной
+// страны Европы, Азии и Северной Африки раскрашены приглушённо и не зависят от выбранной
 // заливки; номер цвета — раскраска Natural Earth, у соседей он всегда разный
 var COUNTRY_PALETTE = ['#d9cfa0', '#bcd0a6', '#d6b4c0', '#b9b6d9', '#a9cbbf', '#e2bea0', '#b8c9da'];
 
@@ -131,7 +131,7 @@ function prepare() {
     byCode[r.code] = r;
   });
 
-  // страны Европы и Азии. Охват карты и стартовый вид по-прежнему считаются
+  // страны Европы, Азии и Северной Африки. Охват карты и стартовый вид по-прежнему считаются
   // только по субъектам России, а вот отдалить карту можно до всего мира
   countryMeta.forEach(function (m, i) {
     var polys = projPolys(geo.countries[m.code]);
@@ -204,7 +204,7 @@ function projPolys(polys) {
   return (polys || []).map(function (poly) { return poly.map(projViewRing); });
 }
 
-// Звёзды — столицы государств (Москва и столицы стран Европы и Азии), точки —
+// Звёзды — столицы государств (Москва и столицы стран Европы, Азии и Северной Африки), точки —
 // центры субъектов России. Где центр субъекта — тот же город, что столица или
 // центр соседнего субъекта (Ленинградская область и Петербург), значок один.
 // Сверяем и название, и место: разные города бывают совсем рядом
@@ -860,7 +860,7 @@ function scheduleRelayout() {
     if (Math.abs(normDeg(view.r - layoutR)) > 0.5) layoutLabels();
   }, 260);
 }
-// охват карты (Россия и страны Европы и Азии) на экране при текущих k и r, без сдвига
+// охват карты (Россия и страны Европы, Азии и Северной Африки) на экране при текущих k и r, без сдвига
 function rotatedBox(b, k, r) {
   var th = r * RAD, cs = Math.cos(th) * k, sn = Math.sin(th) * k;
   var xs = [], ys = [];
@@ -1107,7 +1107,7 @@ function buildSidebar() {
             '<span class="ri-cap"><span class="sr-only">столица </span>' + russia.capital +
             '</span></button></li></ul></section>';
   }
-  ['Европа', 'Азия'].forEach(function (part) {
+  ['Европа', 'Азия', 'Северная Африка'].forEach(function (part) {
     var list = countries.filter(function (c) { return c.part === part; });
     if (!list.length) return;
     list.sort(function (a, b) { return a.short.localeCompare(b.short, 'ru'); });
@@ -1146,7 +1146,7 @@ function buildLegend() {
         html += '<li><i style="background:' + t[1] + '" aria-hidden="true"></i>' + t[0] + '</li>';
       });
     }
-    if (countryMeta.length) html += '<li><i class="sw-foreign" aria-hidden="true"></i>Страны Европы и Азии</li>';
+    if (countryMeta.length) html += '<li><i class="sw-foreign" aria-hidden="true"></i>Страны Европы, Азии и Северной Африки</li>';
     html += '<li><svg class="lg-mark" viewBox="-8 -8 16 16" aria-hidden="true">' +
             '<path class="lg-star" d="' + STAR_D + '"/></svg>Столица государства</li>';
     if (opts.regions) {
@@ -1592,12 +1592,19 @@ function downloadSVG() {
   setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
 }
 
+// число и слово в нужной форме: 1 страна, 2 страны, 5 стран
+function plural(n, one, few, many) {
+  var t = n % 100, d = n % 10;
+  var w = (t > 10 && t < 20) ? many : d === 1 ? one : (d >= 2 && d <= 4) ? few : many;
+  return n + ' ' + w;
+}
 function stats() {
   document.getElementById('stats').textContent =
-    meta.length + ' регионов России · ' +
-    (countries.length ? countries.length + ' стран Европы и Азии · ' : '') +
-    riverData.length + ' рек · ' +
-    geo.lakes.length + ' озёр и водохранилищ';
+    plural(meta.length, 'регион', 'региона', 'регионов') + ' России · ' +
+    (countries.length ? plural(countries.length, 'страна', 'страны', 'стран') +
+      ' Европы, Азии и Северной Африки · ' : '') +
+    plural(riverData.length, 'река', 'реки', 'рек') + ' · ' +
+    plural(geo.lakes.length, 'озеро', 'озера', 'озёр') + ' и водохранилищ';
 }
 
 function init() {

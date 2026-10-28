@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""Countries of Europe and Asia shown next to Russia: geometry source and facts.
+"""Countries of Europe, Asia and North Africa shown next to Russia: geometry and facts.
 
 Run twice:
   python3 countries.py prep — выбирает из ne10_admin1.geojson области России и
-                              всех стран Европы и Азии, помечает каждую ключом
+                              всех стран Европы, Азии и Северной Африки, помечает каждую ключом
                               страны grp и пишет eurasia_src.json для mapshaper
   python3 countries.py meta — собирает таблицу стран russia-countries.json:
                               название, тип, часть света, столица с координатами,
@@ -27,6 +27,44 @@ MERGE = {'HKG': 'CHN', 'MAC': 'CHN', 'ALD': 'FIN', 'FRO': 'DNK', 'GIB': 'GBR',
 DROP = {'SCR', 'PGA', 'KAS', 'IOA', 'RUS'}
 # Мальдивы Natural Earth относит к «открытому океану», а не к Азии
 EXTRA = {'MDV': 'Asia'}
+# Северная Африка — по классификации ООН: Египет, Ливия, Тунис, Алжир, Марокко,
+# Судан и Западная Сахара (Бир-Тавиль — ничейная земля, областей у него нет)
+NORTH_AFRICA = {'EGY', 'LBY', 'TUN', 'DZA', 'MAR', 'SDN', 'SAH'}
+PARTS = {'Europe': 'Европа', 'Asia': 'Азия', 'Africa': 'Северная Африка'}
+
+# Западная Сахара. В слое областей Natural Earth подконтрольная Марокко часть
+# Западной Сахары записана в марокканские области: Уэд-эд-Дахаб целиком, а
+# Гельмим — Эс-Смара и Эль-Аюн — Буждур — Сегиет-эль-Хамра лежат по обе стороны
+# границы. Границу Западной Сахары с Марокко (параллель 27°40′ с. ш.) режем
+# здесь сами: северные части остаются Марокко, южные отходят Западной Сахаре
+SAHARA_LAT = 27 + 40 / 60
+SAHARA_WHOLE = {'MA-16'}
+SAHARA_SPLIT = {'MA-14', 'MA-15'}
+
+def clip_ring(ring, north):
+    """Контур, обрезанный параллелью SAHARA_LAT (Сазерленд — Ходжмен для
+    одной полуплоскости). Точки разреза у северной и южной частей одинаковые,
+    поэтому граница между ними совпадает точка в точку"""
+    inside = (lambda c: c[1] >= SAHARA_LAT) if north else (lambda c: c[1] <= SAHARA_LAT)
+    out = []
+    for i in range(len(ring) - 1):
+        a, b = ring[i], ring[i + 1]
+        if inside(a): out.append(a)
+        if (a[1] - SAHARA_LAT) * (b[1] - SAHARA_LAT) < 0:
+            t = (SAHARA_LAT - a[1]) / (b[1] - a[1])
+            out.append([round(a[0] + (b[0] - a[0]) * t, 6), SAHARA_LAT])
+    if len(out) < 3: return None
+    return out + [out[0]]
+
+def clip_geom(g, north):
+    polys = []
+    for poly in rings(g):
+        r = clip_ring(poly[0], north)
+        if r: polys.append([r])
+    return {'type': 'MultiPolygon', 'coordinates': polys} if polys else None
+
+def shown(a3, cont):
+    return (cont.get(a3) in ('Europe', 'Asia') or a3 in NORTH_AFRICA) and a3 not in DROP
 
 def rings(g):
     if g['type'] == 'Polygon': return [g['coordinates']]
@@ -55,13 +93,20 @@ def prep():
         p = f['properties']; a3 = p['adm0_a3']
         if p['admin'] == 'Russia' or p['iso_3166_2'] in RU_UA:
             grp = 'RU'
-        elif cont.get(a3) in ('Europe', 'Asia') and a3 not in DROP:
+        elif shown(a3, cont):
             if far_away(*centroid(f['geometry'])): continue
             grp = 'PMR' if p['adm1_code'] in PMR else MERGE.get(a3, a3)
+            if p['iso_3166_2'] in SAHARA_WHOLE: grp = 'SAH'
         else:
             continue
-        f['properties'] = {'iso_3166_2': p['iso_3166_2'], 'adm1_code': p['adm1_code'],
-                           'name': p['name'], 'name_ru': p['name_ru'], 'grp': grp}
+        props = {'iso_3166_2': p['iso_3166_2'], 'adm1_code': p['adm1_code'],
+                 'name': p['name'], 'name_ru': p['name_ru'], 'grp': grp}
+        if p['iso_3166_2'] in SAHARA_SPLIT:
+            for north, code in ((True, 'MAR'), (False, 'SAH')):
+                g = clip_geom(f['geometry'], north)
+                if g: out.append({'type': 'Feature', 'geometry': g, 'properties': dict(props, grp=code)})
+            continue
+        f['properties'] = props
         out.append(f)
     # буферная зона ООН на Кипре есть только в слое стран, без деления на области
     for f in z['features']:
@@ -105,7 +150,12 @@ FIX = {
 
 def wikidata(ids):
     cache = os.path.join(SC, 'wd_countries.json')
-    if not os.path.exists(cache):
+    # кэш годится, только если в нём есть все нужные страны (список стран мог вырасти)
+    have = set()
+    if os.path.exists(cache):
+        have = {b['r']['value'].rsplit('/', 1)[1]
+                for b in json.load(open(cache))['results']['bindings']}
+    if not set(ids) <= have:
         q = ('SELECT ?r ?rLabel ?cap ?capLabel ?caprank ?coord ?area ?pop ?popdate ?rank WHERE {'
              ' VALUES ?r { %s }'
              ' OPTIONAL { ?r p:P36 ?cs . ?cs ps:P36 ?cap ; wikibase:rank ?caprank .'
@@ -157,7 +207,7 @@ def meta():
         cap = caps[0] if caps else {'name': None, 'll': None}
         pop = max(e['pops']) if e['pops'] else (False, None, None)
         r = {'code': c, 'name': e['label'], 'short': e['label'], 'type': 'Государство',
-             'part': 'Европа' if (cont.get(c) == 'Europe' or c == 'PMR') else 'Азия',
+             'part': PARTS[cont.get('MDA' if c == 'PMR' else c)],
              'capital': cap['name'], 'capitalLL': cap['ll'],
              'area': round(e['area']) if e['area'] else None,
              'pop': pop[2], 'popNote': ('данные ' + pop[1] + ' г.') if pop[1] else None,
