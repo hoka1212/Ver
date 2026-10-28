@@ -167,6 +167,19 @@ def main():
     with open(os.path.join(SC, 'russia-regions.js'), 'w') as fh:
         fh.write('window.RU_REGIONS = ')
         json.dump(out, fh, ensure_ascii=False, indent=0)
+        # Россия как страна (когда субъекты на карте выключены): площадь и
+        # население — сумма по 89 субъектам из таблицы выше
+        moscow = next(r for r in out if r['capital'] == 'Москва')
+        fh.write(';\nwindow.RU_RUSSIA = ')
+        json.dump({'code': 'RUS', 'name': 'Российская Федерация', 'short': 'Россия',
+                   'type': 'Государство', 'part': 'Европа и Азия', 'capital': 'Москва',
+                   'capitalLL': moscow['capitalLL'],
+                   'area': sum(r['area'] for r in out), 'pop': sum(r['pop'] for r in out),
+                   'popNote': 'сумма по 89 субъектам',
+                   'note': 'Площадь и население — сумма по 89 субъектам, показанным на карте: '
+                           'перепись 2021 г., для ЛНР, ДНР, Запорожской и Херсонской областей — '
+                           'оценка на начало 2022 г.',
+                   'color': 2}, fh, ensure_ascii=False, indent=0)
         fh.write(';\nwindow.RU_COUNTRIES = ')
         json.dump(countries, fh, ensure_ascii=False, indent=0)
         fh.write(';\n')

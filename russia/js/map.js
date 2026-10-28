@@ -51,7 +51,7 @@ var extent = [0, 0, VW, VH];        // докуда можно сдвинуть 
 var view = { k: 1, x: 0, y: 0, r: 0 };  // зум, панорама и поворот (r, градусы)
 var MIN_K = 0.85, MAX_K = 90;       // MIN_K уменьшается, чтобы влез весь мир
 var geo = window.RU_GEO, meta = window.RU_REGIONS, rivers = window.RU_RIVERS;
-var countryMeta = window.RU_COUNTRIES || [];
+var countryMeta = window.RU_COUNTRIES || [], russiaMeta = window.RU_RUSSIA;
 
 var regions = [];                   // субъекты России
 var countries = [];                 // страны Европы и Азии
@@ -60,8 +60,11 @@ var markers = [];                   // звёзды столиц и точки �
 var byCode = {};
 var riverData = [];
 var selected = null, hovered = null;
-var opts = { rivers: true, labels: true, capitals: true, lakes: true,
+// реки по умолчанию выключены; regions — показывать ли субъекты России
+// (иначе Россия на карте одна, как страна со столицей)
+var opts = { rivers: false, regions: true, labels: true, capitals: true, lakes: true,
              allLabels: false, colorBy: 'district' };
+var russia = null;                  // Россия одним контуром — для режима без субъектов
 
 var DISTRICTS = [
   ['ЦФО', 'Центральный',       '#7aa8d6'],
@@ -146,7 +149,19 @@ function prepare() {
     extent = [Math.min(extent[0], c.bbox[0]), Math.min(extent[1], c.bbox[1]),
               Math.max(extent[2], c.bbox[2]), Math.max(extent[3], c.bbox[3])];
   });
-  areas = regions.concat(countries);
+  if (russiaMeta && geo.russia) {
+    var rp = projPolys(geo.russia), rm = russiaMeta;
+    russia = {
+      code: rm.code, name: rm.name, short: rm.short, type: rm.type, part: rm.part,
+      capital: rm.capital, capitalLL: rm.capitalLL, area: rm.area, pop: rm.pop,
+      popNote: rm.popNote, note: rm.note, color: rm.color, isCountry: true, isRussia: true,
+      polys: rp, d: rp.map(ringPath).join(''), bbox: polyBBox(rp)
+    };
+    russia.mainArea = mainRingArea(rp);
+    russia.anchor = poleOfInaccessibility(largestRing(rp));
+    byCode[russia.code] = russia;
+  }
+  areas = regions.concat(countries, russia ? [russia] : []);
 
   // остальной мир — серой подложкой; он тоже входит в охват, чтобы карту можно
   // было отдалить до всей Земли
@@ -211,6 +226,7 @@ function buildMarkers() {
     seen.push(m);
     markers.push(m);
   }
+  if (russia) add(russia.capitalLL, true, russia);
   meta.forEach(function (m) {
     if (m.capital === 'Москва') add(m.capitalLL, true, byCode[m.code]);
   });
@@ -426,7 +442,8 @@ function build() {
   });
 
   areas.forEach(function (r) {
-    var p = el('path', { d: r.d, class: r.isCountry ? 'region country' : 'region', fill: fillOf(r),
+    var p = el('path', { d: r.d, class: r.isRussia ? 'region country russia' :
+                                         r.isCountry ? 'region country' : 'region', fill: fillOf(r),
                          'data-code': r.code, 'shape-rendering': 'geometricPrecision' });
     r.el = p;
     gRegions.appendChild(p);
@@ -510,7 +527,7 @@ function build() {
     r.labelEl = g; r.labelInner = inner; r.nameEl = t1; r.capEl = t2;
     r.labelShown = false; r.labelHi = false; r.minK = Infinity;
   });
-  countries.forEach(function (c) {
+  countries.concat(russia ? [russia] : []).forEach(function (c) {
     var g = el('g', { class: 'label label-country' });
     g.setAttribute('transform', 'translate(' + c.anchor[0].toFixed(1) + ' ' +
                                  c.anchor[1].toFixed(1) + ')');
@@ -623,17 +640,20 @@ function layoutLabels() {
     if (m.star) items.push({ fixed: true, done: true, x: rx(m.x, m.y), y: ry(m.x, m.y), w: 13, h: 13 });
   });
 
-  // страны — первыми, от крупных к мелким
-  countries.slice().sort(function (a, b) { return b.mainArea - a.mainArea; }).forEach(function (c) {
+  // страны — первыми, от крупных к мелким (Россия — только когда её субъекты
+  // выключены и она показана одной страной)
+  countries.concat(russia && !opts.regions ? [russia] : [])
+    .sort(function (a, b) { return b.mainArea - a.mainArea; }).forEach(function (c) {
     c.minK = Infinity;
     items.push({ region: c, x: rx(c.anchor[0], c.anchor[1]), y: ry(c.anchor[0], c.anchor[1]),
                  room: c.anchor[2] * 1.6, w: textWidth(c.short, COUNTRY_PX) * 1.25,
                  h: COUNTRY_PX + 2 });
   });
 
-  // субъекты и регионы: сначала крупные, подпись всегда считается как
-  // «название + столица», чтобы включение и выключение столиц не меняло раскладку
-  regions.slice().sort(function (a, b) { return b.mainArea - a.mainArea; })
+  // субъекты: сначала крупные, подпись всегда считается как «название + столица»,
+  // чтобы включение и выключение столиц не меняло раскладку
+  regions.forEach(function (r) { r.minK = Infinity; });
+  (opts.regions ? regions.slice() : []).sort(function (a, b) { return b.mainArea - a.mainArea; })
     .forEach(function (r) {
       r.minK = Infinity;
       items.push({ region: r, x: rx(r.anchor[0], r.anchor[1]), y: ry(r.anchor[0], r.anchor[1]),
@@ -643,7 +663,7 @@ function layoutLabels() {
     });
 
   // подписи столиц стоят справа от звезды: центр рамки сдвинут на dx пикселей
-  markers.filter(function (m) { return m.capOf; })
+  markers.filter(function (m) { return m.capOf && (m.capOf !== russia || !opts.regions); })
     .sort(function (a, b) { return b.capOf.mainArea - a.capOf.mainArea; })
     .forEach(function (m) {
       m.minK2 = Infinity;
@@ -743,8 +763,9 @@ function updateLabels() {
   var u = 1 / (view.k * metrics().s);        // px -> единицы карты
   var tr = (view.r ? 'rotate(' + (-view.r).toFixed(2) + ') ' : '') +
            'scale(' + u.toFixed(4) + ')';
-  function label(r, hi) {
-    var show = opts.labels && (opts.allLabels || hi || view.k >= r.minK);
+  // off — подпись того, чего сейчас нет на карте (субъекты или Россия целиком)
+  function label(r, hi, off) {
+    var show = !off && opts.labels && (opts.allLabels || hi || view.k >= r.minK);
     if (show !== r.labelShown) {
       r.labelEl.style.display = show ? '' : 'none';
       r.labelShown = show;
@@ -758,22 +779,25 @@ function updateLabels() {
     }
   }
   regions.forEach(function (r) {
-    if (r.labelEl) label(r, r === selected || r === hovered);
+    if (r.labelEl) label(r, r === selected || r === hovered, !opts.regions);
   });
   countries.forEach(function (c) {
     if (c.labelEl) label(c, c === selected || c === hovered);
   });
+  if (russia) label(russia, russia === selected || russia === hovered, opts.regions);
 
   markers.forEach(function (m) {
     var hi = m.owners.indexOf(selected) >= 0 || m.owners.indexOf(hovered) >= 0;
-    var show = opts.capitals && (m.star || hi || view.k >= m.minK);
+    // точки центров субъектов — только когда субъекты на карте
+    var show = opts.capitals && (m.star || (opts.regions && (hi || view.k >= m.minK)));
     if (show !== m.shown) {
       m.el.style.display = show ? '' : 'none';
       m.shown = show;
     }
     if (show) m.inner.setAttribute('transform', tr);
     if (m.labelEl) {
-      var showL = opts.labels && opts.capitals && (opts.allLabels || hi || view.k >= m.minK2);
+      var showL = opts.labels && opts.capitals && (m.capOf !== russia || !opts.regions) &&
+                  (opts.allLabels || hi || view.k >= m.minK2);
       if (showL !== m.labelShown) {
         m.labelEl.style.display = showL ? '' : 'none';
         m.labelShown = showL;
@@ -1021,8 +1045,9 @@ var riverCache = {};
 function riversOf(r) {
   if (riverCache[r.code]) return riverCache[r.code];
   var found = [];
+  // реки идут от самых больших к меньшим: в карточке хватит восьми крупнейших
   riverData.forEach(function (rv) {
-    if (rv.order > 2 && found.length > 5) return;
+    if (found.length >= 8) return;
     var hit = rv.lines.some(function (line) {
       for (var i = 0; i < line.length; i += 2) {
         if (pointInRegion(line[i][0], line[i][1], r)) return true;
@@ -1046,9 +1071,14 @@ function regionAt(evt) {
   // запасной путь, если карта чем-то перекрыта: обычная проверка по полигонам
   var p = mapPoint(evt);
   for (var i = 0; i < areas.length; i++) {
-    if (pointInRegion(p[0], p[1], areas[i])) return areas[i];
+    if (onMap(areas[i]) && pointInRegion(p[0], p[1], areas[i])) return areas[i];
   }
   return null;
+}
+// что сейчас на карте: субъекты России или Россия одним контуром
+function onMap(a) {
+  if (a.isRussia) return !opts.regions;
+  return a.isCountry || opts.regions;
 }
 
 function buildSidebar() {
@@ -1058,7 +1088,7 @@ function buildSidebar() {
     var list = regions.filter(function (r) { return r.district === d[0]; });
     if (!list.length) return;
     list.sort(function (a, b) { return a.name.localeCompare(b.name, 'ru'); });
-    html += '<section class="dist"><h3><i style="background:' + d[2] + '" aria-hidden="true"></i>' +
+    html += '<section class="dist dist-ru"><h3><i style="background:' + d[2] + '" aria-hidden="true"></i>' +
             d[1] + ' ФО<span class="count">' + list.length +
             '<span class="sr-only"> субъектов</span></span></h3><ul>';
     list.forEach(function (r) {
@@ -1070,6 +1100,13 @@ function buildSidebar() {
     });
     html += '</ul></section>';
   });
+  if (russia) {
+    html += '<section class="dist dist-russia"><h3><i class="sw-russia" aria-hidden="true"></i>' +
+            'Россия</h3><ul><li><button type="button" class="reg-item" data-code="' + russia.code +
+            '" aria-current="false"><span class="ri-name">' + russia.short + '</span>' +
+            '<span class="ri-cap"><span class="sr-only">столица </span>' + russia.capital +
+            '</span></button></li></ul></section>';
+  }
   ['Европа', 'Азия'].forEach(function (part) {
     var list = countries.filter(function (c) { return c.part === part; });
     if (!list.length) return;
@@ -1097,7 +1134,9 @@ function buildLegend() {
   var wrap = document.getElementById('legend');
   function paint() {
     var html = '';
-    if (opts.colorBy === 'district') {
+    if (!opts.regions) {
+      // субъекты выключены — их заливка в легенде не нужна
+    } else if (opts.colorBy === 'district') {
       DISTRICTS.forEach(function (d) {
         html += '<li><i style="background:' + d[2] + '" aria-hidden="true"></i>' +
                 d[1] + '<span class="sr-only"> федеральный округ</span></li>';
@@ -1109,10 +1148,12 @@ function buildLegend() {
     }
     if (countryMeta.length) html += '<li><i class="sw-foreign" aria-hidden="true"></i>Страны Европы и Азии</li>';
     html += '<li><svg class="lg-mark" viewBox="-8 -8 16 16" aria-hidden="true">' +
-            '<path class="lg-star" d="' + STAR_D + '"/></svg>Столица государства</li>' +
-            '<li><svg class="lg-mark" viewBox="-8 -8 16 16" aria-hidden="true">' +
-            '<circle class="lg-dot" r="2.9"/></svg>Центр субъекта России</li>';
-    html += '<li><i class="lg-riv" aria-hidden="true"></i>Крупные реки</li>';
+            '<path class="lg-star" d="' + STAR_D + '"/></svg>Столица государства</li>';
+    if (opts.regions) {
+      html += '<li><svg class="lg-mark" viewBox="-8 -8 16 16" aria-hidden="true">' +
+              '<circle class="lg-dot" r="2.9"/></svg>Центр субъекта России</li>';
+    }
+    if (opts.rivers) html += '<li><i class="lg-riv" aria-hidden="true"></i>Крупные реки</li>';
     wrap.innerHTML = html;
   }
   paint();
@@ -1126,9 +1167,14 @@ function buildSearch() {
   var items = [], hits = [], cursor = -1;
 
   regions.forEach(function (r) {
-    items.push({ t: r.short, s: 'субъект, столица ' + r.capital, code: r.code });
-    items.push({ t: r.capital, s: 'столица, ' + r.short, code: r.code });
+    items.push({ t: r.short, s: 'субъект, столица ' + r.capital, code: r.code, ru: true });
+    items.push({ t: r.capital, s: 'столица, ' + r.short, code: r.code, ru: true });
   });
+  if (russia) {
+    items.push({ t: russia.short, s: 'государство, столица ' + russia.capital, code: russia.code, rus: true });
+    items.push({ t: russia.name, s: 'государство', code: russia.code, rus: true });
+    items.push({ t: russia.capital, s: 'столица, ' + russia.short, code: russia.code, rus: true });
+  }
   countries.forEach(function (c) {
     items.push({ t: c.short, s: c.type.toLowerCase() + ', столица ' + c.capital, code: c.code });
     if (c.name !== c.short) items.push({ t: c.name, s: c.type.toLowerCase(), code: c.code });
@@ -1169,6 +1215,7 @@ function buildSearch() {
     var q = input.value.trim().toLowerCase();
     if (q.length < 2) { close(); status.textContent = ''; return; }
     hits = items.filter(function (i) {
+      if ((i.ru && !opts.regions) || (i.rus && opts.regions)) return false;
       return i.t.toLowerCase().indexOf(q) >= 0;
     }).sort(function (a, b) {
       return a.t.toLowerCase().indexOf(q) - b.t.toLowerCase().indexOf(q) || a.t.length - b.t.length;
@@ -1219,6 +1266,7 @@ function focusRiver(rv) {
     });
   });
   select(null, false);
+  if (!opts.rivers) setOption('t-rivers', true);    // реку ищут — значит, её надо показать
   zoomTo(b, 1.25);
   flashRiver(rv);
 }
@@ -1450,20 +1498,47 @@ function showTip(e, r) {
 }
 function hideTip() { tooltip.classList.remove('open'); }
 
+var togglers = {}, ready = false;
+// включить или выключить переключатель из кода — так же, как это сделал бы человек
+function setOption(id, on) {
+  var n = document.getElementById(id);
+  if (!n || n.checked === on) return;
+  n.checked = on;
+  togglers[id]();
+}
+
+// Субъекты России или Россия одной страной: на карте показано что-то одно
+function applyRegionsMode() {
+  var on = opts.regions;
+  regions.forEach(function (r) { r.el.style.display = on ? '' : 'none'; });
+  gBorders.style.display = on ? '' : 'none';
+  if (russia) russia.el.style.display = on ? 'none' : '';
+  document.body.classList.toggle('ru-country', !on);
+  document.getElementById('color-by').disabled = !on;
+  if (selected && !onMap(selected)) select(null, false);
+  if (hovered && !onMap(hovered)) { hovered.el.classList.remove('hover'); hovered = null; }
+  if (ready) layoutLabels();             // при запуске раскладку сделает init()
+}
+
 function bindControls() {
   var repaintLegend = buildLegend();
+  // переключатель: состояние берётся из opts и сразу применяется к карте
   function toggle(id, key, after) {
     var n = document.getElementById(id);
     n.checked = opts[key];
-    n.addEventListener('change', function () {
+    togglers[id] = function () {
       opts[key] = n.checked;
       if (after) after();
       scheduleLabels();
-    });
+    };
+    n.addEventListener('change', togglers[id]);
+    if (after) after();
   }
+  toggle('t-regions', 'regions', function () { applyRegionsMode(); repaintLegend(); });
   toggle('t-rivers', 'rivers', function () {
     gRivers.style.display = opts.rivers ? '' : 'none';
     gRiverLabels.style.display = opts.rivers ? '' : 'none';
+    repaintLegend();
   });
   toggle('t-labels', 'labels');
   toggle('t-capitals', 'capitals', applyCapitalLines);   // и значки столиц тоже
@@ -1537,6 +1612,7 @@ function init() {
   applyCapitalLines();
   applyView();
   layoutLabels();
+  ready = true;
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

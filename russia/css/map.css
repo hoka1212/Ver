@@ -143,6 +143,9 @@ body.panel-hidden .sidebar { display: none; }
 .card-src { display: block; font-size: 11.5px; color: var(--text-muted); }
 .card-note { margin: 10px 0 0; font-size: 12px; line-height: 1.45; color: var(--text-muted); }
 /* образец заливки соседних стран — полосы их цветов */
+/* в боковой панели — либо субъекты России, либо Россия одной строкой */
+body.ru-country .dist-ru, body:not(.ru-country) .dist-russia { display: none; }
+.sw-russia { background: #bcd0a6; }
 .sw-foreign {
   background: linear-gradient(135deg, #d9cfa0 0 25%, #bcd0a6 25% 50%, #b9b6d9 50% 75%, #e2bea0 75%);
 }
