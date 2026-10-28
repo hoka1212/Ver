@@ -22,11 +22,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: chess/package-lock.json
+      - name: Build chess trainer
+        working-directory: chess
+        run: |
+          npm ci
+          npm test
+          npm run build
+      - name: Assemble site
+        run: |
+          mkdir _site
+          git archive --format=tar HEAD | tar -x -C _site
+          rm -rf _site/.github _site/chess
+          cp -r chess/dist _site/chess
       - uses: actions/configure-pages@v5
         with:
           enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: '_site'
       - id: deployment
         uses: actions/deploy-pages@v4

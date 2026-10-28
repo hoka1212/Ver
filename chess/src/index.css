@@ -1,0 +1,85 @@
+@import 'tailwindcss';
+
+/* Тёмная палитра в духе шахматных сайтов */
+@theme {
+  --color-bg: #161512;
+  --color-surface: #211f1c;
+  --color-surface-2: #2a2825;
+  --color-surface-3: #353230;
+  --color-line: #3b3834;
+  --color-fg: #e8e6e3;
+  --color-muted: #a19d96;
+  --color-faint: #6f6b65;
+  --color-accent: #81b64c;
+  --color-accent-strong: #95c95f;
+  --color-accent-ink: #0f1a06;
+  --color-danger: #e2574c;
+  --color-warn: #e8b23a;
+  --color-info: #5aa6e0;
+
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+
+  --animate-pop: pop 0.35s ease-out;
+  --animate-shake: shake 0.35s ease-in-out;
+  --animate-fade-in: fade-in 0.25s ease-out;
+
+  @keyframes pop {
+    0% { transform: scale(0.6); opacity: 0; }
+    60% { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: none; }
+  }
+}
+
+html {
+  color-scheme: dark;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Размер доски: занимает доступную ширину, но не выше экрана. */
+.board-frame {
+  width: min(100%, calc(100dvh - 9rem));
+  aspect-ratio: 1 / 1;
+  margin-inline: auto;
+}
+
+@media (max-width: 1023px) {
+  .board-frame {
+    width: min(100%, calc(100dvh - 15rem));
+    min-width: min(100%, 18rem);
+  }
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line) transparent;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.figurine {
+  font-family: 'Segoe UI Symbol', 'Noto Sans Symbols 2', 'DejaVu Sans', sans-serif;
+  font-variant-emoji: text;
+  font-size: 1.12em;
+  line-height: 1;
+}
