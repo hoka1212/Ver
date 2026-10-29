@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import { PlusIcon, SearchIcon } from '../components/icons'
 import { Badge, ButtonLink, PageHeader, ProgressBar, Segmented } from '../components/ui'
 import { useCourses } from '../data'
-import { KIND_LABEL, LEVEL_LABEL, SIDE_LABEL, type Course, type CourseKind, type Side } from '../lib/courses'
+import { KIND_LABEL, KIND_TONE, LEVEL_LABEL, SIDE_LABEL, type Course, type CourseKind, type Side } from '../lib/courses'
 import { useStore } from '../lib/storage'
 import { isDue, lineMastery } from '../lib/srs'
 import { progressStore } from '../store'
@@ -57,6 +57,7 @@ export function OpeningsPage() {
             { value: 'all', label: 'Всё' },
             { value: 'gambit', label: 'Гамбиты' },
             { value: 'opening', label: 'Дебюты' },
+            { value: 'traps', label: 'Ловушки' },
           ]}
         />
         <label className="relative min-w-48 flex-1 sm:max-w-xs">
@@ -108,7 +109,7 @@ function CourseCard({ course, progress }: { course: Course; progress: ReturnType
     >
       <div className="flex flex-wrap items-center gap-1.5">
         <Badge tone={course.side}>{SIDE_LABEL[course.side]}</Badge>
-        <Badge tone={course.kind === 'gambit' ? 'accent' : 'info'}>{KIND_LABEL[course.kind]}</Badge>
+        <Badge tone={KIND_TONE[course.kind]}>{KIND_LABEL[course.kind]}</Badge>
         {course.custom ? <Badge>Мой</Badge> : <Badge>{LEVEL_LABEL[course.level]}</Badge>}
         {due > 0 && <Badge tone="warn">{due} к повтору</Badge>}
       </div>

@@ -1,7 +1,7 @@
 import { extractLines, parsePgn, type LineMove } from './pgn'
 
 export type Side = 'white' | 'black'
-export type CourseKind = 'gambit' | 'opening'
+export type CourseKind = 'gambit' | 'opening' | 'traps'
 export type Level = 'beginner' | 'intermediate' | 'advanced'
 
 /** Линия в исходном виде: PGN-ходы с комментариями в фигурных скобках. */
@@ -47,7 +47,10 @@ export interface Course extends Omit<CourseDef, 'lines'> {
 }
 
 export const SIDE_LABEL: Record<Side, string> = { white: 'Белые', black: 'Чёрные' }
-export const KIND_LABEL: Record<CourseKind, string> = { gambit: 'Гамбит', opening: 'Дебют' }
+export const KIND_LABEL: Record<CourseKind, string> = { gambit: 'Гамбит', opening: 'Дебют', traps: 'Ловушки' }
+
+/** Цвет бейджа типа курса. */
+export const KIND_TONE: Record<CourseKind, 'accent' | 'info' | 'danger'> = { gambit: 'accent', opening: 'info', traps: 'danger' }
 export const LEVEL_LABEL: Record<Level, string> = {
   beginner: 'Начальный',
   intermediate: 'Средний',

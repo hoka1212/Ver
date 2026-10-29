@@ -41,7 +41,8 @@ export function isDue(p: LineProgress | undefined, now = Date.now()): boolean {
 export function reviewLine(prev: LineProgress | undefined, mistakes: number, now = Date.now()): LineProgress {
   const level = prev?.level ?? 0
   let next: number
-  if (mistakes === 0) next = Math.min(level + 1, MAX_LEVEL)
+  // Безошибочный проход сразу отправляет линию хотя бы на следующий день.
+  if (mistakes === 0) next = Math.min(Math.max(level + 1, 2), MAX_LEVEL)
   else if (mistakes === 1) next = Math.max(1, level - 1)
   else next = 1
   return {

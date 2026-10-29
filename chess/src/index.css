@@ -61,9 +61,19 @@ body {
   margin-inline: auto;
 }
 
+/* Доска с полосами материала сверху и снизу (2 × 2rem). */
+.board-column {
+  width: min(100%, calc(100dvh - 13rem));
+  margin-inline: auto;
+}
+
 @media (max-width: 1023px) {
   .board-frame {
     width: min(100%, calc(100dvh - 15rem));
+    min-width: min(100%, 18rem);
+  }
+  .board-column {
+    width: min(100%, calc(100dvh - 19rem));
     min-width: min(100%, 18rem);
   }
 }

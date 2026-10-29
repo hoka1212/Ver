@@ -1,5 +1,29 @@
 import type { CourseDef } from '../../lib/courses'
 import { albin } from './albin'
+import { alekhine } from './alekhine'
+import { dragon } from './dragon'
+import { dutch } from './dutch'
+import { grunfeld } from './grunfeld'
+import { kingsIndian } from './kingsIndian'
+import { najdorf } from './najdorf'
+import { nimzo } from './nimzo'
+import { petrov } from './petrov'
+import { philidor } from './philidor'
+import { pirc } from './pirc'
+import { qgdBlack } from './qgdBlack'
+import { slavBlack } from './slavBlack'
+import { accelDragon } from './accelDragon'
+import { falkbeer } from './falkbeer'
+import { french } from './french'
+import { goring } from './goring'
+import { ruyLopez } from './ruyLopez'
+import { scandinavian } from './scandinavian'
+import { scotch } from './scotch'
+import { staunton } from './staunton'
+import { trapsBlack } from './trapsBlack'
+import { trapsWhite } from './trapsWhite'
+import { traxler } from './traxler'
+import { vienna } from './vienna'
 import { blackmarDiemer } from './blackmarDiemer'
 import { budapest } from './budapest'
 import { caroKann } from './caroKann'
@@ -31,8 +55,31 @@ export const BUILT_IN_COURSES: CourseDef[] = [
   kingsGambit,
   smithMorra,
   blackmarDiemer,
-  // За чёрных
+  scotch,
+  ruyLopez,
+  vienna,
+  goring,
+  staunton,
+  trapsWhite,
+  // За чёрных: защиты против 1.e4
   caroKann,
+  scandinavian,
+  french,
+  najdorf,
+  dragon,
+  accelDragon,
+  alekhine,
+  pirc,
+  petrov,
+  philidor,
+  // За чёрных: защиты против 1.d4
+  kingsIndian,
+  grunfeld,
+  nimzo,
+  qgdBlack,
+  slavBlack,
+  dutch,
+  // За чёрных: гамбиты
   stafford,
   from,
   budapest,
@@ -40,4 +87,7 @@ export const BUILT_IN_COURSES: CourseDef[] = [
   volga,
   schliemann,
   marshall,
+  traxler,
+  falkbeer,
+  trapsBlack,
 ]
