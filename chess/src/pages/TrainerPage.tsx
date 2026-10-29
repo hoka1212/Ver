@@ -450,7 +450,7 @@ function StatusBox({
         <span className={`size-2.5 rounded-full ${userTurn ? 'bg-accent' : 'animate-pulse bg-faint'}`} />
         {turnText}
       </div>
-      {learnComment && <p className="mt-1.5 text-sm leading-relaxed text-muted">{learnComment}</p>}
+      {/* Отклик на ход — сразу под строкой статуса: появление комментария ниже его не сдвигает. */}
       {feedback && (
         <p
           key={feedback.text}
@@ -461,6 +461,7 @@ function StatusBox({
           {feedback.text}
         </p>
       )}
+      {learnComment && <p className="mt-1.5 text-sm leading-relaxed text-muted">{learnComment}</p>}
     </div>
   )
 }

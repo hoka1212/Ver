@@ -1,4 +1,3 @@
-import type { BotLevel } from '../engine/levels'
 import { positionKey, sideToColor, type Course, type CourseLine } from './courses'
 
 /** Ход из дебютной книги курса. */
@@ -7,8 +6,6 @@ export interface BookMove {
   uci: string
   /** Линии курса, в которых встречается этот ход в этой позиции. */
   lines: CourseLine[]
-  /** Ход есть только в линиях-ловушках (для соперника это ошибка, в которую он попадает). */
-  trapOnly: boolean
   /** Комментарий курса к ходу (первый найденный). */
   comment?: string
 }
@@ -37,26 +34,23 @@ export function buildBook(course: Course): Book {
       const list = m.color === userColor ? entry.user : entry.opponent
       let move = list.find((x) => x.san === m.san)
       if (!move) {
-        move = { san: m.san, uci: m.from + m.to + (m.promotion ?? ''), lines: [], trapOnly: true }
+        move = { san: m.san, uci: m.from + m.to + (m.promotion ?? ''), lines: [] }
         list.push(move)
       }
       if (!move.lines.includes(line)) move.lines.push(line)
-      if (!line.trap) move.trapOnly = false
       if (!move.comment && m.comment) move.comment = m.comment
     }
   }
   return book
 }
 
-/** Слабый бот чаще попадает в ловушки курса, сильный — почти никогда. */
-const TRAP_WEIGHT: Record<BotLevel, number> = { 1: 1.5, 2: 1, 3: 0.5, 4: 0.2 }
-
 /**
  * Выбор ответа соперника из книги. Вес — корень из числа линий:
  * главные продолжения встречаются чаще, но и редкие боковые линии выпадают регулярно.
+ * Ловушки курса бот любого уровня играет так же охотно — ради них курс и проходят.
  */
-export function chooseBookMove(moves: BookMove[], level: BotLevel, random: () => number = Math.random): BookMove {
-  const weights = moves.map((m) => Math.sqrt(m.lines.length) * (m.trapOnly ? TRAP_WEIGHT[level] : 1))
+export function chooseBookMove(moves: BookMove[], random: () => number = Math.random): BookMove {
+  const weights = moves.map((m) => Math.sqrt(m.lines.length))
   const total = weights.reduce((a, b) => a + b, 0)
   let r = random() * total
   for (let i = 0; i < moves.length; i++) {

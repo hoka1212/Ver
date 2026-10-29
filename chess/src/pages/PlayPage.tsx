@@ -58,7 +58,16 @@ export function PlayPage() {
   const game = useStore(botGameStore)
   const [setupOpen, setSetupOpen] = useState(false)
   if (!game || setupOpen) return <PlaySetup canReturn={!!game} onClose={() => setSetupOpen(false)} />
-  return <GameView key={game.id} game={game} onSetup={() => setSetupOpen(true)} />
+  return (
+    <GameView
+      key={game.id}
+      game={game}
+      onSetup={() => {
+        setSetupOpen(true)
+        window.scrollTo(0, 0)
+      }}
+    />
+  )
 }
 
 // ---------- Настройка партии ----------
@@ -91,6 +100,8 @@ function PlaySetup({ canReturn, onClose }: { canReturn: boolean; onClose: () => 
         : prefs.freeColor
     startBotGame(course?.id ?? null, color)
     onClose()
+    // Партия открывается сверху: доска целиком на экране, даже если кнопку нажали внизу формы.
+    window.scrollTo(0, 0)
   }
   const group = (side: 'white' | 'black') =>
     courses
@@ -119,7 +130,7 @@ function PlaySetup({ canReturn, onClose }: { canReturn: boolean; onClose: () => 
             <optgroup label="За белых">{group('white')}</optgroup>
             <optgroup label="За чёрных">{group('black')}</optgroup>
           </select>
-          <p className="mt-2 min-h-10 text-sm leading-relaxed text-muted">
+          <p className="mt-2 min-h-[4.25rem] text-sm leading-relaxed text-muted">
             {course ? course.summary : 'Обычная партия с начальной позиции — бот играет без подсказок курса.'}
           </p>
         </Field>
@@ -167,7 +178,7 @@ function PlaySetup({ canReturn, onClose }: { canReturn: boolean; onClose: () => 
             className="grid grid-cols-1 sm:inline-grid sm:grid-cols-3"
             options={(Object.keys(BEHAVIOURS) as BotBehaviour[]).map((b) => ({ value: b, label: BEHAVIOURS[b].name }))}
           />
-          <p className="mt-2 min-h-10 text-sm leading-relaxed text-faint">
+          <p className="mt-2 min-h-[4.25rem] text-sm leading-relaxed text-faint">
             {course ? BEHAVIOURS[prefs.behaviour].description : 'Доступно, когда выбран дебют.'}
           </p>
         </Field>
@@ -207,6 +218,14 @@ const NOTICE_TONE: Record<Notice['tone'], string> = {
   bad: 'bg-danger/12 text-[#f08a80]',
   warn: 'bg-warn/12 text-warn',
   info: 'bg-surface-2 text-fg/90',
+}
+
+const STRIP_TONE: Record<Notice['tone'] | 'hint', string> = {
+  ok: 'text-accent-strong',
+  bad: 'text-[#f08a80]',
+  warn: 'text-warn',
+  info: 'text-muted',
+  hint: 'text-info',
 }
 
 const MARK: Partial<Record<MoveTag, MoveMark>> = { book: 'book', mistake: 'mistake', deviation: 'deviation' }
@@ -267,7 +286,7 @@ function GameView({ game, onSetup }: { game: BotGame; onSetup: () => void }) {
             }
           }
           if (!uci) {
-            uci = chooseBookMove(bookMoves, game.level).uci
+            uci = chooseBookMove(bookMoves).uci
             tag = 'book'
           }
         } else {
@@ -431,19 +450,93 @@ function GameView({ game, onSetup }: { game: BotGame; onSetup: () => void }) {
     status = entry?.user.length ? 'Ваш ход — позиция из курса' : 'Ваш ход'
   } else status = 'Бот думает…'
 
+  const badges = (
+    <>
+      <Badge tone="info">{course ? course.name : game.courseId ? 'Курс удалён' : 'Свободная партия'}</Badge>
+      <Badge tone={game.color === 'w' ? 'white' : 'black'}>Вы за {game.color === 'w' ? 'белых' : 'чёрных'}</Badge>
+      <Badge>{BOT_LEVELS[game.level].name}</Badge>
+    </>
+  )
+
+  const undoButton = (
+    <button type="button" onClick={undo} className="ml-1 font-semibold underline underline-offset-2 hover:no-underline">
+      Взять ход назад
+    </button>
+  )
+  const retryButton = (
+    <button
+      type="button"
+      className="font-semibold underline underline-offset-2 hover:no-underline"
+      onClick={() => {
+        setEngineError(false)
+        setRetry((r) => r + 1)
+      }}
+    >
+      Повторить
+    </button>
+  )
+  // Сообщения о ходах: подсказка, оценка вашего хода, ответ бота, сбой движка.
+  const messages: { key: string; tone: Notice['tone'] | 'hint'; text: string; action?: ReactNode }[] = []
+  if (!game.result) {
+    if (engineError) messages.push({ key: 'error', tone: 'bad', text: 'Движок не ответил.', action: retryButton })
+    if (activeHint) messages.push({ key: 'hint', tone: 'hint', text: activeHint.text })
+    if (userNotice) messages.push({ key: 'user', tone: userNotice.tone, text: userNotice.text, action: userNotice.undo && hasUserMove ? undoButton : undefined })
+    if (botNotice) messages.push({ key: 'bot', tone: botNotice.tone, text: botNotice.text })
+  }
+  // В строке над доской (телефон) — самое важное: ошибка в теории важнее комментария к ходу бота.
+  const primary = messages.find((m) => m.key === 'error') ?? messages.find((m) => m.tone === 'bad') ?? messages.find((m) => m.key === 'hint') ?? messages[messages.length - 1]
+
   return (
     <div className="mx-auto max-w-6xl">
-      <PageHeader
-        title="Игра с ботом"
-        subtitle={
-          <span className="flex flex-wrap items-center gap-2">
-            <Badge tone="info">{course ? course.name : game.courseId ? 'Курс удалён' : 'Свободная партия'}</Badge>
-            <Badge tone={game.color === 'w' ? 'white' : 'black'}>Вы за {game.color === 'w' ? 'белых' : 'чёрных'}</Badge>
-            <Badge>{BOT_LEVELS[game.level].name}</Badge>
-            {course && <span className="text-sm text-faint">{BEHAVIOURS[game.behaviour].name.toLowerCase()}</span>}
-          </span>
-        }
-      />
+      <div className="hidden lg:block">
+        <PageHeader
+          title="Игра с ботом"
+          subtitle={
+            <span className="flex flex-wrap items-center gap-2">
+              {badges}
+              {course && <span className="text-sm text-faint">{BEHAVIOURS[game.behaviour].name.toLowerCase()}</span>}
+            </span>
+          }
+        />
+      </div>
+      {/* Телефон: компактная шапка и строка статуса над доской — всё важное видно без прокрутки. */}
+      <div className="lg:hidden">
+        <h1 className="sr-only">Игра с ботом</h1>
+        <div className="scrollbar-thin mb-2 flex gap-1.5 overflow-x-auto whitespace-nowrap">{badges}</div>
+        <div className="mb-2 flex h-[4.5rem] items-center gap-2 rounded-xl border border-line bg-surface px-3">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 text-sm font-semibold">
+              <span className={`size-2 shrink-0 rounded-full ${over ? 'bg-faint' : userTurn ? 'bg-accent' : 'animate-pulse bg-faint'}`} />
+              <span className="truncate">{status}</span>
+            </div>
+            <p className={`mt-0.5 line-clamp-2 text-xs leading-snug ${primary ? STRIP_TONE[primary.tone] : 'text-faint'}`}>
+              {primary
+                ? primary.text
+                : game.result
+                  ? course
+                    ? `По теории: ${summary.bookMoves}${summary.mistakes.length ? `, ошибок: ${summary.mistakes.length}` : ''}. Итог — ниже.`
+                    : 'Партия окончена.'
+                  : course
+                    ? `По теории: ${summary.bookMoves}${summary.mistakes.length ? ` · ошибок: ${summary.mistakes.length}` : ''}`
+                    : 'Свободная партия'}
+            </p>
+          </div>
+          {game.result ? (
+            <Button size="sm" variant="primary" onClick={newGame}>
+              <RotateIcon size={16} /> Ещё
+            </Button>
+          ) : (
+            <div className="flex shrink-0 gap-1">
+              <Button size="sm" onClick={showHint} disabled={!userTurn || hintBusy || !!activeHint} aria-label="Подсказка" title="Подсказка">
+                <LightbulbIcon size={16} className={hintBusy ? 'animate-pulse' : ''} />
+              </Button>
+              <Button size="sm" onClick={undo} disabled={!hasUserMove} aria-label="Ход назад" title="Ход назад">
+                <UndoIcon size={16} />
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="min-w-0">
@@ -458,11 +551,12 @@ function GameView({ game, onSetup }: { game: BotGame; onSetup: () => void }) {
             arrows={arrows}
             showMaterial
             materialLabels={userIsBottom ? { top: botName, bottom: 'Вы' } : { top: 'Вы', bottom: botName }}
+            columnClassName="board-column board-column-play"
           />
         </div>
 
         <aside className="flex min-w-0 flex-col gap-3">
-          <Card className="flex min-h-[15.5rem] flex-col p-4">
+          <Card className="flex flex-col p-4">
             <div className="flex items-center gap-2 font-semibold">
               <span className={`size-2.5 shrink-0 rounded-full ${over ? 'bg-faint' : userTurn ? 'bg-accent' : 'animate-pulse bg-faint'}`} />
               {status}
@@ -474,43 +568,31 @@ function GameView({ game, onSetup }: { game: BotGame; onSetup: () => void }) {
               </p>
             )}
 
-            <div className="mt-2 flex flex-col gap-2" aria-live="polite">
+            {/* Область сообщений фиксированной высоты: новые сообщения не сдвигают кнопки и список ходов. */}
+            <div className="scrollbar-thin mt-2 flex h-[9.5rem] flex-col gap-2 overflow-y-auto overscroll-contain" aria-live="polite">
               {game.result ? (
                 <GameReport game={game} course={course} />
+              ) : messages.length ? (
+                messages.map((m) => (
+                  <div key={m.key} className={`rounded-lg px-3 py-2 text-sm leading-relaxed ${m.tone === 'hint' ? 'bg-info/12 text-info' : NOTICE_TONE[m.tone]}`}>
+                    {m.text}
+                    {m.action && <> {m.action}</>}
+                  </div>
+                ))
               ) : (
-                <>
-                  {activeHint && <p className="rounded-lg bg-info/12 px-3 py-2 text-sm leading-relaxed text-info">{activeHint.text}</p>}
-                  {userNotice && (
-                    <div className={`rounded-lg px-3 py-2 text-sm leading-relaxed ${NOTICE_TONE[userNotice.tone]}`}>
-                      {userNotice.text}
-                      {userNotice.undo && hasUserMove && (
-                        <button type="button" onClick={undo} className="ml-1 font-semibold underline underline-offset-2 hover:no-underline">
-                          Взять ход назад
-                        </button>
-                      )}
-                    </div>
-                  )}
-                  {botNotice && <p className={`rounded-lg px-3 py-2 text-sm leading-relaxed ${NOTICE_TONE[botNotice.tone]}`}>{botNotice.text}</p>}
-                  {engineError && (
-                    <div className="rounded-lg bg-danger/12 px-3 py-2 text-sm text-[#f08a80]">
-                      Движок не ответил.{' '}
-                      <button
-                        type="button"
-                        className="font-semibold underline underline-offset-2 hover:no-underline"
-                        onClick={() => {
-                          setEngineError(false)
-                          setRetry((r) => r + 1)
-                        }}
-                      >
-                        Повторить
-                      </button>
-                    </div>
-                  )}
-                </>
+                <p className="px-1 text-sm text-faint">
+                  {userTurn && entry?.user.length
+                    ? 'Позиция из курса — вспомните ход. Если забыли, нажмите «Подсказка».'
+                    : userTurn
+                      ? course
+                        ? 'Позиция вне курса — играйте по идеям дебюта.'
+                        : 'Ваш ход.'
+                      : 'Бот выбирает ход…'}
+                </p>
               )}
             </div>
 
-            <div className="mt-auto flex flex-wrap gap-2 pt-3">
+            <div className="flex flex-wrap gap-2 pt-3">
               {game.result ? (
                 <>
                   <Button size="sm" variant="primary" onClick={newGame}>

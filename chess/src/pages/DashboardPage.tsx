@@ -71,7 +71,7 @@ export function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Card className="flex flex-col">
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -155,7 +155,7 @@ export function DashboardPage() {
         </ButtonLink>
       </Card>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <Card>
           <div className="mb-1 flex items-baseline justify-between">
             <h2 className="font-semibold">Тренировки за две недели</h2>

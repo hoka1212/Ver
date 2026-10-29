@@ -30,6 +30,8 @@ interface ChessBoardProps {
   showMaterial?: boolean
   /** Подписи сторон для полос материала: сверху и снизу доски. */
   materialLabels?: { top?: string; bottom?: string }
+  /** Класс колонки с доской и полосами материала (размер доски на конкретной странице). */
+  columnClassName?: string
 }
 
 const LAST_MOVE = 'rgba(255, 214, 10, 0.38)'
@@ -54,6 +56,7 @@ export function ChessBoard({
   showNotation,
   showMaterial,
   materialLabels,
+  columnClassName = 'board-column',
 }: ChessBoardProps) {
   const settings = useStore(settingsStore)
   const theme = BOARD_THEMES[settings.boardTheme]
@@ -206,7 +209,7 @@ export function ChessBoard({
   const bottom = orientation === 'white' ? 'w' : 'b'
   const top = bottom === 'w' ? 'b' : 'w'
   return (
-    <div className="board-column">
+    <div className={columnClassName}>
       <MaterialBar fen={fen} color={top} label={materialLabels?.top} />
       {board}
       <MaterialBar fen={fen} color={bottom} label={materialLabels?.bottom} />

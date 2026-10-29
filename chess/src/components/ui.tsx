@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { ArrowLeftIcon, XIcon } from './icons'
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger'
@@ -57,7 +57,15 @@ export function ConfirmButton({
         onConfirm()
       }}
     >
-      {armed ? confirmLabel : children}
+      {skipConfirm ? (
+        children
+      ) : (
+        // Обе надписи в одной ячейке: ширина кнопки не меняется, соседние кнопки не прыгают.
+        <span className="grid">
+          <span className={`col-start-1 row-start-1 inline-flex items-center justify-center gap-1.5 ${armed ? 'invisible' : ''}`}>{children}</span>
+          <span className={`col-start-1 row-start-1 inline-flex items-center justify-center gap-1.5 ${armed ? '' : 'invisible'}`}>{confirmLabel}</span>
+        </span>
+      )}
     </Button>
   )
 }
@@ -88,11 +96,22 @@ export function Card({ children, className = '' }: { children: ReactNode; classN
 }
 
 export function PageHeader({ title, subtitle, back, actions }: { title: ReactNode; subtitle?: ReactNode; back?: string; actions?: ReactNode }) {
+  const navigate = useNavigate()
   return (
     <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
       <div className="min-w-0">
         {back && (
-          <Link to={back} className="mb-2 inline-flex items-center gap-1.5 text-sm text-muted hover:text-fg">
+          <Link
+            to={back}
+            onClick={(e) => {
+              // Если пришли с другой страницы приложения — возвращаемся по истории: список останется на том же месте.
+              if (((window.history.state as { idx?: number } | null)?.idx ?? 0) > 0) {
+                e.preventDefault()
+                navigate(-1)
+              }
+            }}
+            className="mb-2 inline-flex items-center gap-1.5 text-sm text-muted hover:text-fg"
+          >
             <ArrowLeftIcon size={16} /> Назад
           </Link>
         )}
@@ -178,8 +197,8 @@ export function Toggle({ checked, onChange, label }: { checked: boolean; onChang
 
 export function StatTile({ label, value, hint, icon }: { label: string; value: ReactNode; hint?: ReactNode; icon?: ReactNode }) {
   return (
-    <div className="rounded-xl border border-line bg-surface p-4">
-      <div className="flex items-center gap-2 text-sm text-muted">
+    <div className="min-w-0 rounded-xl border border-line bg-surface p-3 sm:p-4">
+      <div className="flex items-center gap-2 text-xs text-muted sm:text-sm">
         {icon}
         {label}
       </div>

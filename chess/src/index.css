@@ -76,6 +76,21 @@ body {
   }
 }
 
+/* Партия с ботом на телефоне: над доской строка статуса, поэтому доска чуть меньше — всё помещается в экран. */
+@media (max-width: 1023px) {
+  .board-column-play {
+    width: min(100%, calc(100svh - 20rem));
+  }
+}
+
+/* Просмотр линии сбоку на ПК: карточка с доской, комментарием и ходами целиком помещается в экран. */
+@media (min-width: 1024px) {
+  .board-column-preview {
+    width: min(100%, calc(100svh - 31rem));
+    min-width: 15rem;
+  }
+}
+
 .scrollbar-thin {
   scrollbar-width: thin;
   scrollbar-color: var(--color-line) transparent;

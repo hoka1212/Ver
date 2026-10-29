@@ -97,6 +97,8 @@ export function CoordinatesPage() {
       setDeadline(t + prefs.perSquareSeconds * 1000)
     }
     setPhase('running')
+    // Раунд начинается с доской на экране, даже если «Начать» нажали внизу страницы (телефон).
+    window.scrollTo(0, 0)
   }
 
   const finish = (list: Attempt[]) => {

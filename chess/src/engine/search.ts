@@ -163,7 +163,9 @@ export class Searcher {
     if (this.timeUp()) return 0
     const pos = this.pos
 
-    if (pos.halfmove >= 100 || pos.isRepetition() || pos.insufficientMaterial()) return 0
+    // Мат последним ходом перед правилом 50 ходов всё равно мат.
+    if (pos.halfmove >= 100) return pos.inCheck() && !this.hasLegalMove(ply) ? -MATE + ply : 0
+    if (pos.isRepetition() || pos.insufficientMaterial()) return 0
     // Мат быстрее уже найденного не улучшить.
     alpha = Math.max(alpha, -MATE + ply)
     beta = Math.min(beta, MATE - ply - 1)
@@ -252,6 +254,19 @@ export class Searcher {
     return best
   }
 
+  private hasLegalMove(ply: number): boolean {
+    const pos = this.pos
+    const start = ply * 256
+    const end = pos.generate(this.moves, start, false)
+    for (let i = start; i < end; i++) {
+      if (pos.make(this.moves[i])) {
+        pos.unmake()
+        return true
+      }
+    }
+    return false
+  }
+
   private prepare(timeMs: number) {
     this.nodes = 0
     this.stopped = false
@@ -312,11 +327,14 @@ export class Searcher {
     return { move: bestMove, score: bestScore, depth: completed, nodes: this.nodes }
   }
 
-  /** Оценка каждого легального хода (полное окно) — для «живого» выбора хода ботом. */
-  rootScores(depth: number, timeMs: number): ScoredMove[] {
+  /**
+   * Оценка каждого хода (полное окно, итеративное углубление до depth или пока есть время) —
+   * для «живого» выбора хода ботом. subset — оценить только эти ходы.
+   */
+  rootScores(depth: number, timeMs: number, subset?: number[]): ScoredMove[] {
     this.prepare(timeMs)
     const pos = this.pos
-    const root = pos.legalMoves()
+    const root = subset ?? pos.legalMoves()
     let result: ScoredMove[] = root.map((move) => ({ move, score: 0 }))
     for (let d = 1; d <= depth; d++) {
       const iteration: ScoredMove[] = []

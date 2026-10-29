@@ -104,6 +104,7 @@ export function CoursePage() {
         lastMove={lastMove ? { from: lastMove.from, to: lastMove.to } : null}
         showMaterial
         materialLabels={{ top: 'Соперник', bottom: 'Вы' }}
+        columnClassName="board-column board-column-preview"
       />
       <div className="mt-3 flex items-center justify-center gap-2">
         <Button size="sm" variant="ghost" onClick={() => setPly(0)} disabled={ply === 0}>
@@ -128,7 +129,7 @@ export function CoursePage() {
           <span className="text-faint">{ply === 0 ? 'Начальная позиция. Листайте ходы стрелками.' : 'Без комментария.'}</span>
         )}
       </div>
-      <MoveList key={selected.id} moves={selected.moves} ply={ply} onSelect={setPly} className="mt-3 h-56" />
+      <MoveList key={selected.id} moves={selected.moves} ply={ply} onSelect={setPly} className="mt-3 h-40" />
     </>
   )
 

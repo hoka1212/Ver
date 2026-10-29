@@ -39,7 +39,7 @@ describe('дебютная книга', () => {
     chess.move('e4')
     const replies = book.get(positionKey(chess.fen()))!.opponent
     const seen = new Set<string>()
-    for (let i = 0; i < 200; i++) seen.add(chooseBookMove(replies, 2, () => i / 200).san)
+    for (let i = 0; i < 200; i++) seen.add(chooseBookMove(replies, () => i / 200).san)
     expect(seen.size).toBe(replies.length)
   })
 })
