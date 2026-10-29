@@ -291,6 +291,7 @@ function BoardInput({ side, onAdd, nextIndex }: { side: Side; onAdd: (line: { na
         orientation={orientation ?? side}
         lastMove={last ? { from: last.from, to: last.to } : null}
         onMove={onMove}
+        showMaterial
       />
       <div className="mt-3 flex flex-wrap gap-2">
         <Button size="sm" onClick={() => setPly((p) => Math.max(0, p - 1))} disabled={ply === 0}>

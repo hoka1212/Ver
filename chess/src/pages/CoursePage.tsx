@@ -237,6 +237,8 @@ export function CoursePage() {
                 orientation={course.side}
                 interactive={false}
                 lastMove={lastMove ? { from: lastMove.from, to: lastMove.to } : null}
+                showMaterial
+                materialLabels={{ top: 'Соперник', bottom: 'Вы' }}
               />
               <div className="mt-3 flex items-center justify-center gap-2">
                 <Button size="sm" variant="ghost" onClick={() => setPly(0)} disabled={ply === 0}>

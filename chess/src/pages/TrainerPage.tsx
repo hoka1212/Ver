@@ -305,6 +305,10 @@ function LineTrainer({ course, target, mode, position, revealName, onComplete, o
             lastMove={lastMove ? { from: lastMove.from, to: lastMove.to } : null}
             arrows={arrows}
             highlights={highlights}
+            showMaterial
+            materialLabels={
+              orientation === course.side ? { top: 'Соперник', bottom: 'Вы' } : { top: 'Вы', bottom: 'Соперник' }
+            }
           />
         </div>
 

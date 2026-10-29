@@ -2,6 +2,7 @@ import { Chess, type Square } from 'chess.js'
 import { useMemo, useState, type CSSProperties } from 'react'
 import { Chessboard, defaultPieces, type Arrow, type PieceDropHandlerArgs, type SquareHandlerArgs } from 'react-chessboard'
 import { BOARD_THEMES, settingsStore } from '../store'
+import { MaterialBar } from './MaterialBar'
 import { useStore } from '../lib/storage'
 
 export interface BoardMove {
@@ -25,6 +26,10 @@ interface ChessBoardProps {
   /** Дополнительная подсветка клеток (поверх стандартной). */
   highlights?: Record<string, CSSProperties>
   showNotation?: boolean
+  /** Показывать взятые фигуры и счёт материала над и под доской. */
+  showMaterial?: boolean
+  /** Подписи сторон для полос материала: сверху и снизу доски. */
+  materialLabels?: { top?: string; bottom?: string }
 }
 
 const LAST_MOVE = 'rgba(255, 214, 10, 0.38)'
@@ -47,6 +52,8 @@ export function ChessBoard({
   arrows,
   highlights,
   showNotation,
+  showMaterial,
+  materialLabels,
 }: ChessBoardProps) {
   const settings = useStore(settingsStore)
   const theme = BOARD_THEMES[settings.boardTheme]
@@ -135,8 +142,8 @@ export function ChessBoard({
 
   const promoColor = pendingPromotion ? chess.get(pendingPromotion.from as Square)?.color ?? 'w' : 'w'
 
-  return (
-    <div className="board-frame relative select-none">
+  const board = (
+    <div className={`relative select-none ${showMaterial ? 'aspect-square w-full' : 'board-frame'}`}>
       <Chessboard
         options={{
           id,
@@ -192,6 +199,17 @@ export function ChessBoard({
           </div>
         </div>
       )}
+    </div>
+  )
+
+  if (!showMaterial) return board
+  const bottom = orientation === 'white' ? 'w' : 'b'
+  const top = bottom === 'w' ? 'b' : 'w'
+  return (
+    <div className="board-column">
+      <MaterialBar fen={fen} color={top} label={materialLabels?.top} />
+      {board}
+      <MaterialBar fen={fen} color={bottom} label={materialLabels?.bottom} />
     </div>
   )
 }
