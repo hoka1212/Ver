@@ -1,11 +1,12 @@
 import { NavLink, Outlet, useLocation } from 'react-router'
 import { useEffect } from 'react'
-import { BookIcon, HomeIcon, KnightLogo, SettingsIcon, TargetIcon } from './icons'
+import { BookIcon, BotIcon, HomeIcon, KnightLogo, SettingsIcon, TargetIcon } from './icons'
 
-const NAV = [
+const NAV: { to: string; label: string; short?: string; icon: typeof HomeIcon; end: boolean }[] = [
   { to: '/', label: 'Главная', icon: HomeIcon, end: true },
   { to: '/coordinates', label: 'Координаты', icon: TargetIcon, end: false },
   { to: '/openings', label: 'Дебюты', icon: BookIcon, end: false },
+  { to: '/play', label: 'Игра с ботом', short: 'Бот', icon: BotIcon, end: false },
   { to: '/settings', label: 'Настройки', icon: SettingsIcon, end: false },
 ]
 
@@ -61,8 +62,8 @@ export function Layout() {
       </main>
 
       {/* Нижняя навигация (мобильные) */}
-      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
-        {NAV.map(({ to, label, icon: Icon, end }) => (
+      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
+        {NAV.map(({ to, label, short, icon: Icon, end }) => (
           <NavLink
             key={to}
             to={to}
@@ -72,7 +73,7 @@ export function Layout() {
             }
           >
             <Icon size={22} />
-            {label}
+            {short ?? label}
           </NavLink>
         ))}
       </nav>

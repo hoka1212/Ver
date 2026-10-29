@@ -1,9 +1,9 @@
 import { Chess, type Square } from 'chess.js'
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import type { Arrow } from 'react-chessboard'
-import { useParams, useSearchParams } from 'react-router'
+import { useNavigate, useParams, useSearchParams } from 'react-router'
 import { ChessBoard, type BoardMove } from '../components/ChessBoard'
-import { CheckIcon, EyeIcon, FlipIcon, LightbulbIcon, PlayIcon, RotateIcon, XIcon } from '../components/icons'
+import { BotIcon, CheckIcon, EyeIcon, FlipIcon, LightbulbIcon, PlayIcon, RotateIcon, XIcon } from '../components/icons'
 import { MoveList } from '../components/MoveList'
 import { Badge, Button, ButtonLink, Card, PageHeader } from '../components/ui'
 import { useCourse } from '../data'
@@ -12,6 +12,7 @@ import { moveLabel, ruSan } from '../lib/pgn'
 import { formatDue, markStudied, practiceOrder, reviewLine, type LineProgress } from '../lib/srs'
 import { useStore } from '../lib/storage'
 import { logActivity, progressStore, settingsStore } from '../store'
+import { startBotGame } from '../lib/botGame'
 
 type Mode = 'learn' | 'practice'
 
@@ -70,6 +71,11 @@ function Session({ course, mode, lineId, onRestart }: { course: Course; mode: Mo
   const [attempt, setAttempt] = useState(0)
   const [results, setResults] = useState<LineResult[]>([])
   const finished = index >= queue.length
+  const navigate = useNavigate()
+  const playBot = () => {
+    startBotGame(course.id, sideToColor(course.side))
+    navigate('/play')
+  }
 
   const complete = (line: CourseLine, mistakes: number) => {
     const prev = progressStore.get()[line.key]
@@ -119,6 +125,9 @@ function Session({ course, mode, lineId, onRestart }: { course: Course; mode: Mo
                 <RotateIcon size={16} /> Ещё сессия
               </Button>
             )}
+            <Button onClick={playBot}>
+              <BotIcon size={16} /> Применить в партии с ботом
+            </Button>
             <ButtonLink to={`/openings/${course.id}`}>К курсу</ButtonLink>
           </div>
         </Card>
@@ -294,7 +303,7 @@ function LineTrainer({ course, target, mode, position, revealName, onComplete, o
       />
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <div className={`min-w-0 ${feedback?.tone === 'bad' && flash ? 'animate-shake' : ''}`}>
+        <div className="min-w-0">
           <ChessBoard
             id="trainer"
             fen={fen}
@@ -317,7 +326,7 @@ function LineTrainer({ course, target, mode, position, revealName, onComplete, o
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <div className="text-xs uppercase tracking-wider text-faint">Линия</div>
-                <div className="font-semibold leading-snug">{revealName || done ? line.name : 'скрыта до конца линии'}</div>
+                <div className="line-clamp-2 min-h-11 font-semibold leading-snug">{revealName || done ? line.name : 'скрыта до конца линии'}</div>
               </div>
               {line.trap && (revealName || done) && <Badge tone="danger">Ловушка</Badge>}
             </div>
@@ -337,7 +346,7 @@ function LineTrainer({ course, target, mode, position, revealName, onComplete, o
           </Card>
 
           {done && outcome ? (
-            <Card className="animate-fade-in border-accent/40 p-4">
+            <Card className="flex min-h-[15rem] flex-col border-accent/40 p-4">
               <div className="flex items-center gap-2 text-lg font-semibold">
                 <CheckIcon size={22} className="text-accent" />
                 {mode === 'learn' ? 'Линия изучена!' : mistakes === 0 ? 'Идеально!' : 'Линия пройдена'}
@@ -354,7 +363,7 @@ function LineTrainer({ course, target, mode, position, revealName, onComplete, o
               {line.moves[line.moves.length - 1]?.comment && (
                 <p className="mt-2 rounded-lg bg-surface-2 px-3 py-2 text-sm text-fg/90">{line.moves[line.moves.length - 1].comment}</p>
               )}
-              <div className="mt-3 flex flex-wrap gap-2">
+              <div className="mt-auto flex flex-wrap gap-2 pt-3">
                 {position.index + 1 < position.total ? (
                   <Button variant="primary" onClick={onNext}>
                     Следующая линия
@@ -370,7 +379,7 @@ function LineTrainer({ course, target, mode, position, revealName, onComplete, o
               </div>
             </Card>
           ) : (
-            <Card className="p-4">
+            <Card className="flex min-h-[15rem] flex-col p-4">
               <StatusBox
                 mode={mode}
                 userTurn={userTurn}
@@ -383,7 +392,7 @@ function LineTrainer({ course, target, mode, position, revealName, onComplete, o
                   <span className="font-semibold">{moveLabel(ply - 1, lastMove.san)}</span> — {lastMove.comment}
                 </p>
               )}
-              <div className="mt-3 flex flex-wrap gap-2">
+              <div className="mt-auto flex flex-wrap gap-2 pt-3">
                 {mode === 'practice' && (
                   <>
                     <Button size="sm" onClick={showHint} disabled={!userTurn || hintLevel >= 1}>
@@ -408,7 +417,7 @@ function LineTrainer({ course, target, mode, position, revealName, onComplete, o
           )}
 
           <Card className="p-2">
-            <MoveList moves={line.moves} ply={ply} hideFuture={!done} className="max-h-72" />
+            <MoveList moves={line.moves} ply={ply} hideFuture={!done} className="h-64" />
           </Card>
         </aside>
       </div>
@@ -444,7 +453,7 @@ function StatusBox({
       {feedback && (
         <p
           key={feedback.text}
-          className={`mt-2 animate-fade-in rounded-lg px-3 py-2 text-sm leading-relaxed ${
+          className={`mt-2 rounded-lg px-3 py-2 text-sm leading-relaxed ${
             feedback.tone === 'ok' ? 'bg-accent/12 text-accent-strong' : feedback.tone === 'bad' ? 'bg-danger/12 text-[#f08a80]' : 'bg-info/12 text-info'
           }`}
         >

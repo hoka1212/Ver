@@ -5,6 +5,7 @@ import { CoursePage } from './pages/CoursePage'
 import { DashboardPage } from './pages/DashboardPage'
 import { EditorPage } from './pages/EditorPage'
 import { OpeningsPage } from './pages/OpeningsPage'
+import { PlayPage } from './pages/PlayPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { TrainerPage } from './pages/TrainerPage'
 
@@ -20,6 +21,7 @@ const router = createHashRouter([
       { path: 'openings/:courseId', element: <CoursePage /> },
       { path: 'openings/:courseId/edit', element: <EditorPage /> },
       { path: 'openings/:courseId/train', element: <TrainerPage /> },
+      { path: 'play', element: <PlayPage /> },
       { path: 'settings', element: <SettingsPage /> },
       { path: '*', element: <DashboardPage /> },
     ],

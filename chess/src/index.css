@@ -21,7 +21,6 @@
   --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
 
   --animate-pop: pop 0.35s ease-out;
-  --animate-shake: shake 0.35s ease-in-out;
   --animate-fade-in: fade-in 0.25s ease-out;
 
   @keyframes pop {
@@ -29,22 +28,17 @@
     60% { transform: scale(1.08); opacity: 1; }
     100% { transform: scale(1); }
   }
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-6px); }
-    40% { transform: translateX(6px); }
-    60% { transform: translateX(-4px); }
-    80% { transform: translateX(4px); }
-  }
   @keyframes fade-in {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: none; }
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 }
 
 html {
   color-scheme: dark;
   -webkit-tap-highlight-color: transparent;
+  /* Место под полосу прокрутки резервируется всегда — страницы не сдвигаются вбок при переходах. */
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -54,26 +48,30 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Размер доски: занимает доступную ширину, но не выше экрана. */
+/*
+ * Размер доски: занимает доступную ширину, но не выше экрана.
+ * svh — «малая» высота экрана: не меняется, когда на телефоне прячется адресная строка,
+ * поэтому доска не дёргается при прокрутке.
+ */
 .board-frame {
-  width: min(100%, calc(100dvh - 9rem));
+  width: min(100%, calc(100svh - 9rem));
   aspect-ratio: 1 / 1;
   margin-inline: auto;
 }
 
 /* Доска с полосами материала сверху и снизу (2 × 2rem). */
 .board-column {
-  width: min(100%, calc(100dvh - 13rem));
+  width: min(100%, calc(100svh - 13rem));
   margin-inline: auto;
 }
 
 @media (max-width: 1023px) {
   .board-frame {
-    width: min(100%, calc(100dvh - 15rem));
+    width: min(100%, calc(100svh - 15rem));
     min-width: min(100%, 18rem);
   }
   .board-column {
-    width: min(100%, calc(100dvh - 19rem));
+    width: min(100%, calc(100svh - 19rem));
     min-width: min(100%, 18rem);
   }
 }

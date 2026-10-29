@@ -1,6 +1,6 @@
 import { useEffect, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { Link } from 'react-router'
-import { ArrowLeftIcon } from './icons'
+import { ArrowLeftIcon, XIcon } from './icons'
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger'
 
@@ -128,14 +128,17 @@ export function Segmented<T extends string | number>({
   options,
   onChange,
   disabled,
+  className = 'inline-flex flex-wrap',
 }: {
   value: T
   options: { value: T; label: ReactNode }[]
   onChange: (v: T) => void
   disabled?: boolean
+  /** Раскладка кнопок (по умолчанию — в строку с переносом). */
+  className?: string
 }) {
   return (
-    <div className="inline-flex flex-wrap rounded-lg bg-surface-2 p-1">
+    <div className={`rounded-lg bg-surface-2 p-1 ${className}`}>
       {options.map((o) => (
         <button
           key={String(o.value)}
@@ -196,5 +199,34 @@ export function Figurine({ san }: { san: string }) {
       {rest}
       {promo && <span className="figurine">{map[promo[1]]}</span>}
     </span>
+  )
+}
+
+/** Нижняя панель поверх страницы (на телефоне) — страница под ней не прокручивается и не сдвигается. */
+export function Sheet({ title, onClose, children }: { title: ReactNode; onClose: () => void; children: ReactNode }) {
+  useEffect(() => {
+    const root = document.documentElement
+    const prev = root.style.overflow
+    root.style.overflow = 'hidden'
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
+    window.addEventListener('keydown', onKey)
+    return () => {
+      root.style.overflow = prev
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [onClose])
+  return (
+    <div className="fixed inset-0 z-50 animate-fade-in" role="dialog" aria-modal="true">
+      <button type="button" aria-label="Закрыть" className="absolute inset-0 bg-black/60" onClick={onClose} />
+      <div className="absolute inset-x-0 bottom-0 flex max-h-[94svh] flex-col rounded-t-2xl border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] shadow-2xl">
+        <div className="flex items-center gap-2 border-b border-line px-4 py-3">
+          <h3 className="min-w-0 flex-1 truncate font-semibold">{title}</h3>
+          <button type="button" onClick={onClose} className="rounded-lg p-1.5 text-muted transition-colors hover:bg-surface-3 hover:text-fg" aria-label="Закрыть просмотр">
+            <XIcon size={20} />
+          </button>
+        </div>
+        <div className="overflow-y-auto overscroll-contain p-3">{children}</div>
+      </div>
+    </div>
   )
 }

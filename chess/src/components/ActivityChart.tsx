@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { dayKey } from '../lib/storage'
-import type { DayActivity } from '../store'
+import { dayTotal, type DayActivity } from '../store'
 
 const DAYS = 14
 const BAR_COLOR = '#72a543' // проверено валидатором палитры для тёмной поверхности
@@ -11,6 +11,7 @@ interface Point {
   date: Date
   coords: number
   lines: number
+  games: number
   total: number
 }
 
@@ -24,7 +25,7 @@ export function ActivityChart({ activity, now }: { activity: Record<string, DayA
     date.setDate(date.getDate() - i)
     const key = dayKey(date.getTime())
     const d = activity[key] ?? { coords: 0, lines: 0 }
-    points.push({ key, date, coords: d.coords, lines: d.lines, total: d.coords + d.lines })
+    points.push({ key, date, coords: d.coords, lines: d.lines, games: d.games ?? 0, total: dayTotal(d) })
   }
   const max = Math.max(4, ...points.map((p) => p.total))
   const niceMax = Math.ceil(max / 2) * 2
@@ -107,15 +108,21 @@ export function ActivityChart({ activity, now }: { activity: Record<string, DayA
           <div className="text-muted">
             Линии дебютов: <span className="text-fg tabular">{hovered.lines}</span>
           </div>
+          <div className="text-muted">
+            Партии с ботом: <span className="text-fg tabular">{hovered.games}</span>
+          </div>
         </div>
       )}
-      <table className="sr-only">
+      {/* sr-only на обёртке: таблица сама по себе не сжимается до 1px и раздвигала страницу на телефоне. */}
+      <div className="sr-only">
+      <table>
         <caption>Тренировки по дням</caption>
         <thead>
           <tr>
             <th>Дата</th>
             <th>Координаты</th>
             <th>Дебюты</th>
+            <th>Партии с ботом</th>
           </tr>
         </thead>
         <tbody>
@@ -124,10 +131,12 @@ export function ActivityChart({ activity, now }: { activity: Record<string, DayA
               <td>{p.key}</td>
               <td>{p.coords}</td>
               <td>{p.lines}</td>
+              <td>{p.games}</td>
             </tr>
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   )
 }

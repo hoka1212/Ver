@@ -1,15 +1,17 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { ChessBoard } from '../components/ChessBoard'
-import { ChevronLeftIcon, ChevronRightIcon, DownloadIcon, EditIcon, EyeIcon, LightbulbIcon, PlayIcon, TrashIcon } from '../components/icons'
+import { BotIcon, ChevronLeftIcon, ChevronRightIcon, DownloadIcon, EditIcon, EyeIcon, LightbulbIcon, PlayIcon, TrashIcon } from '../components/icons'
 import { MoveList } from '../components/MoveList'
-import { Badge, Button, ButtonLink, Card, ConfirmButton, PageHeader, ProgressBar } from '../components/ui'
+import { Badge, Button, ButtonLink, Card, ConfirmButton, PageHeader, ProgressBar, Sheet } from '../components/ui'
 import { useCourse } from '../data'
-import { findConflicts, KIND_LABEL, KIND_TONE, LEVEL_LABEL, type CourseLine } from '../lib/courses'
+import { findConflicts, KIND_LABEL, KIND_TONE, LEVEL_LABEL, sideToColor, type CourseLine } from '../lib/courses'
 import { linesToPgn, moveLabel, ruSan } from '../lib/pgn'
 import { formatDue, isDue, lineMastery, lineStatus, STATUS_LABEL, type LineStatus } from '../lib/srs'
 import { useStore } from '../lib/storage'
+import { useMediaQuery } from '../lib/useMediaQuery'
 import { progressStore, repertoireStore } from '../store'
+import { startBotGame } from '../lib/botGame'
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 
@@ -37,6 +39,10 @@ export function CoursePage() {
   const navigate = useNavigate()
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [view, setView] = useState<{ lineId: string; ply: number } | null>(null)
+  // На телефоне линия открывается в нижней панели поверх списка — страница не прыгает к доске.
+  const isDesktop = useMediaQuery('(min-width: 1024px)')
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const closeSheet = useCallback(() => setSheetOpen(false), [])
 
   const selected: CourseLine | undefined = course?.lines.find((l) => l.id === selectedId) ?? course?.lines[0]
   // По умолчанию показываем конечную позицию выбранной линии.
@@ -79,6 +85,44 @@ export function CoursePage() {
     progressStore.set((p) => Object.fromEntries(Object.entries(p).filter(([k]) => !k.startsWith(`${course.id}/`))))
     navigate('/openings')
   }
+
+  const preview = selected && (
+    <>
+      <ChessBoard
+        id="preview"
+        fen={fen}
+        orientation={course.side}
+        interactive={false}
+        lastMove={lastMove ? { from: lastMove.from, to: lastMove.to } : null}
+        showMaterial
+        materialLabels={{ top: 'Соперник', bottom: 'Вы' }}
+      />
+      <div className="mt-3 flex items-center justify-center gap-2">
+        <Button size="sm" variant="ghost" onClick={() => setPly(0)} disabled={ply === 0}>
+          В начало
+        </Button>
+        <Button size="sm" onClick={() => setPly((p) => Math.max(0, p - 1))} disabled={ply === 0} aria-label="Ход назад">
+          <ChevronLeftIcon size={18} />
+        </Button>
+        <Button size="sm" onClick={() => setPly((p) => Math.min(selected.moves.length, p + 1))} disabled={ply >= selected.moves.length} aria-label="Ход вперёд">
+          <ChevronRightIcon size={18} />
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => setPly(selected.moves.length)} disabled={ply >= selected.moves.length}>
+          В конец
+        </Button>
+      </div>
+      <div className="scrollbar-thin mt-3 h-[6.75rem] overflow-y-auto rounded-lg bg-surface-2 px-3 py-2 text-sm leading-relaxed text-fg/90">
+        {comment ? (
+          <>
+            <span className="font-semibold">{moveLabel(ply - 1, lastMove!.san)}</span> — {comment}
+          </>
+        ) : (
+          <span className="text-faint">{ply === 0 ? 'Начальная позиция. Листайте ходы стрелками.' : 'Без комментария.'}</span>
+        )}
+      </div>
+      <MoveList moves={selected.moves} ply={ply} onSelect={setPly} className="mt-3 h-56" />
+    </>
+  )
 
   return (
     <div className="mx-auto max-w-6xl">
@@ -146,6 +190,14 @@ export function CoursePage() {
                 <ButtonLink to={`/openings/${course.id}/train?mode=practice`} variant={newCount ? 'secondary' : 'primary'}>
                   <PlayIcon size={16} /> Тренировать{due ? ` (${due})` : ''}
                 </ButtonLink>
+                <Button
+                  onClick={() => {
+                    startBotGame(course.id, sideToColor(course.side))
+                    navigate('/play')
+                  }}
+                >
+                  <BotIcon size={16} /> Играть с ботом
+                </Button>
               </div>
             </div>
           </Card>
@@ -184,7 +236,14 @@ export function CoursePage() {
                 const active = selected?.id === line.id
                 return (
                   <li key={line.id} className={`flex items-center gap-3 px-4 py-3 transition ${active ? 'bg-surface-2' : 'hover:bg-surface-2/60'}`}>
-                    <button type="button" onClick={() => setSelectedId(line.id)} className="min-w-0 flex-1 text-left">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedId(line.id)
+                        if (!isDesktop) setSheetOpen(true)
+                      }}
+                      className="min-w-0 flex-1 text-left"
+                    >
                       <div className="flex flex-wrap items-center gap-2">
                         <span className={`font-medium ${active ? 'text-accent-strong' : ''}`}>{line.name}</span>
                         {line.trap && <Badge tone="danger">Ловушка</Badge>}
@@ -224,48 +283,21 @@ export function CoursePage() {
           </Card>
         </div>
 
-        {selected && (
-          <div className="lg:sticky lg:top-6 lg:self-start">
+        {selected && isDesktop && (
+          <div className="sticky top-6 self-start">
             <Card className="p-3 sm:p-4">
               <div className="mb-2 flex items-center justify-between gap-2">
                 <h3 className="truncate font-semibold">{selected.name}</h3>
                 <span className="shrink-0 text-xs text-faint">просмотр</span>
               </div>
-              <ChessBoard
-                id="preview"
-                fen={fen}
-                orientation={course.side}
-                interactive={false}
-                lastMove={lastMove ? { from: lastMove.from, to: lastMove.to } : null}
-                showMaterial
-                materialLabels={{ top: 'Соперник', bottom: 'Вы' }}
-              />
-              <div className="mt-3 flex items-center justify-center gap-2">
-                <Button size="sm" variant="ghost" onClick={() => setPly(0)} disabled={ply === 0}>
-                  В начало
-                </Button>
-                <Button size="sm" onClick={() => setPly((p) => Math.max(0, p - 1))} disabled={ply === 0} aria-label="Ход назад">
-                  <ChevronLeftIcon size={18} />
-                </Button>
-                <Button size="sm" onClick={() => setPly((p) => Math.min(selected.moves.length, p + 1))} disabled={ply >= selected.moves.length} aria-label="Ход вперёд">
-                  <ChevronRightIcon size={18} />
-                </Button>
-                <Button size="sm" variant="ghost" onClick={() => setPly(selected.moves.length)} disabled={ply >= selected.moves.length}>
-                  В конец
-                </Button>
-              </div>
-              <div className="mt-3 min-h-12 rounded-lg bg-surface-2 px-3 py-2 text-sm leading-relaxed text-fg/90">
-                {comment ? (
-                  <>
-                    <span className="font-semibold">{moveLabel(ply - 1, lastMove!.san)}</span> — {comment}
-                  </>
-                ) : (
-                  <span className="text-faint">{ply === 0 ? 'Начальная позиция. Листайте ходы стрелками.' : 'Без комментария.'}</span>
-                )}
-              </div>
-              <MoveList moves={selected.moves} ply={ply} onSelect={setPly} className="mt-3 max-h-56" />
+              {preview}
             </Card>
           </div>
+        )}
+        {selected && !isDesktop && sheetOpen && (
+          <Sheet title={selected.name} onClose={closeSheet}>
+            {preview}
+          </Sheet>
         )}
       </div>
     </div>
