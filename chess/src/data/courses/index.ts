@@ -1,5 +1,17 @@
 import type { CourseDef } from '../../lib/courses'
 import { albin } from './albin'
+import { accelDragon } from './accelDragon'
+import { falkbeer } from './falkbeer'
+import { french } from './french'
+import { goring } from './goring'
+import { ruyLopez } from './ruyLopez'
+import { scandinavian } from './scandinavian'
+import { scotch } from './scotch'
+import { staunton } from './staunton'
+import { trapsBlack } from './trapsBlack'
+import { trapsWhite } from './trapsWhite'
+import { traxler } from './traxler'
+import { vienna } from './vienna'
 import { blackmarDiemer } from './blackmarDiemer'
 import { budapest } from './budapest'
 import { caroKann } from './caroKann'
@@ -31,8 +43,17 @@ export const BUILT_IN_COURSES: CourseDef[] = [
   kingsGambit,
   smithMorra,
   blackmarDiemer,
+  scotch,
+  ruyLopez,
+  vienna,
+  goring,
+  staunton,
+  trapsWhite,
   // За чёрных
   caroKann,
+  scandinavian,
+  french,
+  accelDragon,
   stafford,
   from,
   budapest,
@@ -40,4 +61,7 @@ export const BUILT_IN_COURSES: CourseDef[] = [
   volga,
   schliemann,
   marshall,
+  traxler,
+  falkbeer,
+  trapsBlack,
 ]

@@ -133,7 +133,7 @@ function Session({ course, mode, lineId, onRestart }: { course: Course; mode: Mo
       target={queue[index]}
       mode={mode}
       position={{ index, total: queue.length }}
-      revealName={mode === 'learn' || !!lineId}
+      revealName={mode === 'learn' || !!lineId || course.kind === 'traps'}
       onComplete={complete}
       onNext={() => setIndex((i) => i + 1)}
       onRetry={() => setAttempt((a) => a + 1)}
@@ -208,8 +208,9 @@ function LineTrainer({ course, target, mode, position, revealName, onComplete, o
 
     let nextLine: CourseLine | null = null
     if (san === expected.san) nextLine = line
-    else if (mode === 'practice') {
+    else if (mode === 'practice' && course.kind !== 'traps') {
       // Другой ход из репертуара (например, при противоречивом импорте) тоже засчитываем.
+      // В сборниках ловушек линии намеренно расходятся, поэтому там ждём ход именно этой линии.
       const alts = repertoireMoves(
         course,
         line.moves.slice(0, ply).map((x) => x.san),

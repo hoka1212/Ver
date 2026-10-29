@@ -63,5 +63,10 @@ export const volga: CourseDef = {
       name: '4.Фc2',
       pgn: `1.d4 Nf6 2.c4 c5 3.d5 b5 4.Qc2 bxc4 5.e4 e6 6.Bxc4 exd5 {Вскрываем центр.}`,
     },
+    {
+      id: 'king-walk-nf3',
+      name: 'Принятый: 9.Кf3 и поход короля',
+      pgn: `1.d4 Nf6 2.c4 c5 3.d5 b5 4.cxb5 a6 5.bxa6 Bxa6 6.Nc3 d6 7.e4 Bxf1 8.Kxf1 g6 9.Nf3 {Другой порядок ходов.} Bg7 10.g3 O-O 11.Kg2 Nbd7 {Та же расстановка: ...Фa5 и ...Лfb8.}`,
+    },
   ],
 }

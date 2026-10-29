@@ -5,7 +5,7 @@ import { ChevronLeftIcon, ChevronRightIcon, DownloadIcon, EditIcon, EyeIcon, Lig
 import { MoveList } from '../components/MoveList'
 import { Badge, Button, ButtonLink, Card, ConfirmButton, PageHeader, ProgressBar } from '../components/ui'
 import { useCourse } from '../data'
-import { findConflicts, KIND_LABEL, LEVEL_LABEL, type CourseLine } from '../lib/courses'
+import { findConflicts, KIND_LABEL, KIND_TONE, LEVEL_LABEL, type CourseLine } from '../lib/courses'
 import { linesToPgn, moveLabel, ruSan } from '../lib/pgn'
 import { formatDue, isDue, lineMastery, lineStatus, STATUS_LABEL, type LineStatus } from '../lib/srs'
 import { useStore } from '../lib/storage'
@@ -88,7 +88,7 @@ export function CoursePage() {
         subtitle={
           <span className="flex flex-wrap items-center gap-1.5">
             <Badge tone={course.side}>Играем за {course.side === 'white' ? 'белых' : 'чёрных'}</Badge>
-            <Badge tone={course.kind === 'gambit' ? 'accent' : 'info'}>{KIND_LABEL[course.kind]}</Badge>
+            <Badge tone={KIND_TONE[course.kind]}>{KIND_LABEL[course.kind]}</Badge>
             {!course.custom && <Badge>{LEVEL_LABEL[course.level]}</Badge>}
             {course.eco && <span className="text-sm text-faint">ECO {course.eco}</span>}
           </span>

@@ -146,6 +146,7 @@ export function EditorPage() {
                   options={[
                     { value: 'gambit', label: 'Гамбит' },
                     { value: 'opening', label: 'Дебют' },
+                    { value: 'traps', label: 'Ловушки' },
                   ]}
                 />
               </div>
