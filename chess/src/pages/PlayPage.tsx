@@ -8,7 +8,7 @@ import { useCourses } from '../data'
 import { askBot } from '../engine/client'
 import { BOT_LEVELS, type BotLevel } from '../engine/levels'
 import { buildBook, chooseBookMove, type BookEntry } from '../lib/book'
-import { BEHAVIOURS, gameResult, moveColor, replay, START_FEN, startBotGame, theorySummary, uciToSan } from '../lib/botGame'
+import { BEHAVIOURS, botGameInProgress, gameResult, moveColor, replay, START_FEN, startBotGame, theorySummary, uciToSan } from '../lib/botGame'
 import { positionKey, sideToColor, type Course } from '../lib/courses'
 import { moveLabel, ruSan } from '../lib/pgn'
 import { useStore } from '../lib/storage'
@@ -65,10 +65,10 @@ export function PlayPage() {
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div>
-      <div className="mb-2 text-sm font-semibold text-muted">{label}</div>
+    <fieldset className="min-w-0">
+      <legend className="mb-2 text-sm font-semibold text-muted">{label}</legend>
       {children}
-    </div>
+    </fieldset>
   )
 }
 
@@ -76,7 +76,8 @@ function PlaySetup({ canReturn, onClose }: { canReturn: boolean; onClose: () => 
   const courses = useCourses()
   const prefs = useStore(botPrefsStore)
   const stats = useStore(botStatsStore)
-  const [courseId, setCourseId] = useState(() => (courses.some((c) => c.id === prefs.courseId) ? prefs.courseId! : ''))
+  const game = useStore(botGameStore)
+  const [courseId, setCourseId] = useState(() => (courses.some((c) => c.id === prefs.courseId && c.lines.length > 0) ? prefs.courseId! : ''))
   const course = courses.find((c) => c.id === courseId)
   const record = stats._all
 
@@ -109,6 +110,7 @@ function PlaySetup({ canReturn, onClose }: { canReturn: boolean; onClose: () => 
       <Card className="flex flex-col gap-6">
         <Field label="Дебют">
           <select
+            aria-label="Дебют"
             value={courseId}
             onChange={(e) => setCourseId(e.target.value)}
             className="h-11 w-full rounded-lg border border-line bg-surface-2 px-3 text-[15px] text-fg outline-none focus:border-accent"
@@ -171,9 +173,9 @@ function PlaySetup({ canReturn, onClose }: { canReturn: boolean; onClose: () => 
         </Field>
 
         <div className="flex flex-wrap gap-2">
-          <Button variant="primary" size="lg" onClick={start}>
+          <ConfirmButton variant="primary" size="lg" onConfirm={start} skipConfirm={!botGameInProgress(game)} confirmLabel="Прервать текущую партию?">
             <PlayIcon size={18} /> Начать партию
-          </Button>
+          </ConfirmButton>
           {canReturn && (
             <Button size="lg" variant="ghost" onClick={onClose}>
               Вернуться к партии
@@ -228,11 +230,19 @@ function GameView({ game, onSetup }: { game: BotGame; onSetup: () => void }) {
   const [hint, setHint] = useState<{ ply: number; uci: string; text: string } | null>(null)
   const [hintBusy, setHintBusy] = useState(false)
   const [engineError, setEngineError] = useState(false)
+  // Повторный запуск хода бота: после сбоя движка или когда вкладка снова стала видимой.
+  const [retry, setRetry] = useState(0)
   const activeHint = hint && hint.ply === ply && userTurn ? hint : null
 
   // Ход бота: из книги курса, отклонение от теории или ход движка.
   useEffect(() => {
     if (over || chess.turn() === game.color) return
+    if (document.visibilityState === 'hidden') {
+      // Скрытая вкладка не думает за бота — иначе две открытые вкладки ответили бы каждая по-своему.
+      const onVisible = () => document.visibilityState === 'visible' && setRetry((r) => r + 1)
+      document.addEventListener('visibilitychange', onVisible)
+      return () => document.removeEventListener('visibilitychange', onVisible)
+    }
     let cancelled = false
     const started = performance.now()
     const botMovesSoFar = game.moves.filter((_, i) => moveColor(i) !== game.color).length
@@ -304,7 +314,7 @@ function GameView({ game, onSetup }: { game: BotGame; onSetup: () => void }) {
     }
     // Перезапуск только при новом ходе или новой партии.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [game.id, ply, over])
+  }, [game.id, ply, over, retry])
 
   const handleMove = (m: BoardMove): boolean => {
     if (!userTurn) return false
@@ -376,7 +386,11 @@ function GameView({ game, onSetup }: { game: BotGame; onSetup: () => void }) {
     if (done) recordResult(done)
   }
 
-  const newGame = () => botGameStore.set({ ...game, id: Date.now(), moves: [], hints: 0, result: null })
+  const newGame = () => {
+    // В свободной партии со случайным цветом цвет разыгрывается заново.
+    const color = !game.courseId && botPrefsStore.get().freeColor === 'random' ? (Math.random() < 0.5 ? 'w' : 'b') : game.color
+    botGameStore.set({ ...game, id: Date.now(), color, moves: [], hints: 0, result: null })
+  }
 
   const showHint = async () => {
     if (!userTurn || hintBusy) return
@@ -460,7 +474,7 @@ function GameView({ game, onSetup }: { game: BotGame; onSetup: () => void }) {
               </p>
             )}
 
-            <div className="mt-2 flex flex-col gap-2">
+            <div className="mt-2 flex flex-col gap-2" aria-live="polite">
               {game.result ? (
                 <GameReport game={game} course={course} />
               ) : (
@@ -478,7 +492,19 @@ function GameView({ game, onSetup }: { game: BotGame; onSetup: () => void }) {
                   )}
                   {botNotice && <p className={`rounded-lg px-3 py-2 text-sm leading-relaxed ${NOTICE_TONE[botNotice.tone]}`}>{botNotice.text}</p>}
                   {engineError && (
-                    <p className="rounded-lg bg-danger/12 px-3 py-2 text-sm text-[#f08a80]">Движок не ответил. Возьмите ход назад или начните новую партию.</p>
+                    <div className="rounded-lg bg-danger/12 px-3 py-2 text-sm text-[#f08a80]">
+                      Движок не ответил.{' '}
+                      <button
+                        type="button"
+                        className="font-semibold underline underline-offset-2 hover:no-underline"
+                        onClick={() => {
+                          setEngineError(false)
+                          setRetry((r) => r + 1)
+                        }}
+                      >
+                        Повторить
+                      </button>
+                    </div>
                   )}
                 </>
               )}
@@ -498,8 +524,8 @@ function GameView({ game, onSetup }: { game: BotGame; onSetup: () => void }) {
                 </>
               ) : (
                 <>
-                  <Button size="sm" onClick={showHint} disabled={!userTurn || hintBusy || !!activeHint}>
-                    <LightbulbIcon size={16} /> {hintBusy ? 'Думаю…' : 'Подсказка'}
+                  <Button size="sm" onClick={showHint} disabled={!userTurn || hintBusy || !!activeHint} aria-busy={hintBusy}>
+                    <LightbulbIcon size={16} className={hintBusy ? 'animate-pulse' : ''} /> Подсказка
                   </Button>
                   <Button size="sm" onClick={undo} disabled={!hasUserMove}>
                     <UndoIcon size={16} /> Ход назад

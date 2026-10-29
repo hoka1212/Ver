@@ -1,4 +1,4 @@
-import { useEffect, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { Link } from 'react-router'
 import { ArrowLeftIcon, XIcon } from './icons'
 
@@ -31,11 +31,14 @@ export function Button({
 export function ConfirmButton({
   onConfirm,
   confirmLabel = 'Точно? Нажмите ещё раз',
+  skipConfirm = false,
   children,
   ...rest
 }: Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> & {
   onConfirm: () => void
   confirmLabel?: ReactNode
+  /** Подтверждение не нужно — действие выполняется с первого нажатия. */
+  skipConfirm?: boolean
   variant?: Variant
   size?: 'sm' | 'md' | 'lg'
 }) {
@@ -49,7 +52,7 @@ export function ConfirmButton({
     <Button
       {...rest}
       onClick={() => {
-        if (!armed) return setArmed(true)
+        if (!armed && !skipConfirm) return setArmed(true)
         setArmed(false)
         onConfirm()
       }}
@@ -204,24 +207,57 @@ export function Figurine({ san }: { san: string }) {
 
 /** Нижняя панель поверх страницы (на телефоне) — страница под ней не прокручивается и не сдвигается. */
 export function Sheet({ title, onClose, children }: { title: ReactNode; onClose: () => void; children: ReactNode }) {
+  const titleId = useId()
+  const panel = useRef<HTMLDivElement>(null)
+  const closeButton = useRef<HTMLButtonElement>(null)
   useEffect(() => {
     const root = document.documentElement
-    const prev = root.style.overflow
+    const prevOverflow = root.style.overflow
+    const prevFocus = document.activeElement as HTMLElement | null
     root.style.overflow = 'hidden'
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
+    closeButton.current?.focus({ preventScroll: true })
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+      // Фокус не уходит из панели на страницу под ней.
+      if (e.key === 'Tab' && panel.current) {
+        const items = panel.current.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])')
+        if (!items.length) return
+        const first = items[0]
+        const last = items[items.length - 1]
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault()
+          last.focus()
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault()
+          first.focus()
+        }
+      }
+    }
     window.addEventListener('keydown', onKey)
     return () => {
-      root.style.overflow = prev
+      root.style.overflow = prevOverflow
       window.removeEventListener('keydown', onKey)
+      prevFocus?.focus({ preventScroll: true })
     }
   }, [onClose])
   return (
-    <div className="fixed inset-0 z-50 animate-fade-in" role="dialog" aria-modal="true">
-      <button type="button" aria-label="Закрыть" className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="absolute inset-x-0 bottom-0 flex max-h-[94svh] flex-col rounded-t-2xl border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] shadow-2xl">
+    <div className="fixed inset-0 z-50 animate-fade-in" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+      <div aria-hidden="true" className="absolute inset-0 bg-black/60" onClick={onClose} />
+      <div
+        ref={panel}
+        className="absolute inset-x-0 bottom-0 flex max-h-[94svh] flex-col rounded-t-2xl border-t border-line bg-surface pb-[env(safe-area-inset-bottom)] shadow-2xl"
+      >
         <div className="flex items-center gap-2 border-b border-line px-4 py-3">
-          <h3 className="min-w-0 flex-1 truncate font-semibold">{title}</h3>
-          <button type="button" onClick={onClose} className="rounded-lg p-1.5 text-muted transition-colors hover:bg-surface-3 hover:text-fg" aria-label="Закрыть просмотр">
+          <h3 id={titleId} className="min-w-0 flex-1 truncate font-semibold">
+            {title}
+          </h3>
+          <button
+            ref={closeButton}
+            type="button"
+            onClick={onClose}
+            className="rounded-lg p-1.5 text-muted transition-colors hover:bg-surface-3 hover:text-fg"
+            aria-label="Закрыть просмотр"
+          >
             <XIcon size={20} />
           </button>
         </div>

@@ -19,6 +19,11 @@ export const BEHAVIOURS: Record<BotBehaviour, { name: string; description: strin
   },
 }
 
+/** Есть ли незаконченная партия, в которой ученик уже сделал ход (её не стоит молча затирать). */
+export function botGameInProgress(game: BotGame | null): boolean {
+  return !!game && !game.result && game.moves.some((_, i) => moveColor(i) === game.color)
+}
+
 /** Начинает новую партию с ботом с сохранёнными силой и поведением. */
 export function startBotGame(courseId: string | null, color: 'w' | 'b') {
   const prefs = botPrefsStore.get()

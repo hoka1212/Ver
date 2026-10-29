@@ -413,7 +413,8 @@ export class Position {
       this.hashHi ^= Z_EP_HI[this.ep & 7]
     }
     this.ep = -1
-    this.halfmove++
+    // Повторение не ищем дальше нулевого хода (счётчик восстановится при отмене).
+    this.halfmove = 0
     this.side ^= 1
     this.hashLo ^= Z_SIDE_LO
     this.hashHi ^= Z_SIDE_HI

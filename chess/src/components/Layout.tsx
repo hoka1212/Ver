@@ -69,11 +69,11 @@ export function Layout() {
             to={to}
             end={end}
             className={({ isActive }) =>
-              `flex flex-col items-center gap-1 py-2 text-[11px] font-medium ${isActive ? 'text-accent' : 'text-muted'}`
+              `flex min-w-0 flex-col items-center gap-1 px-0.5 py-2 text-[10px] font-medium min-[360px]:text-[11px] ${isActive ? 'text-accent' : 'text-muted'}`
             }
           >
             <Icon size={22} />
-            {short ?? label}
+            <span className="max-w-full truncate">{short ?? label}</span>
           </NavLink>
         ))}
       </nav>

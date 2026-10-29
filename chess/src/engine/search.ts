@@ -295,11 +295,9 @@ export class Searcher {
         if (score > alpha) alpha = score
       }
       if (this.stopped) {
-        // Незаконченная итерация: берём её ход, только если он уже оказался лучше прежнего.
-        if (completed === 0 && iterBest) {
-          bestMove = iterBest
-          bestScore = iterScore
-        } else if (iterBest && iterBest !== bestMove && iterScore > bestScore) {
+        // Незаконченная итерация: первым досчитан прежний лучший ход, поэтому лучший из досчитанных
+        // на новой глубине надёжнее прошлой итерации. Если не досчитан ни один — остаёмся при прежнем.
+        if (iterBest) {
           bestMove = iterBest
           bestScore = iterScore
         }

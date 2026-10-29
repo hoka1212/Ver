@@ -5,14 +5,14 @@ import { useNavigate, useParams, useSearchParams } from 'react-router'
 import { ChessBoard, type BoardMove } from '../components/ChessBoard'
 import { BotIcon, CheckIcon, EyeIcon, FlipIcon, LightbulbIcon, PlayIcon, RotateIcon, XIcon } from '../components/icons'
 import { MoveList } from '../components/MoveList'
-import { Badge, Button, ButtonLink, Card, PageHeader } from '../components/ui'
+import { Badge, Button, ButtonLink, Card, ConfirmButton, PageHeader } from '../components/ui'
 import { useCourse } from '../data'
 import { repertoireMoves, sideToColor, type Course, type CourseLine } from '../lib/courses'
 import { moveLabel, ruSan } from '../lib/pgn'
 import { formatDue, markStudied, practiceOrder, reviewLine, type LineProgress } from '../lib/srs'
 import { useStore } from '../lib/storage'
-import { logActivity, progressStore, settingsStore } from '../store'
-import { startBotGame } from '../lib/botGame'
+import { botGameStore, logActivity, progressStore, settingsStore } from '../store'
+import { botGameInProgress, startBotGame } from '../lib/botGame'
 
 type Mode = 'learn' | 'practice'
 
@@ -72,6 +72,7 @@ function Session({ course, mode, lineId, onRestart }: { course: Course; mode: Mo
   const [results, setResults] = useState<LineResult[]>([])
   const finished = index >= queue.length
   const navigate = useNavigate()
+  const botGame = useStore(botGameStore)
   const playBot = () => {
     startBotGame(course.id, sideToColor(course.side))
     navigate('/play')
@@ -125,9 +126,9 @@ function Session({ course, mode, lineId, onRestart }: { course: Course; mode: Mo
                 <RotateIcon size={16} /> Ещё сессия
               </Button>
             )}
-            <Button onClick={playBot}>
+            <ConfirmButton onConfirm={playBot} skipConfirm={!botGameInProgress(botGame)} confirmLabel="Прервать текущую партию?">
               <BotIcon size={16} /> Применить в партии с ботом
-            </Button>
+            </ConfirmButton>
             <ButtonLink to={`/openings/${course.id}`}>К курсу</ButtonLink>
           </div>
         </Card>

@@ -10,8 +10,8 @@ import { linesToPgn, moveLabel, ruSan } from '../lib/pgn'
 import { formatDue, isDue, lineMastery, lineStatus, STATUS_LABEL, type LineStatus } from '../lib/srs'
 import { useStore } from '../lib/storage'
 import { useMediaQuery } from '../lib/useMediaQuery'
-import { progressStore, repertoireStore } from '../store'
-import { startBotGame } from '../lib/botGame'
+import { botGameStore, progressStore, repertoireStore } from '../store'
+import { botGameInProgress, startBotGame } from '../lib/botGame'
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 
@@ -43,6 +43,14 @@ export function CoursePage() {
   const isDesktop = useMediaQuery('(min-width: 1024px)')
   const [sheetOpen, setSheetOpen] = useState(false)
   const closeSheet = useCallback(() => setSheetOpen(false), [])
+  useEffect(() => {
+    // Перешли на широкий экран (поворот планшета) — панель больше не нужна и не должна всплыть снова.
+    const mql = window.matchMedia('(min-width: 1024px)')
+    const onChange = () => mql.matches && setSheetOpen(false)
+    mql.addEventListener('change', onChange)
+    return () => mql.removeEventListener('change', onChange)
+  }, [])
+  const botGame = useStore(botGameStore)
 
   const selected: CourseLine | undefined = course?.lines.find((l) => l.id === selectedId) ?? course?.lines[0]
   // По умолчанию показываем конечную позицию выбранной линии.
@@ -120,7 +128,7 @@ export function CoursePage() {
           <span className="text-faint">{ply === 0 ? 'Начальная позиция. Листайте ходы стрелками.' : 'Без комментария.'}</span>
         )}
       </div>
-      <MoveList moves={selected.moves} ply={ply} onSelect={setPly} className="mt-3 h-56" />
+      <MoveList key={selected.id} moves={selected.moves} ply={ply} onSelect={setPly} className="mt-3 h-56" />
     </>
   )
 
@@ -190,14 +198,16 @@ export function CoursePage() {
                 <ButtonLink to={`/openings/${course.id}/train?mode=practice`} variant={newCount ? 'secondary' : 'primary'}>
                   <PlayIcon size={16} /> Тренировать{due ? ` (${due})` : ''}
                 </ButtonLink>
-                <Button
-                  onClick={() => {
+                <ConfirmButton
+                  skipConfirm={!botGameInProgress(botGame)}
+                  confirmLabel="Прервать текущую партию?"
+                  onConfirm={() => {
                     startBotGame(course.id, sideToColor(course.side))
                     navigate('/play')
                   }}
                 >
                   <BotIcon size={16} /> Играть с ботом
-                </Button>
+                </ConfirmButton>
               </div>
             </div>
           </Card>
