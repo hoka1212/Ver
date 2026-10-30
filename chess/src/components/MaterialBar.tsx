@@ -1,12 +1,15 @@
 import { useMemo } from 'react'
 import { defaultPieces } from 'react-chessboard'
-import { materialFromFen, PIECE_VALUE, type MaterialPiece, type PieceColor } from '../lib/material'
+import { materialFromFen, type MaterialPiece, type PieceColor } from '../lib/material'
 
 const PIECE_NAME: Record<MaterialPiece, string> = { p: 'пешка', n: 'конь', b: 'слон', r: 'ладья', q: 'ферзь' }
 // Взятые фигуры рисуем силуэтами: светлые — белые, серые — чёрные (чёрный контур не виден на тёмном фоне).
 const FILL: Record<PieceColor, string> = { w: '#ecebe8', b: '#6b6762' }
 
-/** Полоса над/под доской: взятые этой стороной фигуры, перевес и очки материала. */
+/**
+ * Полоса над/под доской, как на chess.com: взятые этой стороной фигуры,
+ * а у стороны с перевесом — «+N» (разница в очках материала).
+ */
 export function MaterialBar({ fen, color, label }: { fen: string; color: PieceColor; label?: string }) {
   const material = useMemo(() => materialFromFen(fen), [fen])
   const side = material[color]
@@ -19,9 +22,9 @@ export function MaterialBar({ fen, color, label }: { fen: string; color: PieceCo
     if (last && last[0] === p) last.push(p)
     else groups.push([p])
   }
-  const description = side.captured.length
-    ? `Взято: ${side.captured.map((p) => PIECE_NAME[p]).join(', ')}`
-    : 'Пока ничего не взято'
+  const description =
+    (side.captured.length ? `Взято: ${side.captured.map((p) => PIECE_NAME[p]).join(', ')}` : 'Пока ничего не взято') +
+    (lead > 0 ? `. Перевес: +${lead}` : '')
 
   return (
     <div className="flex h-8 min-w-0 items-center gap-2 px-0.5 text-sm" title={description}>
@@ -41,13 +44,7 @@ export function MaterialBar({ fen, color, label }: { fen: string; color: PieceCo
           </span>
         ))}
       </span>
-      {lead > 0 && <span className="shrink-0 font-bold text-fg tabular">+{lead}</span>}
-      <span
-        className="ml-auto shrink-0 text-xs text-faint tabular"
-        title={`Очки материала (пешка ${PIECE_VALUE.p}, конь и слон ${PIECE_VALUE.n}, ладья ${PIECE_VALUE.r}, ферзь ${PIECE_VALUE.q})`}
-      >
-        {side.points} очк.
-      </span>
+      {lead > 0 && <span className="-ml-1 shrink-0 font-semibold text-fg/75 tabular">+{lead}</span>}
     </div>
   )
 }

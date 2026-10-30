@@ -82,7 +82,8 @@ export function OpeningsPage() {
         </section>
       )}
 
-      <section>
+      {/* Высота с запасом: при фильтрации короткий список не «схлопывает» страницу. */}
+      <section className="min-h-[60svh]">
         {custom.length > 0 && <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted">База курсов</h2>}
         {builtIn.length === 0 ? (
           <p className="text-muted">Ничего не найдено.</p>

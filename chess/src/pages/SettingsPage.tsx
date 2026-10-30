@@ -6,6 +6,8 @@ import {
   activityStore,
   ALL_STORES,
   BOARD_THEMES,
+  botGameStore,
+  botStatsStore,
   coordStore,
   progressStore,
   repertoireStore,
@@ -50,6 +52,8 @@ export function SettingsPage() {
     progressStore.reset()
     coordStore.set((d) => ({ ...d, sessions: [], best: {}, squares: {} }))
     activityStore.reset()
+    botStatsStore.reset()
+    botGameStore.reset()
     setMessage('Прогресс сброшен.')
   }
 

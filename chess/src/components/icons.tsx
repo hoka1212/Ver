@@ -161,6 +161,24 @@ export const ClockIcon = (p: IconProps) => (
   </Svg>
 )
 
+export const BotIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <rect x="4" y="8" width="16" height="12" rx="3" />
+    <path d="M12 8V4" />
+    <circle cx="12" cy="3" r="1" />
+    <path d="M9 13v1.5M15 13v1.5" />
+    <path d="M9.5 17.5h5" />
+    <path d="M2 13v3M22 13v3" />
+  </Svg>
+)
+
+export const FlagIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M5 21V4" />
+    <path d="M5 4h11l-2 4 2 4H5" />
+  </Svg>
+)
+
 export const UndoIcon = (p: IconProps) => (
   <Svg {...p}>
     <path d="M9 14 4 9l5-5" />

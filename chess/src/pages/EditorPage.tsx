@@ -221,7 +221,7 @@ export function EditorPage() {
           </div>
         </div>
 
-        <div className="lg:sticky lg:top-6 lg:self-start">
+        <div className="min-w-0 lg:sticky lg:top-6 lg:self-start">
           <Card className="p-3 sm:p-4">
             <div className="mb-3">
               <Segmented<'board' | 'pgn'>

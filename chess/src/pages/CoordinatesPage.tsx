@@ -97,6 +97,8 @@ export function CoordinatesPage() {
       setDeadline(t + prefs.perSquareSeconds * 1000)
     }
     setPhase('running')
+    // Раунд начинается с доской на экране, даже если «Начать» нажали внизу страницы (телефон).
+    window.scrollTo(0, 0)
   }
 
   const finish = (list: Attempt[]) => {
@@ -268,14 +270,15 @@ export function CoordinatesPage() {
               </div>
             )}
           </div>
-          {running && (
-            <div className="mx-auto mt-3 h-2 w-full max-w-[min(100%,calc(100dvh-9rem))] overflow-hidden rounded-full bg-surface-3">
-              <div
-                className={`h-full rounded-full ${timeShare < 0.25 ? 'bg-danger' : 'bg-accent'}`}
-                style={{ width: `${timeShare * 100}%`, transition: 'width 50ms linear' }}
-              />
-            </div>
-          )}
+          {/* Полоса времени есть всегда (вне раунда — невидима), чтобы старт раунда ничего не сдвигал. */}
+          <div
+            className={`mx-auto mt-3 h-2 w-full max-w-[min(100%,calc(100svh-9rem))] overflow-hidden rounded-full bg-surface-3 ${running ? '' : 'invisible'}`}
+          >
+            <div
+              className={`h-full rounded-full ${timeShare < 0.25 ? 'bg-danger' : 'bg-accent'}`}
+              style={{ width: `${running ? timeShare * 100 : 100}%`, transition: 'width 50ms linear' }}
+            />
+          </div>
         </div>
 
         <aside className="flex flex-col gap-4">

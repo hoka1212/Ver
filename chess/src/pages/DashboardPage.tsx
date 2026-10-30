@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { ActivityChart } from '../components/ActivityChart'
-import { BookIcon, ChevronRightIcon, FlameIcon, PlayIcon, TargetIcon } from '../components/icons'
+import { BookIcon, BotIcon, ChevronRightIcon, FlameIcon, PlayIcon, TargetIcon } from '../components/icons'
 import { Badge, ButtonLink, Card, ProgressBar, StatTile } from '../components/ui'
 import { useCourses } from '../data'
 import { SIDE_LABEL } from '../lib/courses'
 import { dayKey, useStore } from '../lib/storage'
 import { isDue, lineMastery, lineStatus } from '../lib/srs'
-import { activityStore, coordBestKey, coordStore, currentStreak, progressStore } from '../store'
+import { activityStore, botGameStore, botStatsStore, coordBestKey, coordStore, currentStreak, dayTotal, progressStore } from '../store'
 
 function pluralRu(n: number, one: string, few: string, many: string) {
   const m10 = n % 10
@@ -22,6 +22,8 @@ export function DashboardPage() {
   const progress = useStore(progressStore)
   const coords = useStore(coordStore)
   const activity = useStore(activityStore)
+  const botGame = useStore(botGameStore)
+  const botRecord = useStore(botStatsStore)._all
 
   // Время фиксируем при открытии страницы — рендер остаётся чистым.
   const [now] = useState(() => Date.now())
@@ -69,7 +71,7 @@ export function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Card className="flex flex-col">
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -125,15 +127,43 @@ export function DashboardPage() {
         </Card>
       </div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      <Card className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3">
+        <div className="min-w-56 flex-1">
+          <div className="flex items-center gap-2 text-lg font-semibold">
+            <BotIcon size={22} className="text-accent" /> Игра с ботом
+          </div>
+          <p className="mt-1 text-sm text-muted">
+            Применяйте выученные дебюты в партии: бот отвечает по теории курса, иногда сворачивает с неё, а дальше играет сам.
+          </p>
+        </div>
+        <div className="flex gap-5 text-center">
+          <div>
+            <div className="text-xl font-bold tabular">{botRecord?.games ?? 0}</div>
+            <div className="text-xs text-muted">партий</div>
+          </div>
+          <div>
+            <div className="text-xl font-bold text-accent tabular">{botRecord?.wins ?? 0}</div>
+            <div className="text-xs text-muted">побед</div>
+          </div>
+          <div>
+            <div className="text-xl font-bold tabular">{botRecord?.draws ?? 0}</div>
+            <div className="text-xs text-muted">ничьих</div>
+          </div>
+        </div>
+        <ButtonLink to="/play" variant="primary">
+          <PlayIcon size={16} /> {botGame && !botGame.result && botGame.moves.length > 0 ? 'Продолжить партию' : 'Играть с ботом'}
+        </ButtonLink>
+      </Card>
+
+      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <Card>
           <div className="mb-1 flex items-baseline justify-between">
             <h2 className="font-semibold">Тренировки за две недели</h2>
             <span className="text-xs text-muted">
-              сегодня: {today.coords + today.lines}
+              сегодня: {dayTotal(today)}
             </span>
           </div>
-          <p className="mb-2 text-xs text-faint">Раунды координат и пройденные линии дебютов по дням</p>
+          <p className="mb-2 text-xs text-faint">Раунды координат, линии дебютов и партии с ботом по дням</p>
           <ActivityChart activity={activity} now={now} />
         </Card>
 
