@@ -25,7 +25,7 @@ export const blackmarDiemer: CourseDef = {
     },
     {
       id: 'teichmann-bh5',
-      name: 'Тейхман: 6...Сh5',
+      name: 'Защита Тейхмана: 6...Сh5',
       pgn: `1.d4 d5 2.e4 dxe4 3.Nc3 Nf6 4.f3 exf3 5.Nxf3 Bg4 6.h3 Bh5 7.g4 {Гоним слона.} Bg6 8.Ne5 {Конь занимает центр, готовится h4–h5.}`,
     },
     {
@@ -35,7 +35,7 @@ export const blackmarDiemer: CourseDef = {
     },
     {
       id: 'gunderam-be4',
-      name: 'Гундерам: 7...Сe4',
+      name: 'Защита Гундерама: 7...Сe4',
       pgn: `1.d4 d5 2.e4 dxe4 3.Nc3 Nf6 4.f3 exf3 5.Nxf3 Bf5 6.Ne5 e6 7.g4 Be4 8.Nxe4 Nxe4 9.Qf3 {Двойная атака: конь e4 и пункт f7.} Qxd4 10.Qxf7+ Kd8 11.Qf4 {Король чёрных лишён рокировки.}`,
     },
     {

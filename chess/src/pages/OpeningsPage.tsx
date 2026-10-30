@@ -1,12 +1,14 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router'
-import { PlusIcon, SearchIcon } from '../components/icons'
-import { Badge, ButtonLink, PageHeader, ProgressBar, Segmented } from '../components/ui'
+import { Link, useNavigate } from 'react-router'
+import { BotIcon, EyeIcon, PlayIcon, PlusIcon, SearchIcon } from '../components/icons'
+import { Badge, ButtonLink, ConfirmButton, PageHeader, ProgressBar, Segmented } from '../components/ui'
 import { useCourses } from '../data'
 import { KIND_LABEL, KIND_TONE, LEVEL_LABEL, SIDE_LABEL, type Course, type CourseKind, type Side } from '../lib/courses'
 import { useStore } from '../lib/storage'
 import { isDue, lineMastery } from '../lib/srs'
-import { progressStore } from '../store'
+import { botGameInProgress, startBotGame } from '../lib/botGame'
+import { REPERTOIRE_IDS } from '../lib/tree'
+import { botGameStore, progressStore } from '../store'
 
 export function OpeningsPage() {
   const courses = useCourses()
@@ -39,6 +41,11 @@ export function OpeningsPage() {
           </ButtonLink>
         }
       />
+
+      <section className="mb-6 grid grid-cols-1 gap-3 md:grid-cols-2">
+        <RepertoireCard side="white" courses={courses} progress={progress} />
+        <RepertoireCard side="black" courses={courses} progress={progress} />
+      </section>
 
       <div className="mb-5 flex flex-wrap items-center gap-3">
         <Segmented<Side | 'all'>
@@ -130,5 +137,54 @@ function CourseCard({ course, progress }: { course: Course; progress: ReturnType
         <ProgressBar value={mastery} />
       </div>
     </Link>
+  )
+}
+
+/** Все дебюты одной стороны одним деревом: изучение, тренировка и игра с ботом. */
+function RepertoireCard({ side, courses, progress }: { side: Side; courses: Course[]; progress: ReturnType<typeof progressStore.get> }) {
+  const navigate = useNavigate()
+  const botGame = useStore(botGameStore)
+  const own = courses.filter((c) => c.side === side && c.lines.length > 0)
+  const lines = own.flatMap((c) => c.lines)
+  const mastery = lines.length ? lines.reduce((s, l) => s + lineMastery(progress[l.key]), 0) / lines.length : 0
+  const due = lines.filter((l) => isDue(progress[l.key])).length
+  const base = `/repertoire/${side}/train`
+  return (
+    <div className="flex flex-col rounded-xl border border-line bg-surface p-4">
+      <div className="flex flex-wrap items-center gap-2">
+        <Badge tone={side}>{SIDE_LABEL[side]}</Badge>
+        {due > 0 && <Badge tone="warn">{due} к повтору</Badge>}
+      </div>
+      <h3 className="mt-2 text-lg font-semibold">Весь репертуар за {side === 'white' ? 'белых' : 'чёрных'}</h3>
+      <p className="text-sm text-muted">
+        {own.length} дебютов и {lines.length} линий одним деревом: соперник играет что угодно из курсов, а тренажёр сразу называет дебют и вариант.
+      </p>
+      <div className="mt-3">
+        <div className="mb-1 flex justify-between text-xs text-muted">
+          <span>Освоение</span>
+          <span className="tabular">{Math.round(mastery * 100)}%</span>
+        </div>
+        <ProgressBar value={mastery} />
+      </div>
+      <div className="mt-4 flex flex-wrap gap-2">
+        <ButtonLink size="sm" variant="primary" to={`${base}?mode=learn`}>
+          <EyeIcon size={16} /> Дерево вариантов
+        </ButtonLink>
+        <ButtonLink size="sm" to={`${base}?mode=practice`}>
+          <PlayIcon size={16} /> Тренировать
+        </ButtonLink>
+        <ConfirmButton
+          size="sm"
+          skipConfirm={!botGameInProgress(botGame)}
+          confirmLabel="Прервать текущую партию?"
+          onConfirm={() => {
+            startBotGame(REPERTOIRE_IDS[side], side === 'white' ? 'w' : 'b')
+            navigate('/play')
+          }}
+        >
+          <BotIcon size={16} /> С ботом
+        </ConfirmButton>
+      </div>
+    </div>
   )
 }

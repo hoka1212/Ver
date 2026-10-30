@@ -21,6 +21,7 @@ const router = createHashRouter([
       { path: 'openings/:courseId', element: <CoursePage /> },
       { path: 'openings/:courseId/edit', element: <EditorPage /> },
       { path: 'openings/:courseId/train', element: <TrainerPage /> },
+      { path: 'repertoire/:side/train', element: <TrainerPage /> },
       { path: 'play', element: <PlayPage /> },
       { path: 'settings', element: <SettingsPage /> },
       { path: '*', element: <DashboardPage /> },

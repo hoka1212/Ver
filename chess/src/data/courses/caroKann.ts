@@ -25,12 +25,12 @@ export const caroKann: CourseDef = {
     },
     {
       id: 'classical-nc5',
-      name: 'Классическая: 5.Кc5',
+      name: 'Классическая система: 5.Кc5',
       pgn: `1.e4 c6 2.d4 d5 3.Nc3 dxe4 4.Nxe4 Bf5 5.Nc5 {Нападаем на пешку b7.} b6 6.Nb3 e6 {Надёжное развитие.}`,
     },
     {
       id: 'classical-bd3',
-      name: 'Классическая: 5.Сd3?',
+      name: 'Классическая система: 5.Сd3?',
       trap: true,
       pgn: `1.e4 c6 2.d4 d5 3.Nc3 dxe4 4.Nxe4 Bf5 5.Bd3 {Ошибка: пешка d4 осталась без защиты.} Qxd4 6.Nf3 Qd8 {Чёрные с лишней пешкой.}`,
     },

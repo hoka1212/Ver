@@ -9,7 +9,8 @@ import { askBot } from '../engine/client'
 import { BOT_LEVELS, type BotLevel } from '../engine/levels'
 import { buildBook, chooseBookMove, type BookEntry } from '../lib/book'
 import { BEHAVIOURS, botGameInProgress, gameResult, moveColor, replay, START_FEN, startBotGame, theorySummary, uciToSan } from '../lib/botGame'
-import { positionKey, sideToColor, type Course } from '../lib/courses'
+import { positionKey, sideToColor } from '../lib/courses'
+import { buildTree, deepestNode, describeNode, REPERTOIRE_IDS, REPERTOIRE_NAMES, resolveSource, type TrainSource } from '../lib/tree'
 import { moveLabel, ruSan } from '../lib/pgn'
 import { useStore } from '../lib/storage'
 import {
@@ -86,19 +87,19 @@ function PlaySetup({ canReturn, onClose }: { canReturn: boolean; onClose: () => 
   const prefs = useStore(botPrefsStore)
   const stats = useStore(botStatsStore)
   const game = useStore(botGameStore)
-  const [courseId, setCourseId] = useState(() => (courses.some((c) => c.id === prefs.courseId && c.lines.length > 0) ? prefs.courseId! : ''))
-  const course = courses.find((c) => c.id === courseId)
+  const [courseId, setCourseId] = useState(() => (resolveSource(prefs.courseId, courses)?.lines.length ? prefs.courseId! : ''))
+  const source = useMemo(() => resolveSource(courseId, courses), [courseId, courses])
   const record = stats._all
 
   const start = () => {
-    const color = course
-      ? sideToColor(course.side)
+    const color = source
+      ? sideToColor(source.side)
       : prefs.freeColor === 'random'
         ? Math.random() < 0.5
           ? 'w'
           : 'b'
         : prefs.freeColor
-    startBotGame(course?.id ?? null, color)
+    startBotGame(source?.id ?? null, color)
     onClose()
     // Партия открывается сверху: доска целиком на экране, даже если кнопку нажали внизу формы.
     window.scrollTo(0, 0)
@@ -127,18 +128,25 @@ function PlaySetup({ canReturn, onClose }: { canReturn: boolean; onClose: () => 
             className="h-11 w-full rounded-lg border border-line bg-surface-2 px-3 text-[15px] text-fg outline-none focus:border-accent"
           >
             <option value="">Без дебюта — свободная партия</option>
+            <optgroup label="Все дебюты сразу">
+              <option value={REPERTOIRE_IDS.white}>{REPERTOIRE_NAMES.white}</option>
+              <option value={REPERTOIRE_IDS.black}>{REPERTOIRE_NAMES.black}</option>
+            </optgroup>
             <optgroup label="За белых">{group('white')}</optgroup>
             <optgroup label="За чёрных">{group('black')}</optgroup>
           </select>
           <p className="mt-2 min-h-[4.25rem] text-sm leading-relaxed text-muted">
-            {course ? course.summary : 'Обычная партия с начальной позиции — бот играет без подсказок курса.'}
+            {source
+              ? (source.course?.summary ??
+                `Бот играет любой дебют из ваших курсов за ${source.side === 'white' ? 'белых' : 'чёрных'}, а по ходу партии видно, какой это дебют и вариант.`)
+              : 'Обычная партия с начальной позиции — бот играет без подсказок курса.'}
           </p>
         </Field>
 
         <Field label="Ваш цвет">
-          {course ? (
+          {source ? (
             <Segmented
-              value={course.side}
+              value={source.side}
               disabled
               onChange={() => {}}
               options={[
@@ -157,7 +165,7 @@ function PlaySetup({ canReturn, onClose }: { canReturn: boolean; onClose: () => 
               ]}
             />
           )}
-          <p className="mt-2 text-sm text-faint">{course ? 'Цвет задаёт курс.' : 'В свободной партии цвет выбираете вы.'}</p>
+          <p className="mt-2 text-sm text-faint">{source ? 'Цвет задаёт курс.' : 'В свободной партии цвет выбираете вы.'}</p>
         </Field>
 
         <Field label="Сила бота">
@@ -173,13 +181,13 @@ function PlaySetup({ canReturn, onClose }: { canReturn: boolean; onClose: () => 
         <Field label="Поведение соперника в дебюте">
           <Segmented
             value={prefs.behaviour}
-            disabled={!course}
+            disabled={!source}
             onChange={(v) => botPrefsStore.set((p) => ({ ...p, behaviour: v }))}
             className="grid grid-cols-1 sm:inline-grid sm:grid-cols-3"
             options={(Object.keys(BEHAVIOURS) as BotBehaviour[]).map((b) => ({ value: b, label: BEHAVIOURS[b].name }))}
           />
           <p className="mt-2 min-h-[4.25rem] text-sm leading-relaxed text-faint">
-            {course ? BEHAVIOURS[prefs.behaviour].description : 'Доступно, когда выбран дебют.'}
+            {source ? BEHAVIOURS[prefs.behaviour].description : 'Доступно, когда выбран дебют.'}
           </p>
         </Field>
 
@@ -233,9 +241,14 @@ const MARK: Partial<Record<MoveTag, MoveMark>> = { book: 'book', mistake: 'mista
 function GameView({ game, onSetup }: { game: BotGame; onSetup: () => void }) {
   const courses = useCourses()
   const settings = useStore(settingsStore)
-  const course: Course | null = (game.courseId && courses.find((c) => c.id === game.courseId)) || null
+  const course = useMemo(() => resolveSource(game.courseId, courses), [game.courseId, courses])
   const book = useMemo(() => (course ? buildBook(course) : null), [course])
+  const tree = useMemo(() => (course ? buildTree(course.lines) : null), [course])
   const chess = useMemo(() => replay(game.moves), [game.moves])
+  // Какой дебют и вариант на доске — по ходам партии, пока она идёт по книге.
+  const opening = tree ? describeNode(deepestNode(tree, game.moves.map((m) => m.san))) : null
+  const openingText = opening?.opening ? `${opening.opening}${opening.variation ? ` · ${opening.variation}` : ''}` : null
+  const ideasCourse = course?.course ?? (opening?.opening ? courses.find((c) => c.name === opening.opening) : undefined)
   const fen = chess.fen()
   const ply = game.moves.length
   const over = !!game.result
@@ -453,6 +466,7 @@ function GameView({ game, onSetup }: { game: BotGame; onSetup: () => void }) {
   const badges = (
     <>
       <Badge tone="info">{course ? course.name : game.courseId ? 'Курс удалён' : 'Свободная партия'}</Badge>
+      {openingText && !course?.course && <Badge tone="accent">{openingText}</Badge>}
       <Badge tone={game.color === 'w' ? 'white' : 'black'}>Вы за {game.color === 'w' ? 'белых' : 'чёрных'}</Badge>
       <Badge>{BOT_LEVELS[game.level].name}</Badge>
     </>
@@ -562,6 +576,11 @@ function GameView({ game, onSetup }: { game: BotGame; onSetup: () => void }) {
               {status}
             </div>
             {course && (
+              <p className="mt-1 truncate text-sm font-semibold text-accent-strong" title={openingText ?? undefined}>
+                {openingText ?? (opening && opening.openings.length > 1 ? `Дебют ещё не определился` : 'Дебют курса')}
+              </p>
+            )}
+            {course && (
               <p className="mt-1 text-sm text-muted tabular">
                 По теории: {summary.bookMoves} {summary.mistakes.length > 0 && <span className="text-danger">· ошибок: {summary.mistakes.length}</span>}
                 {game.hints > 0 && <span className="text-faint"> · подсказок: {game.hints}</span>}
@@ -599,8 +618,8 @@ function GameView({ game, onSetup }: { game: BotGame; onSetup: () => void }) {
                     <RotateIcon size={16} /> Ещё партия
                   </Button>
                   {course && (
-                    <ButtonLink size="sm" to={`/openings/${course.id}`}>
-                      К курсу
+                    <ButtonLink size="sm" to={course.home}>
+                      {course.course ? 'К курсу' : 'К дебютам'}
                     </ButtonLink>
                   )}
                 </>
@@ -639,13 +658,13 @@ function GameView({ game, onSetup }: { game: BotGame; onSetup: () => void }) {
             )}
           </Card>
 
-          {course?.ideas && course.ideas.length > 0 && (
+          {ideasCourse?.ideas && ideasCourse.ideas.length > 0 && (
             <Card className="p-4">
               <div className="mb-2 flex items-center gap-2 text-sm font-semibold">
-                <LightbulbIcon size={16} className="text-warn" /> Идеи дебюта
+                <LightbulbIcon size={16} className="text-warn" /> Идеи дебюта{ideasCourse !== course?.course && `: ${ideasCourse.name}`}
               </div>
               <ul className="space-y-1.5">
-                {course.ideas.map((idea) => (
+                {ideasCourse.ideas.map((idea) => (
                   <li key={idea} className="flex gap-2 text-sm text-muted">
                     <span className="mt-2 size-1 shrink-0 rounded-full bg-faint" />
                     {idea}
@@ -661,7 +680,7 @@ function GameView({ game, onSetup }: { game: BotGame; onSetup: () => void }) {
 }
 
 /** Итог партии по теории курса. */
-function GameReport({ game, course }: { game: BotGame; course: Course | null }) {
+function GameReport({ game, course }: { game: BotGame; course: TrainSource | null }) {
   if (!course) return <p className="text-sm text-muted">Сыграйте ещё одну партию или выберите дебют, чтобы потренировать теорию.</p>
   const s = theorySummary(game)
   const items: ReactNode[] = [

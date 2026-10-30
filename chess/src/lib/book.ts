@@ -1,4 +1,4 @@
-import { positionKey, sideToColor, type Course, type CourseLine } from './courses'
+import { positionKey, sideToColor, type CourseLine, type Side } from './courses'
 
 /** Ход из дебютной книги курса. */
 export interface BookMove {
@@ -20,7 +20,8 @@ export interface BookEntry {
 /** Позиция (без счётчиков ходов) → ходы курса. Переходы из разных линий сливаются. */
 export type Book = Map<string, BookEntry>
 
-export function buildBook(course: Course): Book {
+/** Книга курса или всего репертуара (нужны только сторона и линии). */
+export function buildBook(course: { side: Side; lines: CourseLine[] }): Book {
   const book: Book = new Map()
   const userColor = sideToColor(course.side)
   for (const line of course.lines) {

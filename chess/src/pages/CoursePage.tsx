@@ -194,7 +194,7 @@ export function CoursePage() {
               </div>
               <div className="flex flex-wrap gap-2">
                 <ButtonLink to={`/openings/${course.id}/train?mode=learn`} variant={newCount ? 'primary' : 'secondary'}>
-                  <EyeIcon size={16} /> Изучать{newCount ? ` (${newCount} нов.)` : ''}
+                  <EyeIcon size={16} /> Дерево вариантов{newCount ? ` (${newCount} нов.)` : ''}
                 </ButtonLink>
                 <ButtonLink to={`/openings/${course.id}/train?mode=practice`} variant={newCount ? 'secondary' : 'primary'}>
                   <PlayIcon size={16} /> Тренировать{due ? ` (${due})` : ''}
@@ -275,7 +275,7 @@ export function CoursePage() {
                       <Link
                         to={`/openings/${course.id}/train?mode=learn&line=${line.id}`}
                         className="rounded-lg p-2 text-muted transition hover:bg-surface-3 hover:text-fg"
-                        title="Изучать с подсказками"
+                        title="Изучать эту линию в дереве вариантов"
                       >
                         <EyeIcon size={18} />
                       </Link>

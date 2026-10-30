@@ -14,14 +14,14 @@ interface MoveListProps {
   moves: { san: string; color: 'w' | 'b'; comment?: string; mark?: MoveMark }[]
   /** Сколько ходов уже сыграно (подсвечивается последний). */
   ply: number
-  /** Ходы после ply скрыты (режим тренировки). */
-  hideFuture?: boolean
+  /** Ходы с этого номера скрыты (тренировка: будущие ходы линии). */
+  hideFrom?: number
   onSelect?: (ply: number) => void
   className?: string
 }
 
 /** Список ходов парами, как на шахматных сайтах. */
-export function MoveList({ moves, ply, hideFuture, onSelect, className = '' }: MoveListProps) {
+export function MoveList({ moves, ply, hideFrom, onSelect, className = '' }: MoveListProps) {
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
     // Прокручиваем только сам список: scrollIntoView сдвинул бы всю страницу.
@@ -44,7 +44,7 @@ export function MoveList({ moves, ply, hideFuture, onSelect, className = '' }: M
 
   const cell = (i: number | undefined) => {
     if (i === undefined) return <span className="px-2 py-1 text-faint">…</span>
-    const hidden = hideFuture && i >= ply
+    const hidden = hideFrom !== undefined && i >= hideFrom
     const current = i === ply - 1
     const mark = moves[i].mark
     return (
