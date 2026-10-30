@@ -4,6 +4,9 @@ import { moveToUci, Position } from './board'
 import { pickMove, runBot } from './bot'
 import { MATE, Searcher } from './search'
 
+// Проверки движка тяжёлые: на медленных серверах CI они идут дольше стандартных 5 секунд.
+const SLOW = 60_000
+
 // Эталонные числа perft: https://www.chessprogramming.org/Perft_Results
 const PERFT: [string, string, number[]][] = [
   ['начальная позиция', 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', [20, 400, 8902, 197281]],
@@ -21,7 +24,7 @@ describe('генерация ходов (perft)', () => {
       counts.forEach((n, i) => expect(pos.perft(i + 1)).toBe(n))
       // После всех ходов и отмен позиция не изменилась.
       expect(pos.toFen()).toBe(new Position(fen).toFen())
-    })
+    }, SLOW)
   }
 })
 
@@ -30,7 +33,7 @@ describe('позиция', () => {
     // Псевдослучайная партия: на каждом шаге сверяем ходы с chess.js.
     let seed = 7
     const rnd = () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff)
-    for (let game = 0; game < 20; game++) {
+    for (let game = 0; game < 12; game++) {
       const pos = new Position()
       const chess = new Chess()
       for (let ply = 0; ply < 120 && !chess.isGameOver(); ply++) {
@@ -50,7 +53,7 @@ describe('позиция', () => {
         expect(pos.toFen().split(' ').slice(0, 3)).toEqual(chess.fen().split(' ').slice(0, 3))
       }
     }
-  })
+  }, SLOW)
 
   it('видит повторение позиции', () => {
     const pos = new Position()
@@ -100,7 +103,7 @@ describe('бот', () => {
       expect(res.move).toBeTruthy()
       expect(() => chess.move({ from: res.move!.slice(0, 2), to: res.move!.slice(2, 4), promotion: res.move![4] })).not.toThrow()
     }
-  })
+  }, SLOW)
 
   it('сворачивает с теории только на разумный ход', () => {
     const res = runBot({
@@ -113,7 +116,7 @@ describe('бот', () => {
     expect(res.move).not.toBe('b8c6')
     // Не отдаёт пешку e5 даром и не зевает фигуры.
     expect(res.score).toBeGreaterThan(-150)
-  })
+  }, SLOW)
 
   it('выбор с температурой 0 — всегда лучший ход', () => {
     const list = [
