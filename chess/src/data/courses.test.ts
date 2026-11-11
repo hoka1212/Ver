@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { compileCourse, findConflicts, sideToColor } from '../lib/courses'
+import { compileCourse, findConflicts, lazyCourse, sideToColor } from '../lib/courses'
 import { BUILT_IN_COURSES } from './courses'
 
 describe('встроенная база дебютов', () => {
@@ -8,6 +8,16 @@ describe('встроенная база дебютов', () => {
   it('id курсов уникальны', () => {
     const ids = BUILT_IN_COURSES.map((c) => c.id)
     expect(new Set(ids).size).toBe(ids.length)
+  })
+
+  it('ленивая сборка курса даёт те же линии, что и полная', () => {
+    for (const def of BUILT_IN_COURSES.slice(0, 3)) {
+      const eager = compileCourse(def)
+      const lazy = lazyCourse(def)
+      expect(lazy.lines.map((l) => l.key)).toEqual(eager.lines.map((l) => l.key))
+      expect(lazy.lines.map((l) => l.moves)).toEqual(eager.lines.map((l) => l.moves))
+      expect(lazy.lines.map((l) => l.userMoves)).toEqual(eager.lines.map((l) => l.userMoves))
+    }
   })
 
   for (const course of compiled) {

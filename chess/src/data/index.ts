@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
-import { compileCourse, type Course } from '../lib/courses'
+import { compileCourse, lazyCourse, type Course } from '../lib/courses'
 import { useStore } from '../lib/storage'
 import { repertoireStore } from '../store'
 import { BUILT_IN_COURSES } from './courses'
 
-const BUILT_IN: Course[] = BUILT_IN_COURSES.map(compileCourse)
+const BUILT_IN: Course[] = BUILT_IN_COURSES.map(lazyCourse)
 
 /** Все курсы: встроенная база + пользовательский репертуар. */
 export function useCourses(): Course[] {

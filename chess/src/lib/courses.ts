@@ -61,6 +61,43 @@ export function sideToColor(side: Side): 'w' | 'b' {
   return side === 'white' ? 'w' : 'b'
 }
 
+/**
+ * Линия, ходы которой разбираются только при первом обращении: проверка ходов через chess.js
+ * дорогая, а спискам курсов нужны лишь названия и ключи линий.
+ */
+function lazyLine(courseId: string, l: LineDef, color: 'w' | 'b'): CourseLine {
+  let moves: LineMove[] | null = null
+  const load = () => {
+    if (!moves) {
+      const games = parsePgn(l.pgn)
+      moves = games.length ? (extractLines(games[0], l.name).lines[0]?.moves ?? []) : []
+    }
+    return moves
+  }
+  return {
+    id: l.id,
+    key: `${courseId}/${l.id}`,
+    name: l.name,
+    trap: l.trap,
+    get moves() {
+      return load()
+    },
+    get userMoves() {
+      return load().filter((m) => m.color === color).length
+    },
+  }
+}
+
+/**
+ * Курс встроенной базы: её ходы проверены тестами, поэтому линии разбираются
+ * по мере надобности, а не все сразу при запуске приложения.
+ */
+export function lazyCourse(def: CourseDef): Course {
+  const color = sideToColor(def.side)
+  return { ...def, lines: def.lines.map((l) => lazyLine(def.id, l, color)), errors: [] }
+}
+
+/** Разбирает и проверяет все линии курса сразу (пользовательские курсы и тесты). */
 export function compileCourse(def: CourseDef): Course {
   const errors: string[] = []
   const color = sideToColor(def.side)

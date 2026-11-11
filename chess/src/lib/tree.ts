@@ -27,7 +27,22 @@ export const REPERTOIRE_IDS: Record<Side, string> = { white: 'repertoire-white',
 export const REPERTOIRE_NAMES: Record<Side, string> = { white: 'Весь репертуар за белых', black: 'Весь репертуар за чёрных' }
 
 function trainLines(course: Course): TrainLine[] {
-  return course.lines.map((l) => ({ ...l, courseId: course.id, courseName: course.name, courseKind: course.kind }))
+  // Ходы берём через геттеры: линии встроенных курсов разбираются только при первом обращении.
+  return course.lines.map((l) => ({
+    id: l.id,
+    key: l.key,
+    name: l.name,
+    trap: l.trap,
+    get moves() {
+      return l.moves
+    },
+    get userMoves() {
+      return l.userMoves
+    },
+    courseId: course.id,
+    courseName: course.name,
+    courseKind: course.kind,
+  }))
 }
 
 export function courseSource(course: Course): TrainSource {
